@@ -1,0 +1,12 @@
+appId: com.youssef.streamsafe
+productName: Stream Safe
+copyright: Copyright © 2023 Youssef
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
