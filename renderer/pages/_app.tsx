@@ -6,7 +6,7 @@ import MyAppBar from '../components/appBar/MyAppBar'
 export default function MyApp({ Component, pageProps }: AppProps) {
     return (
         <Box>
-            <MyAppBar />
+            <MyAppBar children={undefined}/>
             <ThemeProvider theme={theme}>
                 <Component {...pageProps} />
             </ThemeProvider>

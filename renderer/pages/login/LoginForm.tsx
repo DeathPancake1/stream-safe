@@ -3,7 +3,7 @@
 import theme from "../../themes/theme"
 import { ThemeProvider } from "@emotion/react"
 import { Label } from "@mui/icons-material"
-import { Box, Button, InputAdornment, TextField, Typography } from "@mui/material"
+import { Box, Button, InputAdornment, Link, TextField, Typography } from "@mui/material"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 
 interface FormData {
@@ -31,7 +31,8 @@ export default function LoginForm() {
         <ThemeProvider theme={theme}>
             <Box
                 sx={{
-                    marginTop: '100px'
+                    marginTop: '100px',
+                    maxWidth: '90%'
                 }}
             >
                 <form 
@@ -49,6 +50,7 @@ export default function LoginForm() {
                                 placeholder='johndoe@example.com'
                                 sx={{
                                     margin: '10px',
+                                    maxWidth: '100%'
                                 }}
                                 InputProps={{
                                     startAdornment: (
@@ -73,6 +75,7 @@ export default function LoginForm() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
+                                type="password"
                                 fullWidth
                                 error={errors.password? true: false}
                                 helperText={
@@ -138,9 +141,11 @@ export default function LoginForm() {
                         <Typography noWrap component="div" textAlign={'center'}>
                             {/* eslint-disable-next-line react/no-unescaped-entities*/}
                             Don't have an account?
-                            <Button variant="text">
-                                Sign up
-                            </Button>
+                            <Link href="/signup">
+                                <Button variant="text">
+                                    Sign up
+                                </Button>
+                            </Link>
                         </Typography>
                     </Box>
                 </form>

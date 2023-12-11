@@ -12,7 +12,11 @@ const theme = createTheme({
     //@ts-ignore
     black: {
         main: "#000000",
-      },
+    },
+    //@ts-ignore
+    white: {
+        main: '#FFFFFF'
+    }
   },
   typography: {
     fontFamily: [
