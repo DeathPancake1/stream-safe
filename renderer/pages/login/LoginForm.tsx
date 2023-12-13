@@ -1,10 +1,7 @@
 "use client"
 
-import theme from "../../themes/theme"
-import { ThemeProvider } from "@emotion/react"
-import { Label } from "@mui/icons-material"
-import { Box, Button, InputAdornment, Link, TextField, Typography } from "@mui/material"
-import { Controller, SubmitHandler, useForm } from "react-hook-form"
+import { Box, Button, Link, Typography } from "@mui/material"
+import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { getFields } from "./fields"
 
@@ -18,7 +15,6 @@ export default function LoginForm() {
         handleSubmit,
         formState: { errors },
         control,
-        watch,
     } = useForm<FormData>({
         defaultValues: {
             email: '',

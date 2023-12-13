@@ -1,4 +1,3 @@
-import { FieldErrors } from "react-hook-form"
 import FieldType from "../../types/field-type"
 
 export function getFields(errors: any): FieldType[] {
