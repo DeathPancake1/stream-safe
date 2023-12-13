@@ -1,10 +1,12 @@
 "use client"
 
-import { Box, Button, Link, Typography } from "@mui/material"
+import { Alert, Box, Button, Link, Snackbar, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { getSignupFields } from "../../helpers/auth/signupFields"
 import { useSignup } from "../../api/hooks/auth-hook"
+import { useEffect, useState } from "react"
+import { useRouter } from 'next/router'
 
 interface FormData {
     firstname: string
@@ -16,6 +18,11 @@ interface FormData {
 }
 
 export default function SignupForm() {
+    const [open, setOpen] = useState<boolean>()
+    const [email, setEmail] = useState<string>('')
+    
+    const router = useRouter()
+
     const {
         handleSubmit,
         formState: { errors },
@@ -34,13 +41,39 @@ export default function SignupForm() {
 
     const {mutate: register, isLoading, isError} = useSignup()
 
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        setOpen(false);
+      };
+
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        delete data.confirmEmail
-        delete data.confirmPassword
-        const email = await register(data)
+        try{
+            delete data.confirmEmail
+            delete data.confirmPassword
+            await register(
+                data,
+                {
+                    onSuccess: (response) => {
+                      setEmail(response)
+                    },
+                }    
+            )
+            if(email){
+                localStorage.setItem('email', JSON.stringify(email))
+                router.push('/login');
+            }
+            else{
+                setOpen(true)
+            }
+        }
+        catch(error){
+            setOpen(true)
+        }
+        
     }
 
     const fields = getSignupFields(errors, watch)
+
+
     return (
         <Box
             sx={{
@@ -48,6 +81,9 @@ export default function SignupForm() {
                 maxWidth: '60%'
             }}
         >
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Email already exists</Alert>
+            </Snackbar>
             <form 
                 onSubmit={handleSubmit(onSubmit)}
             >

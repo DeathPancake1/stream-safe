@@ -13,7 +13,7 @@ class AuthService {
    */
   async signup(data: SignupType) {
     const res = await axios.post(`${process.env.API_URL}/auth/register`, data);
-    return res;
+    return res.data;
   }
 
 }

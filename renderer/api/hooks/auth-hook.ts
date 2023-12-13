@@ -5,8 +5,13 @@ import SignupType from "../../types/signup-type"
 const useSignup = ()=>{
     const queryClient = useQueryClient()
     return useMutation(
-        (data: SignupType)=>{
-            return authService.signup(data)
+        async (data: SignupType)=>{
+            return await authService.signup(data)
+        },
+        {
+            onSuccess: (data)=>{
+                return data
+            }
         }
     )
 }
