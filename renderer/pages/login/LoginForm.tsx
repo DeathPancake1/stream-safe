@@ -1,9 +1,12 @@
 "use client"
 
-import { Box, Button, Link, Typography } from "@mui/material"
+import { Alert, Box, Button, Link, Snackbar, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { getSigninFields } from "../../helpers/auth/signinFields"
+import { useSignin } from "../../api/hooks/auth-hook"
+import { useState } from "react"
+import secureLocalStorage from "react-secure-storage"
 
 interface FormData {
     email: string
@@ -11,6 +14,8 @@ interface FormData {
 }
 
 export default function LoginForm() {
+    const [open, setOpen] = useState<boolean>()
+    const {mutate: login, isLoading, isError} = useSignin()
     const {
         handleSubmit,
         formState: { errors },
@@ -22,8 +27,27 @@ export default function LoginForm() {
         },
     })
 
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        setOpen(false);
+    };
+
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        
+        try{
+            await login(
+                data,
+                {
+                    onSuccess: (response) =>{
+                        if(response.status===201){
+                            secureLocalStorage.setItem('jwt', response.data.token.accessToken)
+                        }else{
+                            setOpen(true)
+                        }
+                    }
+                }
+            )
+        }catch(error){
+            setOpen(true)
+        }
     }
     const fields = getSigninFields(errors)
     return (
@@ -33,6 +57,9 @@ export default function LoginForm() {
                 maxWidth: '90%'
             }}
         >
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Invalid credentials</Alert>
+            </Snackbar>
             <form 
                 onSubmit={handleSubmit(onSubmit)}
             >

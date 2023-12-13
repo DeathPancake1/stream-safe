@@ -1,5 +1,6 @@
 import axios from "axios";
 import SignupType from '../../types/signup-type'
+import SigninType from '../../types/signin-type'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
@@ -14,6 +15,23 @@ class AuthService {
   async signup(data: SignupType) {
     const res = await axios.post(`${process.env.API_URL}/auth/register`, data);
     return res.data;
+  }
+
+  /**
+   *POST signin
+   * @returns
+   */
+   async signin(data: SigninType) {
+    try{
+      const res = await axios.post(`${process.env.API_URL}/auth/login`, data);
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+        }
+    }
+    
   }
 
 }

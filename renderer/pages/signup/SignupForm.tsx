@@ -43,7 +43,7 @@ export default function SignupForm() {
 
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         setOpen(false);
-      };
+    };
 
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
         try{
@@ -58,7 +58,6 @@ export default function SignupForm() {
                 }    
             )
             if(email){
-                localStorage.setItem('email', JSON.stringify(email))
                 router.push('/login');
             }
             else{
