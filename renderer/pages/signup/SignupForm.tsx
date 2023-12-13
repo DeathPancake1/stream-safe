@@ -3,7 +3,8 @@
 import { Box, Button, Link, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
-import { getFields } from "./fields"
+import { getSignupFields } from "../../helpers/auth/signupFields"
+import { useSignup } from "../../api/hooks/auth-hook"
 
 interface FormData {
     firstname: string
@@ -31,11 +32,15 @@ export default function SignupForm() {
         },
     })
 
-    const onSubmit: SubmitHandler<FormData> = async (data: { email: string; password: string }) => {
-        
+    const {mutate: register, isLoading, isError} = useSignup()
+
+    const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+        delete data.confirmEmail
+        delete data.confirmPassword
+        const email = await register(data)
     }
 
-    const fields = getFields(errors, watch)
+    const fields = getSignupFields(errors, watch)
     return (
         <Box
             sx={{
@@ -47,8 +52,10 @@ export default function SignupForm() {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 {
-                    fields.map((field)=>
+                    fields.map((field, index)=>
                         <Field
+                            key={index}
+                            type={field.type}
                             control={control}
                             name={field.name}
                             error={field.error? true: false}

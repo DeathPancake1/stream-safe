@@ -3,7 +3,7 @@
 import { Box, Button, Link, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
-import { getFields } from "./fields"
+import { getSigninFields } from "../../helpers/auth/signinFields"
 
 interface FormData {
     email: string
@@ -22,10 +22,10 @@ export default function LoginForm() {
         },
     })
 
-    const onSubmit: SubmitHandler<FormData> = async (data: { email: string; password: string }) => {
+    const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
         
     }
-    const fields = getFields(errors)
+    const fields = getSigninFields(errors)
     return (
         <Box
             sx={{
@@ -37,9 +37,11 @@ export default function LoginForm() {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 {
-                    fields.map((field)=>
+                    fields.map((field, index)=>
                         <Field
+                            key={index}
                             control={control}
+                            type={field.type}
                             name={field.name}
                             error={field.error? true: false}
                             errorMessage={field.error?.message}

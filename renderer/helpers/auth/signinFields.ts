@@ -1,6 +1,6 @@
 import FieldType from "../../types/field-type"
 
-export function getFields(errors: any): FieldType[] {
+export function getSigninFields(errors: any): FieldType[] {
     return [
         {
             name: 'email', error: errors.email, placeholder: 'johndoe@example.com', type: 'text',

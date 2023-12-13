@@ -1,7 +1,7 @@
 import { UseFormWatch } from "react-hook-form"
 import FieldType from "../../types/field-type"
 
-export function getFields(errors: any, watch: UseFormWatch<any>): FieldType[] {
+export function getSignupFields(errors: any, watch: UseFormWatch<any>): FieldType[] {
     return [
         {
             name: 'email', error: errors.email, placeholder: 'email@example.com', type: 'text',

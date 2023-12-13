@@ -2,7 +2,8 @@ import { Box, ThemeProvider } from '@mui/material'
 import type { AppProps } from 'next/app'
 import theme from '../themes/theme'
 import MyAppBar from '../components/appBar/MyAppBar'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from "react-query/devtools";
 import { useState } from 'react'
  
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -14,6 +15,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider theme={theme}>
                     <Component {...pageProps} />
+                    <ReactQueryDevtools initialIsOpen={false} />
                 </ThemeProvider>
             </QueryClientProvider>
         </Box>

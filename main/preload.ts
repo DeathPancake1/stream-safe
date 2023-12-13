@@ -16,5 +16,10 @@ const handler = {
 }
 
 contextBridge.exposeInMainWorld('ipc', handler)
+console.log(process.env.API_KEY);
+
+contextBridge.exposeInMainWorld('envVars', {
+  apiKey: process.env.API_KEY
+});
 
 export type IpcHandler = typeof handler
