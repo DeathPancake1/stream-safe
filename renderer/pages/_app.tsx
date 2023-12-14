@@ -7,7 +7,16 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { useState } from 'react'
  
 export default function MyApp({ Component, pageProps }: AppProps) {
-    const [queryClient] = useState(() => new QueryClient())
+    const [queryClient] = useState(() => new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+            retry: false,
+            staleTime: Infinity,
+          },
+        },
+      }))
     
     return (
         <Box>

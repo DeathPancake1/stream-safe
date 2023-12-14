@@ -15,13 +15,34 @@ const useGetId = ()=>{
     )
 }
 
-const useCheckLocked = (jwt: string) => {
-    return useQuery(['device', deviceService.getIsLocked(jwt)], {
-      enabled: !!jwt, // Only execute the query if jwt is truthy
-    });
+const useCheckId = ()=>{
+    return useMutation(
+        async (data: {deviceId: string, jwt: string})=>{
+            return await deviceService.checkId(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
+const useCheckLocked = () => {
+    return useMutation(
+        async (data: {jwt: string})=>{
+            return await deviceService.getIsLocked(data.jwt)
+        },
+        {
+            onSuccess: (response) =>{
+
+            }
+        }
+    )
 };
 
 export {
     useGetId,
-    useCheckLocked
+    useCheckLocked,
+    useCheckId
 }

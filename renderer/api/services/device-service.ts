@@ -25,6 +25,24 @@ class DeviceService {
   }
 
   /**
+   *POST device/checkId
+    * @returns
+    */
+  async checkId(data: {deviceId: string, jwt: string}) {
+    try{
+      axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
+      const res = await axios.post(`${process.env.API_URL}/device/checkId`, data.deviceId);
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+        }
+    }
+    
+  }
+
+  /**
    *GET device/isLocked
    * @returns
    */

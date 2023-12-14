@@ -7,8 +7,6 @@ import { getSigninFields } from "../../helpers/auth/signinFields"
 import { useSignin } from "../../api/hooks/auth-hook"
 import { useState } from "react"
 import secureLocalStorage from "react-secure-storage"
-import { useGetId } from "../../api/hooks/device-hook"
-import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric"
 import DeviceModal from "./DeviceModal"
 
 interface FormData {
