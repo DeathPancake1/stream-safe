@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import * as crypto from 'crypto'
 
 const handler = {
   send(channel: string, value: unknown) {
@@ -15,8 +16,16 @@ const handler = {
   },
 }
 
+contextBridge.exposeInMainWorld('electron', {
+  // Expose only the necessary crypto functionality
+  crypto: {
+    generateKeyPairSync: (type: string, options: any) => {
+      return ipcRenderer.invoke('generate-key-pair', type, options);
+    },
+  },
+});
+
 contextBridge.exposeInMainWorld('ipc', handler)
-console.log(process.env.API_KEY);
 
 contextBridge.exposeInMainWorld('envVars', {
   apiKey: process.env.API_KEY

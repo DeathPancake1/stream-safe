@@ -13,7 +13,7 @@ class DeviceService {
   async genDeviceId(data: {publicKey: string, jwt: string}) {
     try{
       axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
-      const res = await axios.post(`${process.env.API_URL}/device/getId`, data.publicKey);
+      const res = await axios.post(`${process.env.API_URL}/device/getId`, {publicKey: data.publicKey});
       return res;
     }catch(error){
       return {
@@ -31,7 +31,7 @@ class DeviceService {
   async checkId(data: {deviceId: string, jwt: string}) {
     try{
       axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
-      const res = await axios.post(`${process.env.API_URL}/device/checkId`, data.deviceId);
+      const res = await axios.post(`${process.env.API_URL}/device/checkId`, {deviceId: data.deviceId});
       return res;
     }catch(error){
       return {

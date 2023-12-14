@@ -2,6 +2,7 @@ import path from 'path'
 import { app, ipcMain, Menu } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
+import crypto from 'crypto'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -10,6 +11,12 @@ if (isProd) {
 } else {
   app.setPath('userData', `${app.getPath('userData')} (development)`)
 }
+
+ipcMain.handle('generate-key-pair', async (event, type, options) => {
+  // Implement the actual key pair generation using crypto module
+  const { publicKey, privateKey } = crypto.generateKeyPairSync(type, options);
+  return { publicKey, privateKey };
+});
 
 ;(async () => {
   await app.whenReady()

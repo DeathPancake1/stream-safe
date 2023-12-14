@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "react-query"
 import deviceService from "../services/device-service"
+import secureLocalStorage from "react-secure-storage"
 
 
 const useGetId = ()=>{
@@ -9,7 +10,7 @@ const useGetId = ()=>{
         },
         {
             onSuccess: (response)=>{
-                
+                secureLocalStorage.setItem('deviceId', response.data);
             }
         }
     )

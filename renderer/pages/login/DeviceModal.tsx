@@ -56,13 +56,11 @@ export default function DeviceModal({open, setOpen}: props){
     const lockThisDevice = async ()=>{
         const {publicKey, privateKey} = await generateAsymmetricKeys()
         secureLocalStorage.setItem('privateKey', privateKey)
-        let deviceId
-        await getId(
+        const deviceId = await getId(
             {publicKey, jwt},
             {
                 onSuccess: (response)=>{
-                    deviceId = response.data
-                    secureLocalStorage.setItem('deviceId', deviceId)
+                    secureLocalStorage.setItem('deviceId', response.data)
                 }
             }
         )
