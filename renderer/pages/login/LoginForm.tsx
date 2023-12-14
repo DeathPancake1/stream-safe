@@ -7,6 +7,9 @@ import { getSigninFields } from "../../helpers/auth/signinFields"
 import { useSignin } from "../../api/hooks/auth-hook"
 import { useState } from "react"
 import secureLocalStorage from "react-secure-storage"
+import { useGetId } from "../../api/hooks/device-hook"
+import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric"
+import DeviceModal from "./DeviceModal"
 
 interface FormData {
     email: string
@@ -15,7 +18,8 @@ interface FormData {
 
 export default function LoginForm() {
     const [open, setOpen] = useState<boolean>()
-    const {mutate: login, isLoading, isError} = useSignin()
+    const [openModal, setOpenModal] = useState<boolean>()
+    const {mutate: login} = useSignin()
     const {
         handleSubmit,
         formState: { errors },
@@ -39,6 +43,7 @@ export default function LoginForm() {
                     onSuccess: (response) =>{
                         if(response.status===201){
                             secureLocalStorage.setItem('jwt', response.data.token.accessToken)
+                            setOpenModal(true)
                         }else{
                             setOpen(true)
                         }
@@ -116,6 +121,7 @@ export default function LoginForm() {
                     </Typography>
                 </Box>
             </form>
+            {openModal && <DeviceModal open={openModal} setOpen={setOpenModal} />}
         </Box>
     )
 }
