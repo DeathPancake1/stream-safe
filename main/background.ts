@@ -29,6 +29,9 @@ ipcMain.handle('generate-key-pair', async (event, type, options) => {
     },
   })
 
+  // Disables screen recording and screenshots
+  mainWindow.setContentProtection(true);
+
   const menu = Menu.buildFromTemplate([]);
   mainWindow.setMenu(menu);
 
