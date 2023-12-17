@@ -6,6 +6,7 @@ import { useCheckId, useCheckLocked, useGetId } from "../../api/hooks/device-hoo
 import { useEffect, useState } from "react";
 import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric";
 import { useRouter } from "next/router";
+import { useUser } from "../../providers/UserContext";
 
 interface props{
     open: boolean
@@ -19,6 +20,7 @@ export default function DeviceModal({open, setOpen}: props){
     const { mutate: getId } = useGetId()
     const { mutate: checkId } = useCheckId()
     const  {mutate: checkLocked} = useCheckLocked()
+    const { userData, updateUser } = useUser();
     const [state, setState] = useState<0|1|2|3>()
     // 0 means locked to this device
     // 1 means locked to another device
@@ -168,6 +170,7 @@ export default function DeviceModal({open, setOpen}: props){
     // Logout function
     const handleClose = () => {
         setOpen(false);
+        updateUser('')
         secureLocalStorage.removeItem('jwt')
         localStorage.removeItem('jwt-time')
     };

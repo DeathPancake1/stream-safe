@@ -9,9 +9,7 @@ const useSignup = ()=>{
             return await authService.signup(data)
         },
         {
-            onSuccess: (data)=>{
-                return data
-            }
+
         }
     )
 }

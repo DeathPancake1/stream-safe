@@ -7,6 +7,7 @@ import { getSignupFields } from "../../helpers/auth/signupFields"
 import { useSignup } from "../../api/hooks/auth-hook"
 import { useEffect, useState } from "react"
 import { useRouter } from 'next/router'
+import { useUser } from "../../providers/UserContext"
 
 interface FormData {
     firstname: string
@@ -38,6 +39,7 @@ export default function SignupForm() {
             confirmPassword: ''
         },
     })
+    const { userData, updateUser } = useUser();
 
     const {mutate: register, isLoading, isError} = useSignup()
 
