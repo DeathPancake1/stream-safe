@@ -5,6 +5,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useCheckId, useCheckLocked, useGetId } from "../../api/hooks/device-hook";
 import { useEffect, useState } from "react";
 import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric";
+import { useRouter } from "next/router";
 
 interface props{
     open: boolean
@@ -19,11 +20,12 @@ export default function DeviceModal({open, setOpen}: props){
     const { mutate: checkId } = useCheckId()
     const  {mutate: checkLocked} = useCheckLocked()
     const [state, setState] = useState<0|1|2|3>()
-    const [locked, setLocked ]= useState<boolean>(false)
     // 0 means locked to this device
     // 1 means locked to another device
     // 2 means not locked but this device is locked to another account
     // 3 means both device and account are unlocked
+    const router = useRouter()
+    const [locked, setLocked ]= useState<boolean>(false)
 
 
     const fetchLocked =async (jwt:string) => {
@@ -64,6 +66,7 @@ export default function DeviceModal({open, setOpen}: props){
                 }
             }
         )
+        login()
         setOpen(false)
     }
 
@@ -101,7 +104,7 @@ export default function DeviceModal({open, setOpen}: props){
                             {"Signed in"}
                         </DialogTitle>
                         <DialogActions>
-                            <Button onClick={handleClose}>Ok</Button>
+                            <Button onClick={login}>Ok</Button>
                         </DialogActions>
                     </>
                 );
@@ -162,9 +165,16 @@ export default function DeviceModal({open, setOpen}: props){
     };
     
 
+    // Logout function
     const handleClose = () => {
         setOpen(false);
+        secureLocalStorage.removeItem('jwt')
+        localStorage.removeItem('jwt-time')
     };
+
+    const login = () =>{
+        router.push('/home')
+    }
     
 
     useEffect(() => {

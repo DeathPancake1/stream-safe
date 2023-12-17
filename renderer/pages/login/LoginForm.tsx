@@ -5,9 +5,10 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { getSigninFields } from "../../helpers/auth/signinFields"
 import { useSignin } from "../../api/hooks/auth-hook"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import secureLocalStorage from "react-secure-storage"
 import DeviceModal from "./DeviceModal"
+import { useUser } from "../../providers/UserContext"
 
 interface FormData {
     email: string
@@ -18,6 +19,7 @@ export default function LoginForm() {
     const [open, setOpen] = useState<boolean>()
     const [openModal, setOpenModal] = useState<boolean>()
     const {mutate: login} = useSignin()
+    const { userData, updateUser } = useUser();
     const {
         handleSubmit,
         formState: { errors },
@@ -41,6 +43,9 @@ export default function LoginForm() {
                     onSuccess: (response) =>{
                         if(response.status===201){
                             secureLocalStorage.setItem('jwt', response.data.token.accessToken)
+                            const date = new Date
+                            localStorage.setItem('jwt-time', date.toString())
+                            updateUser(response.data.user.email)
                             setOpenModal(true)
                         }else{
                             setOpen(true)
@@ -53,6 +58,11 @@ export default function LoginForm() {
         }
     }
     const fields = getSigninFields(errors)
+
+    // on initial load set user email to empty
+    useEffect(()=>{
+        updateUser('')
+    }, [])
     return (
         <Box
             sx={{

@@ -1,8 +1,12 @@
 "use client"
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import theme from "../../themes/theme";
-import { AppBar, Box, Button, Link, ThemeProvider, Toolbar, Typography, useScrollTrigger } from "@mui/material";
+import { AppBar, Box, Button, Chip, Link, ThemeProvider, Toolbar, Typography, useScrollTrigger } from "@mui/material";
+import { Face, Logout } from '@mui/icons-material';
+import secureLocalStorage from "react-secure-storage";
+import { useUser } from "../../providers/UserContext";
+import { useRouter } from "next/router";
 
 interface Props {
     /**
@@ -30,6 +34,15 @@ interface Props {
   }
 
 export default function MyAppBar(props: Props){
+    const { userData, updateUser } = useUser();
+    const router = useRouter()
+
+    const logout = ()=>{
+        secureLocalStorage.removeItem('jwt')
+        updateUser('')
+        router.push('/login')
+        
+    }
     return(
         <ThemeProvider theme={theme}>
             <ElevationScroll {...props}>
@@ -39,18 +52,26 @@ export default function MyAppBar(props: Props){
                         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
                             Stream Safe
                         </Typography>
-                        <Box>
-                            <Link href="/login">
-                                <Button variant="text" sx={{ paddingLeft: '40px', paddingRight: '40px', textTransform: 'none' }}>
-                                    Sign in
-                                </Button>
-                            </Link>
-                            <Link href="/signup">
-                                <Button variant="contained"  sx={{ paddingLeft: '40px', paddingRight: '40px', textTransform: 'none' }}>
-                                    Sign up
-                                </Button>
-                            </Link>
-                        </Box>
+                        {
+                            userData.email === ''?
+                            <Box>
+                                <Link href="/login">
+                                    <Button variant="text" sx={{ paddingLeft: '40px', paddingRight: '40px', textTransform: 'none' }}>
+                                        Sign in
+                                    </Button>
+                                </Link>
+                                <Link href="/signup">
+                                    <Button variant="contained"  sx={{ paddingLeft: '40px', paddingRight: '40px', textTransform: 'none' }}>
+                                        Sign up
+                                    </Button>
+                                </Link>
+                            </Box>
+                            :
+                            <Box>
+                                <Chip icon={<Face />} label={userData.email} deleteIcon={<Logout />} onDelete={logout}/>
+                            </Box>
+                        }
+                        
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
