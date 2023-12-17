@@ -55,16 +55,15 @@ export default function SignupForm() {
                 data,
                 {
                     onSuccess: (response) => {
-                      setEmail(response)
+                        if(response.status===201){
+                            router.push('/login');
+                        }
+                        else{
+                            setOpen(true)
+                        }
                     },
                 }    
             )
-            if(email){
-                router.push('/login');
-            }
-            else{
-                setOpen(true)
-            }
         }
         catch(error){
             setOpen(true)

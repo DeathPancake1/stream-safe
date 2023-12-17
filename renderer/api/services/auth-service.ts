@@ -13,8 +13,16 @@ class AuthService {
    * @returns
    */
   async signup(data: SignupType) {
-    const res = await axios.post(`${process.env.API_URL}/auth/register`, data);
-    return res.data;
+    try{
+      const res = await axios.post(`${process.env.API_URL}/auth/register`, data);
+      return res;
+    }catch(error){
+      return {
+        status: 401,
+        data: ''
+      }
+    }
+    
   }
 
   /**
