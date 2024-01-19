@@ -8,7 +8,7 @@ import { useUser } from "../../providers/UserContext";
 
 
 export default function Home() {
-    const [playing, setPlaying] = useState<boolean>();
+    const [playing, setPlaying] = useState<boolean>(true);
     const { userData, updateUser } = useUser();
     const [leftPad, setLeftPad] = useState<number>();
     const [topPad, setTopPad] = useState<number>();
@@ -16,7 +16,7 @@ export default function Home() {
     useEffect(() => {
       // Function to update leftPad
       const updateLeftPad = () => {
-        setLeftPad(Math.random() * 70);
+        setLeftPad(Math.random() * 50);
       };
   
       // Update leftPad every 2 seconds
@@ -54,13 +54,13 @@ export default function Home() {
         }}
       >
         {/* ReactPlayer component */}
-        <ReactPlayer width={'100%'} height={'100%'} url='/test.mp4' playing={playing} />
+        <ReactPlayer width={'100%'} height={'100%'} url='/test.mp4' playing={playing} loop/>
   
         {/* Email overlay */}
         <span
           style={{
             position: 'absolute',
-            fontSize: '54px',
+            fontSize: '40px',
             left: `${leftPad}%`,
             top: `${topPad}%`,
             backgroundColor: 'white',
