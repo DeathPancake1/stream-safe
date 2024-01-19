@@ -5,14 +5,14 @@ import { Box, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { useUser } from "../../providers/UserContext";
-
+import secureLocalStorage from "react-secure-storage";
 
 export default function Home() {
     const [playing, setPlaying] = useState<boolean>(true);
     const { userData, updateUser } = useUser();
     const [leftPad, setLeftPad] = useState<number>();
     const [topPad, setTopPad] = useState<number>();
-  
+
     useEffect(() => {
       // Function to update leftPad
       const updateLeftPad = () => {
@@ -39,6 +39,25 @@ export default function Home() {
       return () => clearInterval(intervalIdTop);
     }, []);
   
+    useEffect(() => {
+      const handleKeyDown = (event) => {
+        if (event.shiftKey && event.key === 'U') {
+          // Perform actions when Shift + U is pressed
+          localStorage.removeItem('jwt-time');
+          secureLocalStorage.removeItem('deviceId')
+          secureLocalStorage.removeItem('jwt')
+          secureLocalStorage.removeItem('privateKey')
+        }
+      };
+
+      // Add event listener for keydown
+      window.addEventListener('keydown', handleKeyDown);
+
+      // Remove event listener when the component is unmounted
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, []);
     return (
       <Box
         sx={{
@@ -46,7 +65,7 @@ export default function Home() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          position: 'relative', // Make the box a positioning context for absolute positioning
+          position: 'relative',
           width: '80%',
           height: '80%',
           marginTop: '5%',
@@ -55,7 +74,7 @@ export default function Home() {
       >
         {/* ReactPlayer component */}
         <ReactPlayer width={'100%'} height={'100%'} url='/test.mp4' playing={playing} loop/>
-  
+
         {/* Email overlay */}
         <span
           style={{
@@ -70,10 +89,10 @@ export default function Home() {
         >
           {userData.email}
         </span>
-  
+
         <IconButton onClick={() => setPlaying((prevState) => !prevState)}>
           <PlayCircleOutline />
         </IconButton>
       </Box>
     );
-  }
+}
