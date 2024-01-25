@@ -1,5 +1,5 @@
 import { Inbox, Mail } from "@mui/icons-material";
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 import SearchBox from "../SearchBox";
 import { useFindEmail } from "../../api/hooks/search-hook";
 import { useState } from "react";
@@ -44,6 +44,7 @@ export function MyDrawer() {
           <Toolbar />
           <Box sx={{ overflow: 'auto' }}>
             <List>
+              <Divider />
               <SearchBox search={handleSearch} />
               {chats.map((chat, index) => (
                 <ListItem key={chat.email} disablePadding>

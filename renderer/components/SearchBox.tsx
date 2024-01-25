@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, IconButton, InputAdornment } from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
-import { useFindEmail } from '../api/hooks/search-hook';
 import secureLocalStorage from 'react-secure-storage';
 
 interface Props{
@@ -52,9 +51,7 @@ export default function SearchBox({
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            <IconButton>
-              <SearchIcon />
-            </IconButton>
+            <SearchIcon />
           </InputAdornment>
         ),
       }}
