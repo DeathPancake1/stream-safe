@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from 'react';
+import { TextField, IconButton, InputAdornment } from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
+import { useFindEmail } from '../api/hooks/search-hook';
+import secureLocalStorage from 'react-secure-storage';
+
+interface Props{
+  search : ({email, jwt} : {email: string, jwt: string}) => any
+}
+
+export default function SearchBox({
+  search,
+}: Props) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [jwt, setJwt] = useState<string>('');
+  
+
+  const timerRef = React.useRef<number>();
+
+  // Function to handle search
+  const handleSearch = (query) => {
+    search({ email: query, jwt: jwt });
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+        handleSearch(event.target.value)
+    }, 300); // debounce timeout
+  };
+
+  useEffect(() => {
+    setJwt(secureLocalStorage.getItem('jwt').toString());
+  }, []);
+
+  return (
+    <TextField
+      variant="outlined"
+      label="Search"
+      value={searchQuery}
+      sx={{
+        margin: 'auto',
+        marginTop: 1,
+        marginLeft: 1,
+        width: '95%',
+      }}
+      onChange={handleChange}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton>
+              <SearchIcon />
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+    />
+  );
+}
