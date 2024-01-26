@@ -4,21 +4,19 @@ import { Search as SearchIcon } from '@mui/icons-material';
 import secureLocalStorage from 'react-secure-storage';
 
 interface Props{
-  search : ({email, jwt} : {email: string, jwt: string}) => any
+  search : ({email} : {email: string}) => any
 }
 
 export default function SearchBox({
   search,
 }: Props) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [jwt, setJwt] = useState<string>('');
-  
+  const [searchQuery, setSearchQuery] = useState('');  
 
   const timerRef = React.useRef<number>();
 
   // Function to handle search
   const handleSearch = (query) => {
-    search({ email: query, jwt: jwt });
+    search({ email: query });
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,9 +30,6 @@ export default function SearchBox({
     }, 300); // debounce timeout
   };
 
-  useEffect(() => {
-    setJwt(secureLocalStorage.getItem('jwt').toString());
-  }, []);
 
   return (
     <TextField

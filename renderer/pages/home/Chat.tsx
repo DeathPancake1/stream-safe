@@ -1,6 +1,8 @@
 import { Box, Divider, Typography, Button } from "@mui/material";
 import Welcome from "../../components/auth/Welcome";
 import ChatBody from "./ChatBody";
+import UploadFile from "../../components/uploadFile/UploadFile";
+import { useState } from "react";
 
 interface Props {
   firstname?: string;
@@ -13,6 +15,8 @@ export default function Chat({
   lastname = "",
   email = "",
 }: Props) {
+  const [files, setFiles] = useState<File[]>([])
+  
   return (
     <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
       {email ? (
@@ -50,10 +54,7 @@ export default function Chat({
             <Divider />
 
             {/* Button to upload a file */}
-            <Button variant="contained" fullWidth component="label" sx={{ mt: "auto" }}>
-                Upload File
-                <input type="file" style={{ display: "none" }} />
-            </Button>
+            <UploadFile fileList={files} setFiles={setFiles}/>
         </Box>
       ) : (
         // When email doesn't exist, show the welcome component

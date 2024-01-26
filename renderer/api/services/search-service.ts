@@ -10,10 +10,10 @@ class SearchService {
    *POST user/findEmail
    * @returns
    */
-  async findEmail(data: {email: string, jwt: string}) {
+  async searchUser(data: {email: string, jwt: string}) {
     try{
       axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
-      const res = await axios.post(`${process.env.API_URL}/user/findEmail`, {email: data.email});
+      const res = await axios.post(`${process.env.API_URL}/user/searchUser`, {email: data.email});
       return res;
     }catch(error){
       return {

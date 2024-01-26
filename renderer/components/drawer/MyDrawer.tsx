@@ -1,63 +1,80 @@
 import { Inbox, Mail } from "@mui/icons-material";
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 import SearchBox from "../SearchBox";
-import { useFindEmail } from "../../api/hooks/search-hook";
-import { useState } from "react";
+import { useSearchUser } from "../../api/hooks/search-hook";
+import { useEffect, useState } from "react";
+import secureLocalStorage from "react-secure-storage";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ChatType from "../../types/chat-type";
 
-type Chat = {
-  firstname: string,
-  lastname: string,
-  email: string,
-  publicKey: string,
+interface Props {
+  selectedChat: ChatType,
+  setSelectedChat: (chat: ChatType) => void
 }
 
-export function MyDrawer() {
-    const { mutate: search } = useFindEmail();
-    const [ chats, setChats ] = useState<Chat[]>([]);
+export function MyDrawer({
+  selectedChat,
+  setSelectedChat,
+}: Props) {
+  const { mutate: search } = useSearchUser();
+  const [chats, setChats] = useState<ChatType[]>([]);
+  const [jwt, setJwt] = useState<string>('');
 
-    async function handleSearch({email, jwt} : {email: string, jwt: string}){
-      await search(
-        {email, jwt},
-        {
-          onSuccess: (response)=>{
-            setChats(chats.concat({
-              firstname: 'test',
-              lastname: 'test',
-              email: 'test12@email.com',
-              publicKey: 'test'
-            }))
-            console.log(chats)
+  async function handleSearch({ email }: { email: string }) {
+    search(
+      { email, jwt },
+      {
+        onSuccess: (response) => {
+          if (response.data) {
+            setChats(response.data);
           }
         }
-      )
-    }
+      }
+    );
+  }
 
-    return (
-      <Drawer
-          variant="permanent"
-          sx={{
-            width: 300,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ overflow: 'auto' }}>
-            <List>
-              <Divider />
-              <SearchBox search={handleSearch} />
-              {chats.map((chat, index) => (
-                <ListItem key={chat.email} disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      {index % 2 === 0 ? <Inbox /> : <Mail />}
-                    </ListItemIcon>
-                    <ListItemText primary={chat.email} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-      </Drawer>
-    )
+  const handleSetChat = (chat: ChatType) => {
+    setSelectedChat(chat);
+  }
+
+  useEffect(() => {
+    handleSearch({ email: '' });
+  }, [jwt]);
+
+  useEffect(() => {
+    setJwt(secureLocalStorage.getItem('jwt').toString());
+  }, []);
+
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: 300,
+        flexShrink: 0,
+        [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+      }}
+    >
+      <Toolbar />
+      <Box sx={{ overflow: 'auto' }}>
+        <List>
+          <Divider />
+          <SearchBox search={handleSearch} />
+          {chats.map((chat, index) => (
+            <ListItem
+              key={chat.email}
+              disablePadding
+              selected={selectedChat && selectedChat.email === chat.email}
+            >
+              <ListItemButton onClick={() => handleSetChat(chat)}>
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary={chat.email} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    </Drawer>
+  );
 }
