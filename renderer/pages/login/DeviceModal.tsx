@@ -16,7 +16,6 @@ interface props{
 
 
 export default function DeviceModal({open, setOpen}: props){
-    const [ jwt, setJwt] = useState<string>('')
     const { mutate: getId } = useGetId()
     const { mutate: checkId } = useCheckId()
     const  {mutate: checkLocked} = useCheckLocked()
@@ -43,7 +42,7 @@ export default function DeviceModal({open, setOpen}: props){
 
     const checkAccountId = async (deviceId: string)=>{
         await checkId(
-            {deviceId, jwt},
+            {deviceId, jwt: userData.jwt},
             {
                 onSuccess: (response)=>{
                     if(response.data === true){
@@ -61,7 +60,7 @@ export default function DeviceModal({open, setOpen}: props){
         const {publicKey, privateKey} = await generateAsymmetricKeys()
         secureLocalStorage.setItem('privateKey', privateKey)
         const deviceId = await getId(
-            {publicKey, jwt},
+            {publicKey, jwt: userData.jwt},
             {
                 onSuccess: (response)=>{
                     secureLocalStorage.setItem('deviceId', response.data)
@@ -170,7 +169,7 @@ export default function DeviceModal({open, setOpen}: props){
     // Logout function
     const handleClose = () => {
         setOpen(false);
-        updateUser('')
+        updateUser('', '')
         secureLocalStorage.removeItem('jwt')
         localStorage.removeItem('jwt-time')
     };
@@ -178,16 +177,10 @@ export default function DeviceModal({open, setOpen}: props){
     const login = () =>{
         router.push('/home')
     }
-    
-
-    useEffect(() => {
-        setJwt(secureLocalStorage.getItem('jwt').toString())
-    }, []);
 
     useEffect(()=>{
-        if(jwt)
-            fetchLocked(jwt)
-    }, [jwt])
+        fetchLocked(userData.jwt)
+    }, [])
 
     useEffect(() => {
         checkAccountState();

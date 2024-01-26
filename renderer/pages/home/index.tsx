@@ -7,6 +7,7 @@ import { useReceiverSeen } from "../../api/hooks/key-hook";
 import secureLocalStorage from "react-secure-storage";
 import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
+import { useUser } from "../../providers/UserContext";
 
 export default function Home(){
   const [selectedChat, setSelectedChat] = useState<ChatType>({
@@ -15,7 +16,7 @@ export default function Home(){
     email: '',
     publicKey: ''
   })
-  const [jwt, setJwt] = useState<string>('')
+  const {userData, updateUser} = useUser()
 
   const {mutate: receiveKeys} = useReceiverSeen()
 
@@ -28,7 +29,7 @@ export default function Home(){
   useEffect(()=>{
     const intervalId = setInterval(() => {
       receiveKeys(
-        {jwt},
+        {jwt: userData.jwt},
         {
           onSuccess: (response)=>{
             const newKeys = response.data
@@ -48,10 +49,6 @@ export default function Home(){
       )
     }, 10000)
     return () => clearInterval(intervalId);
-  }, [jwt])
-
-  useEffect(()=>{
-    setJwt(secureLocalStorage.getItem('jwt').toString())
   }, [])
 
   return (

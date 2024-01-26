@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatType from "../../types/chat-type";
+import { useUser } from "../../providers/UserContext";
 
 interface Props {
   selectedChat: ChatType,
@@ -18,11 +19,11 @@ export function MyDrawer({
 }: Props) {
   const { mutate: search } = useSearchUser();
   const [chats, setChats] = useState<ChatType[]>([]);
-  const [jwt, setJwt] = useState<string>('');
+  const { userData, updateUser } = useUser();
 
   async function handleSearch({ email }: { email: string }) {
     search(
-      { email, jwt },
+      { email, jwt: userData.jwt },
       {
         onSuccess: (response) => {
           if (response.data) {
@@ -39,10 +40,6 @@ export function MyDrawer({
 
   useEffect(() => {
     handleSearch({ email: '' });
-  }, [jwt]);
-
-  useEffect(() => {
-    setJwt(secureLocalStorage.getItem('jwt').toString());
   }, []);
 
   return (

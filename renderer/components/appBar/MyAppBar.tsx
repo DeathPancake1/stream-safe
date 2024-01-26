@@ -32,7 +32,7 @@ export default function MyAppBar(props: Props){
 
     const logout = ()=>{
         secureLocalStorage.removeItem('jwt')
-        updateUser('')
+        updateUser('', '')
         router.push('/login')
         
     }

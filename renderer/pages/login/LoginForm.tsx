@@ -45,7 +45,7 @@ export default function LoginForm() {
                             secureLocalStorage.setItem('jwt', response.data.token.accessToken)
                             const date = new Date
                             localStorage.setItem('jwt-time', date.toString())
-                            updateUser(response.data.user.email)
+                            updateUser(response.data.user.email, response.data.token.accessToken)
                             setOpenModal(true)
                         }else{
                             setOpen(true)
@@ -61,7 +61,7 @@ export default function LoginForm() {
 
     // on initial load set user email to empty
     useEffect(()=>{
-        updateUser('')
+        updateUser('', '')
     }, [])
     return (
         <Box

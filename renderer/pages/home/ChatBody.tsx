@@ -6,6 +6,7 @@ import secureLocalStorage from "react-secure-storage";
 import encryptPublic from "../../helpers/keyExchange/encryptPublic";
 import formatPublicKey from "../../helpers/keyExchange/formatPublic";
 import { useCheckConversationKey, useExchangeSymmetric } from "../../api/hooks/key-hook";
+import { useUser } from "../../providers/UserContext";
 
 interface Props {
   chat: ChatType;
@@ -13,10 +14,10 @@ interface Props {
 
 export default function ChatBody({ chat }: Props) {
   const [symmetricKey, setSymmetricKey] = useState<string>('');
-  const [jwt, setJwt] = useState<string>('');
   const [keyExists, setKeyExists] = useState<boolean>(false);
   const { mutate: checkConversationKey } = useCheckConversationKey();
   const { mutate: exchangeSymmetric } = useExchangeSymmetric();
+  const {userData, updateUser} = useUser()
 
   const generateConversationKey = async () => {
     const keyHex = await generateSymmetricKey256();
@@ -24,10 +25,12 @@ export default function ChatBody({ chat }: Props) {
   };
 
   const encryptAndSendSymmetricKey = async () => {
+    console.log(chat.publicKey)
     const formattedPublic = formatPublicKey(chat.publicKey);
-    const cipherText = await encryptPublic(formattedPublic, symmetricKey);
+    console.log(formattedPublic)
+    const cipherText = await encryptPublic(chat.publicKey, symmetricKey);
     await exchangeSymmetric(
-      { email: chat.email, key: cipherText, jwt: jwt },
+      { email: chat.email, key: cipherText, jwt: userData.jwt },
       {
         onSuccess: (response) => {
           setKeyExists(true);
@@ -46,9 +49,9 @@ export default function ChatBody({ chat }: Props) {
 
   useEffect(() => {
     // Check the server if there is a conversation key already
-    if (jwt) {
+    if (userData.jwt) {
       checkConversationKey(
-        { email: chat.email, jwt: jwt },
+        { email: chat.email, jwt: userData.jwt },
         {
           onSuccess: (response) => {
             setKeyExists(response.data);
@@ -56,7 +59,7 @@ export default function ChatBody({ chat }: Props) {
         }
       );
     }
-  }, [jwt, chat]);
+  }, [chat]);
 
   useEffect(() => {
     // If exists load it, if not generate it and send it
@@ -64,13 +67,6 @@ export default function ChatBody({ chat }: Props) {
         handleNewKey()
     }
   }, [keyExists]);
-
-  useEffect(() => {
-    const jwtFromStorage = secureLocalStorage.getItem('jwt')?.toString();
-    if (jwtFromStorage) {
-      setJwt(jwtFromStorage);
-    }
-  }, [chat]);
 
   return (
     <Box>
