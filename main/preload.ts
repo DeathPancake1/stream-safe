@@ -25,6 +25,9 @@ contextBridge.exposeInMainWorld('electron', {
     generateRandomKey: (keyLen: string) => {
       return ipcRenderer.invoke('generate-symmetric-256', keyLen);
     },
+    encryptPublicRSA: (publicKey: string, plaintext: string) =>{
+      return ipcRenderer.invoke('encrypt-public-RSA', publicKey, plaintext);
+    }
   },
 });
 

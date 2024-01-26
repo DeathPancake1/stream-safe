@@ -25,6 +25,15 @@ ipcMain.handle('generate-symmetric-256', async (event, keyLen) => {
   return keyHex;
 });
 
+ipcMain.handle('encrypt-public-RSA', async (event, publicKey, plaintext) => {
+  // Encrypt using public key in crypto
+  const buffer = Buffer.from(plaintext, 'utf-8');
+  //@ts-ignore
+  const publicKeyBuffer = Buffer.from(publicKey, 'utf-8');
+  const encrypted = crypto.publicEncrypt({ key: publicKeyBuffer, padding: crypto.constants.RSA_PKCS1_PADDING }, buffer);
+  return encrypted.toString('base64');
+});
+
 ;(async () => {
   await app.whenReady()
 

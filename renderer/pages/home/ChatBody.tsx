@@ -3,6 +3,8 @@ import ChatType from "../../types/chat-type";
 import { useEffect, useState } from "react";
 import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
 import secureLocalStorage from "react-secure-storage";
+import encryptPublic from "../../helpers/keyExchange/encryptPublic";
+import formatPublicKey from "../../helpers/keyExchange/formatPublic";
 
 
 interface Props{
@@ -17,6 +19,13 @@ export default function ChatBody({
     const generateConversationKey= async ()=>{
         const keyHex = await generateSymmetricKey256()
         setSymmetricKey(keyHex)
+        const formattedPublic = formatPublicKey(chat.publicKey)
+        encryptSymmetricKey(formattedPublic, symmetricKey)
+    }
+
+    const encryptSymmetricKey = async (publicKey: string, plaintext: string)=>{
+        const cipherText = await encryptPublic(publicKey, plaintext)
+        console.log(cipherText)
     }
 
     useEffect(()=>{
