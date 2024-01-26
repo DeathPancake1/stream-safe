@@ -24,11 +24,8 @@ export default function ChatBody({ chat }: Props) {
     return keyHex;
   };
 
-  const encryptAndSendSymmetricKey = async () => {
-    console.log(chat.publicKey)
-    const formattedPublic = formatPublicKey(chat.publicKey);
-    console.log(formattedPublic)
-    const cipherText = await encryptPublic(chat.publicKey, symmetricKey);
+  const encryptAndSendSymmetricKey = async (key: string) => {
+    const cipherText = await encryptPublic(chat.publicKey, key);
     await exchangeSymmetric(
       { email: chat.email, key: cipherText, jwt: userData.jwt },
       {
@@ -44,7 +41,7 @@ export default function ChatBody({ chat }: Props) {
     const key = await generateConversationKey()
     setSymmetricKey(key)
     secureLocalStorage.setItem(keyId, key)
-    await encryptAndSendSymmetricKey()
+    await encryptAndSendSymmetricKey(key)
   }
 
   useEffect(() => {

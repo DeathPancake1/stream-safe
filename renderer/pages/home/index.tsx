@@ -38,9 +38,7 @@ export default function Home(){
               const encryptedKey = key.encryptedKey;
       
               const privateKey = getPrivateKey()
-              console.log(privateKey)
               const decryptedKey = await decryptPrivate(privateKey, encryptedKey)
-              console.log(decryptedKey)
               const keyId = senderEmail + '-key';
               secureLocalStorage.setItem(keyId, decryptedKey);
             });
