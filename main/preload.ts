@@ -27,6 +27,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     encryptPublicRSA: (publicKey: string, plaintext: string) =>{
       return ipcRenderer.invoke('encrypt-public-RSA', publicKey, plaintext);
+    },
+    decryptPrivateRSA: (privateKey: string, cipherText: string) =>{
+      return ipcRenderer.invoke('decrypt-private-RSA', privateKey, cipherText);
     }
   },
 });
