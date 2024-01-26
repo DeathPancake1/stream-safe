@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('electron', {
     generateKeyPairSync: (type: string, options: any) => {
       return ipcRenderer.invoke('generate-key-pair', type, options);
     },
+    generateRandomKey: (keyLen: string) => {
+      return ipcRenderer.invoke('generate-symmetric-256', keyLen);
+    },
   },
 });
 

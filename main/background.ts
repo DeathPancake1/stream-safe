@@ -18,6 +18,13 @@ ipcMain.handle('generate-key-pair', async (event, type, options) => {
   return { publicKey, privateKey };
 });
 
+ipcMain.handle('generate-symmetric-256', async (event, keyLen) => {
+  // Implement the actual symmetric key generation using crypto module
+  const keyBuffer = crypto.randomBytes(keyLen);
+  const keyHex = keyBuffer.toString('hex');
+  return keyHex;
+});
+
 ;(async () => {
   await app.whenReady()
 

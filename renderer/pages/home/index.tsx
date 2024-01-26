@@ -17,7 +17,7 @@ export default function Home(){
       <MyDrawer selectedChat={selectedChat} setSelectedChat={setSelectedChat}/>
       
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Chat firstname={selectedChat.firstname} lastname={selectedChat.lastname} email={selectedChat.email}/>
+        <Chat chat={selectedChat}/>
       </Box>
     </Box>
   )

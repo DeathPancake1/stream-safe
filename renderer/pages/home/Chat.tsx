@@ -3,23 +3,25 @@ import Welcome from "../../components/auth/Welcome";
 import ChatBody from "./ChatBody";
 import UploadFile from "../../components/uploadFile/UploadFile";
 import { useState } from "react";
+import ChatType from "../../types/chat-type";
 
 interface Props {
-  firstname?: string;
-  lastname?: string;
-  email?: string;
+  chat?: ChatType
 }
 
 export default function Chat({
-  firstname = "",
-  lastname = "",
-  email = "",
+  chat = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    publicKey: ''
+  }
 }: Props) {
   const [files, setFiles] = useState<File[]>([])
   
   return (
     <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-      {email ? (
+      {chat.email ? (
         // When email exists, show the chat box
         <Box
           sx={{
@@ -32,8 +34,8 @@ export default function Chat({
           }}
         >
             <Box>
-                <Typography fontSize={24}>{firstname + " " + lastname}</Typography>
-                <Typography fontSize={12}>{email}</Typography>
+                <Typography fontSize={24}>{chat.firstname + " " + chat.lastname}</Typography>
+                <Typography fontSize={12}>{chat.email}</Typography>
                 <Divider />
             </Box>
           
@@ -47,7 +49,7 @@ export default function Chat({
                 width: "100%",
                 }}
             >
-                <ChatBody />
+                <ChatBody chat={chat}/>
             </Box>
 
             {/* Divider */}
