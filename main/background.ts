@@ -27,16 +27,15 @@ ipcMain.handle('generate-symmetric-256', async (event, keyLen) => {
 
 ipcMain.handle('encrypt-public-RSA', async (event, publicKey, plaintext) => {
   // Encrypt using public key in crypto
-  const buffer = Buffer.from(plaintext, 'utf-8');
-  //@ts-ignore
-  const publicKeyBuffer = Buffer.from(publicKey, 'utf-8');
+  const buffer = Buffer.from(plaintext);
+  const publicKeyBuffer = Buffer.from(publicKey);
   const encrypted = crypto.publicEncrypt({ key: publicKeyBuffer, padding: crypto.constants.RSA_PKCS1_PADDING }, buffer);
   return encrypted.toString('base64');
 });
 
 ipcMain.handle('decrypt-private-RSA', async (event, privateKey, cipherText) => {
   // Decrypt using private key in crypto
-  const privateKeyBuffer = Buffer.from(privateKey, 'utf-8');
+  const privateKeyBuffer = Buffer.from(privateKey);
 
   // Convert the base64-encoded cipher text to a Buffer
   const buffer = Buffer.from(cipherText, 'base64');
