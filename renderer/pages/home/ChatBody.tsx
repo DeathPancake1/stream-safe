@@ -5,43 +5,78 @@ import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric
 import secureLocalStorage from "react-secure-storage";
 import encryptPublic from "../../helpers/keyExchange/encryptPublic";
 import formatPublicKey from "../../helpers/keyExchange/formatPublic";
+import { useCheckConversationKey, useExchangeSymmetric } from "../../api/hooks/key-hook";
 
-
-interface Props{
-    chat: ChatType
+interface Props {
+  chat: ChatType;
 }
 
-export default function ChatBody({
-    chat,
-}: Props){
-    const [symmetricKey, setSymmetricKey] = useState<string>('')
+export default function ChatBody({ chat }: Props) {
+  const [symmetricKey, setSymmetricKey] = useState<string>('');
+  const [jwt, setJwt] = useState<string>('');
+  const [keyExists, setKeyExists] = useState<boolean>(false);
+  const { mutate: checkConversationKey } = useCheckConversationKey();
+  const { mutate: exchangeSymmetric } = useExchangeSymmetric();
 
-    const generateConversationKey= async ()=>{
-        const keyHex = await generateSymmetricKey256()
-        setSymmetricKey(keyHex)
-        const formattedPublic = formatPublicKey(chat.publicKey)
-        encryptSymmetricKey(formattedPublic, symmetricKey)
+  const generateConversationKey = async () => {
+    const keyHex = await generateSymmetricKey256();
+    return keyHex;
+  };
+
+  const encryptAndSendSymmetricKey = async () => {
+    const formattedPublic = formatPublicKey(chat.publicKey);
+    const cipherText = await encryptPublic(formattedPublic, symmetricKey);
+    await exchangeSymmetric(
+      { email: chat.email, key: cipherText, jwt: jwt },
+      {
+        onSuccess: (response) => {
+          setKeyExists(true);
+        },
+      }
+    );
+  };
+
+  const handleNewKey = async ()=>{
+    const keyId = chat.email+'-key';
+    const key = await generateConversationKey()
+    setSymmetricKey(key)
+    secureLocalStorage.setItem(keyId, key)
+    await encryptAndSendSymmetricKey()
+  }
+
+  useEffect(() => {
+    // Check the server if there is a conversation key already
+    if (jwt) {
+      checkConversationKey(
+        { email: chat.email, jwt: jwt },
+        {
+          onSuccess: (response) => {
+            setKeyExists(response.data);
+          },
+        }
+      );
     }
+  }, [jwt, chat]);
 
-    const encryptSymmetricKey = async (publicKey: string, plaintext: string)=>{
-        const cipherText = await encryptPublic(publicKey, plaintext)
-        console.log(cipherText)
+  useEffect(() => {
+    // If exists load it, if not generate it and send it
+    if(!keyExists){
+        handleNewKey()
     }
+  }, [keyExists]);
 
-    useEffect(()=>{
-        const KeyId = chat.email+'-'+'key'
-        secureLocalStorage.setItem(KeyId, symmetricKey)
-    }, [symmetricKey])
+  useEffect(() => {
+    const jwtFromStorage = secureLocalStorage.getItem('jwt')?.toString();
+    if (jwtFromStorage) {
+      setJwt(jwtFromStorage);
+    }
+  }, [chat]);
 
-    useEffect(()=>{
-        // Check the server if there is a conversation key already
-    }, [])
-
-    return(
-        <Box>
-            <Button onClick={()=>{generateConversationKey()}} variant="contained">
-                Exchange keys
-            </Button>
-        </Box>
-    )
+  return (
+    <Box>
+      <Button onClick={() => { generateConversationKey(); }} variant="contained">
+        Exchange keys
+      </Button>
+    </Box>
+  );
 }
