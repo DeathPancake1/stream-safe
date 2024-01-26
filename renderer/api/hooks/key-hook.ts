@@ -28,7 +28,21 @@ const useExchangeSymmetric = ()=>{
     )
 }
 
+const useReceiverSeen = () => {
+    return useMutation(
+        async (data: {jwt: string})=>{
+            return await keyService.receiverSeen(data.jwt)
+        },
+        {
+            onSuccess: (response) =>{
+
+            }
+        }
+    )
+};
+
 export {
     useCheckConversationKey,
-    useExchangeSymmetric
+    useExchangeSymmetric,
+    useReceiverSeen
 }
