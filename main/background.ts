@@ -3,6 +3,7 @@ import { app, ipcMain, Menu } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import crypto from 'crypto'
+import fs from 'fs'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -49,6 +50,33 @@ ipcMain.handle('decrypt-private-RSA', async (event, privateKey, cipherText) => {
   // Return the decrypted data as a UTF-8 string
   return decrypted.toString('utf-8');
 });
+
+ipcMain.handle('encrypt-symmetric-AES', async (event, keyHex, arrayBuffer) => {
+  try {
+    // Convert ArrayBuffer to Buffer
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Convert keyHex to Buffer
+    const keyBuffer = Buffer.from(keyHex, 'hex');
+
+    // Generate IV
+    const iv = crypto.randomBytes(16);
+
+    // Create a cipher with AES-256-CBC algorithm
+    const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
+
+    // Encrypt the data
+    const encryptedBuffer = Buffer.concat([cipher.update(buffer), cipher.final()]);
+    const resultBuffer = Buffer.concat([iv, encryptedBuffer]);
+
+    // Return the base64-encoded result
+    return resultBuffer.toString('base64');
+  } catch (error) {
+    console.error('Symmetric encryption failed:', error.message);
+    return null;
+  }
+});
+
 
 ;(async () => {
   await app.whenReady()

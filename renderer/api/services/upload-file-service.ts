@@ -1,0 +1,38 @@
+import axios from "axios";
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+axios.defaults.headers.common['api-key']=`${process.env.API_KEY}`
+
+class UploadFileService {
+
+  /**
+   *POST files/upload
+   * @returns
+   */
+  async uploadFile(data: {senderEmail: string, receiverEmail : string, name: string, file:File, jwt: string}) {
+    try{
+      let formData = new FormData();
+      formData.append("senderEmail", data.senderEmail);
+      formData.append("receiverEmail", data.receiverEmail);
+      formData.append("name", data.name);
+      formData.append("file", data.file);
+      axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
+      const res = await axios.post(`${process.env.API_URL}/files/upload`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+      });
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+          }
+    }
+    
+  }
+
+}
+
+export default new UploadFileService();
