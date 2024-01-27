@@ -67,9 +67,6 @@ export default function ChatBody({ chat }: Props) {
 
   return (
     <Box>
-      <Button onClick={() => { generateConversationKey(); }} variant="contained">
-        Exchange keys
-      </Button>
     </Box>
   );
 }

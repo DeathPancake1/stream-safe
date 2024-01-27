@@ -4,6 +4,7 @@ import ChatBody from "./ChatBody";
 import UploadFile from "../../components/uploadFile/UploadFile";
 import { useState } from "react";
 import ChatType from "../../types/chat-type";
+import FileStatus from "../../components/uploadFile/FileStatus";
 
 interface Props {
   chat?: ChatType
@@ -56,7 +57,13 @@ export default function Chat({
             <Divider />
 
             {/* Button to upload a file */}
-            <UploadFile fileList={files} setFiles={setFiles}/>
+            {
+              files.length === 0?
+                <UploadFile fileList={files} setFiles={setFiles}/>
+              :
+                <FileStatus file={files[0]} removeFile={()=>setFiles([])} upload={()=>console.log('not implemented')}/>
+            }
+            
         </Box>
       ) : (
         // When email doesn't exist, show the welcome component

@@ -62,7 +62,7 @@ ipcMain.handle('decrypt-private-RSA', async (event, privateKey, cipherText) => {
   })
 
   // Disables screen recording and screenshots
-  mainWindow.setContentProtection(true);
+  //mainWindow.setContentProtection(true);
 
   const menu = Menu.buildFromTemplate([]);
   mainWindow.setMenu(menu);
