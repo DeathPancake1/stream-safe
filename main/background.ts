@@ -90,7 +90,7 @@ ipcMain.handle('encrypt-symmetric-AES', async (event, keyHex, arrayBuffer) => {
   })
 
   // Disables screen recording and screenshots
-  //mainWindow.setContentProtection(true);
+  mainWindow.setContentProtection(true);
 
   const menu = Menu.buildFromTemplate([]);
   mainWindow.setMenu(menu);
