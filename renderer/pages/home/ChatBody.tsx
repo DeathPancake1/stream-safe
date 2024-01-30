@@ -14,7 +14,6 @@ interface Props {
 
 export default function ChatBody({ chat }: Props) {
   const [symmetricKey, setSymmetricKey] = useState<string>('');
-  const [keyExists, setKeyExists] = useState<boolean>(false);
   const { mutate: checkConversationKey } = useCheckConversationKey();
   const { mutate: exchangeSymmetric } = useExchangeSymmetric();
   const {userData, updateUser} = useUser()
@@ -30,18 +29,20 @@ export default function ChatBody({ chat }: Props) {
       { email: chat.email, key: cipherText, jwt: userData.jwt },
       {
         onSuccess: (response) => {
-          setKeyExists(true);
+          
         },
       }
     );
   };
 
-  const handleNewKey = async ()=>{
-    const keyId = chat.email+'-key';
-    const key = await generateConversationKey()
-    setSymmetricKey(key)
-    secureLocalStorage.setItem(keyId, key)
-    await encryptAndSendSymmetricKey(key)
+  const handleNewKey = async (keyExists: boolean)=>{
+    if(!keyExists){
+      const keyId = chat.email+'-key';
+      const key = await generateConversationKey()
+      setSymmetricKey(key)
+      secureLocalStorage.setItem(keyId, key)
+      await encryptAndSendSymmetricKey(key)
+    }
   }
 
   useEffect(() => {
@@ -51,19 +52,12 @@ export default function ChatBody({ chat }: Props) {
         { email: chat.email, jwt: userData.jwt },
         {
           onSuccess: (response) => {
-            setKeyExists(response.data);
+            handleNewKey(response.data)
           },
         }
       );
     }
   }, [chat]);
-
-  useEffect(() => {
-    // If exists load it, if not generate it and send it
-    if(!keyExists){
-        handleNewKey()
-    }
-  }, [keyExists]);
 
   return (
     <Box>
