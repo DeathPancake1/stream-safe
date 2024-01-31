@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import UploadFile from "../../components/uploadFile/UploadFile";
 import FileStatus from "../../components/uploadFile/FileStatus";
 import { useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import secureLocalStorage from "react-secure-storage";
 import encryptAES from "../../helpers/encryption/encryptAES";
 import { useUploadFile } from "../../api/hooks/upload-file-hook";
 import { useUser } from "../../providers/UserContext";
+import TickOverlay from "../../components/TickOverlay";
 
 interface Props{
     chat: ChatType
@@ -19,6 +20,13 @@ export default function CurrentMessage({
     const {mutate: uploadFile} = useUploadFile()
     const {userData, updateUser} = useUser()
     const [uploadProgress ,setUploadProgress] = useState<number>(0)
+    const [isUploadComplete ,setIsUploadComplete] = useState<boolean>(false)
+
+    const handleClearFile = ()=>{
+        setFiles([])
+        setUploadProgress(0)
+        setIsUploadComplete(false)
+    }
 
     const fetchKey =async () => {
         const keyId = chat.email+ '-key';
@@ -58,12 +66,15 @@ export default function CurrentMessage({
         }
     };
 
-    useEffect(()=>{
-        setUploadProgress(0)
-    }, files)
+    useEffect(() => {
+        if (uploadProgress === 100) {
+            setIsUploadComplete(true);
+        }
+    }, [uploadProgress]);
     
     return (
         <Box>
+            {isUploadComplete && <TickOverlay onClick={()=>handleClearFile()}/>}
             {
             files.length === 0?
               <UploadFile fileList={files} setFiles={setFiles}/>
@@ -71,10 +82,7 @@ export default function CurrentMessage({
               <FileStatus 
                 file={files[0]} 
                 removeFile={
-                    ()=>{
-                        setFiles([])
-                        setUploadProgress(0)
-                    }
+                    ()=>handleClearFile()
                 } 
                 uploadProgress={uploadProgress}
                 upload={

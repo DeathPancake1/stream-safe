@@ -49,7 +49,7 @@ class KeyService {
     */
     receiverSeen(jwt: string) {
         axios.defaults.headers.common['Authorization']=`Bearer ${jwt}`
-        const res = axios.get(`${process.env.API_URL}/exchanged-keys/receiverSeen`);
+        const res = axios.get(`${process.env.API_URL}/exchanged-keys/receiverDelivered`);
         return res
     }
     
