@@ -8,6 +8,7 @@ import secureLocalStorage from "react-secure-storage";
 import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
 import { useUser } from "../../providers/UserContext";
+import { useGetNewMessages } from "../../api/hooks/messages-hook";
 
 export default function Home(){
   const [selectedChat, setSelectedChat] = useState<ChatType>({
@@ -19,6 +20,7 @@ export default function Home(){
   const {userData, updateUser} = useUser()
 
   const {mutate: receiveKeys} = useReceiverSeen()
+  const {mutate: getNewMessages} = useGetNewMessages()
 
   const getPrivateKey = ()=>{
     const privateKey = secureLocalStorage.getItem('privateKey').toString()
@@ -42,6 +44,18 @@ export default function Home(){
               const keyId = senderEmail + '-key';
               secureLocalStorage.setItem(keyId, decryptedKey);
             });
+          }
+        }
+      )
+      getNewMessages(
+        {jwt: userData.jwt},
+        {
+          onSuccess: (response)=>{
+            const newMessages = response.data
+            newMessages.forEach((message)=>{
+              const senderEmail = message.senderEmail;
+              
+            })
           }
         }
       )
