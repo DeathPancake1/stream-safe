@@ -7,6 +7,7 @@ import encryptPublic from "../../helpers/keyExchange/encryptPublic";
 import formatPublicKey from "../../helpers/keyExchange/formatPublic";
 import { useCheckConversationKey, useExchangeSymmetric } from "../../api/hooks/key-hook";
 import { useUser } from "../../providers/UserContext";
+import { addKey } from "../../indexedDB";
 
 interface Props {
   chat: ChatType;
@@ -36,9 +37,8 @@ export default function ChatBody({ chat }: Props) {
 
   const handleNewKey = async (keyExists: boolean)=>{
     if(!keyExists){
-      const keyId = chat.email+'-key';
       const key = await generateConversationKey()
-      secureLocalStorage.setItem(keyId, key)
+      const id = await addKey(chat.email, key)
       await encryptAndSendSymmetricKey(key)
     }
   }

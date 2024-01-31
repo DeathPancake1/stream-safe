@@ -3,11 +3,12 @@ import UploadFile from "../../components/uploadFile/UploadFile";
 import FileStatus from "../../components/uploadFile/FileStatus";
 import { useEffect, useState } from "react";
 import ChatType from "../../types/chat-type";
-import secureLocalStorage from "react-secure-storage";
 import encryptAES from "../../helpers/encryption/encryptAES";
 import { useUploadFile } from "../../api/hooks/upload-file-hook";
 import { useUser } from "../../providers/UserContext";
 import TickOverlay from "../../components/TickOverlay";
+import { useLiveQuery } from "dexie-react-hooks";
+import { keysDB } from "../../indexedDB";
 
 interface Props{
     chat: ChatType
@@ -22,21 +23,25 @@ export default function CurrentMessage({
     const [uploadProgress ,setUploadProgress] = useState<number>(0)
     const [isUploadComplete ,setIsUploadComplete] = useState<boolean>(false)
 
+    const fetchedKey = useLiveQuery(
+      async()=>{
+        const key = await keysDB.keys
+          .where('name')
+          .equals(chat.email)
+          .first();
+        return key;
+      }
+    );
+
     const handleClearFile = ()=>{
         setFiles([])
         setUploadProgress(0)
         setIsUploadComplete(false)
     }
 
-    const fetchKey =async () => {
-        const keyId = chat.email+ '-key';
-        const key = await secureLocalStorage.getItem(keyId).toString()
-        return key
-    }
-
     const handleUpload = async () => {
         try {
-          const key = await fetchKey();
+          const key = fetchedKey.value;
           const originalFile = files[0];
           
           // Perform encryption using your encryptAES function

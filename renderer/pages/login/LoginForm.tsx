@@ -71,7 +71,7 @@ export default function LoginForm() {
             }}
         >
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Invalid credentials</Alert>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }} >Invalid credentials</Alert>
             </Snackbar>
             <form 
                 onSubmit={handleSubmit(onSubmit)}

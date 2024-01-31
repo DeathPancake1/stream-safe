@@ -9,6 +9,7 @@ import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
 import { useUser } from "../../providers/UserContext";
 import { useGetNewMessages } from "../../api/hooks/messages-hook";
+import { addKey } from "../../indexedDB";
 
 export default function Home(){
   const [selectedChat, setSelectedChat] = useState<ChatType>({
@@ -41,8 +42,7 @@ export default function Home(){
       
               const privateKey = getPrivateKey()
               const decryptedKey = await decryptPrivate(privateKey, encryptedKey)
-              const keyId = senderEmail + '-key';
-              secureLocalStorage.setItem(keyId, decryptedKey);
+              const id = addKey(senderEmail, decryptedKey)
             });
           }
         }
@@ -52,10 +52,10 @@ export default function Home(){
         {
           onSuccess: (response)=>{
             const newMessages = response.data
-            newMessages.forEach((message)=>{
-              const senderEmail = message.senderEmail;
+            // newMessages.forEach((message)=>{
+            //   const senderEmail = message.senderEmail;
               
-            })
+            // })
           }
         }
       )
