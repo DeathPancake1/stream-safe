@@ -13,7 +13,6 @@ interface Props {
 }
 
 export default function ChatBody({ chat }: Props) {
-  const [symmetricKey, setSymmetricKey] = useState<string>('');
   const { mutate: checkConversationKey } = useCheckConversationKey();
   const { mutate: exchangeSymmetric } = useExchangeSymmetric();
   const {userData, updateUser} = useUser()
@@ -29,7 +28,7 @@ export default function ChatBody({ chat }: Props) {
       { email: chat.email, key: cipherText, jwt: userData.jwt },
       {
         onSuccess: (response) => {
-          
+
         },
       }
     );
@@ -39,7 +38,6 @@ export default function ChatBody({ chat }: Props) {
     if(!keyExists){
       const keyId = chat.email+'-key';
       const key = await generateConversationKey()
-      setSymmetricKey(key)
       secureLocalStorage.setItem(keyId, key)
       await encryptAndSendSymmetricKey(key)
     }

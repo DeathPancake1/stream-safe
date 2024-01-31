@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as dotenv from 'dotenv'
+import { useState } from "react";
 
 dotenv.config()
 axios.defaults.headers.common['api-key']=`${process.env.API_KEY}`
@@ -10,7 +11,7 @@ class UploadFileService {
    *POST files/upload
    * @returns
    */
-  async uploadFile(data: {senderEmail: string, receiverEmail : string, name: string, file:File, jwt: string}) {
+  async uploadFile(data: {senderEmail: string, receiverEmail : string, name: string, file:File, jwt: string, setUploadProgress: (progress: number)=>void}) {
     try{
       let formData = new FormData();
       formData.append("senderEmail", data.senderEmail);
@@ -18,9 +19,13 @@ class UploadFileService {
       formData.append("name", data.name);
       formData.append("file", data.file);
       axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
-      const res = await axios.post(`${process.env.API_URL}/files/upload`, formData, {
+      const res = axios.post(`${process.env.API_URL}/files/upload`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: progressEvent => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          data.setUploadProgress(percentCompleted);
         }
       });
       return res;

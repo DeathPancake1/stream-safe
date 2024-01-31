@@ -5,6 +5,7 @@ import {
     Button,
     IconButton,
     LinearProgress,
+    LinearProgressProps,
     Typography,
     linearProgressClasses,
     styled,
@@ -18,8 +19,24 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 type FileStatusProps = {
     file: File
     removeFile: (file: File) => void
-    upload: (file: File) => void
+    upload: (file: File) => void,
+    uploadProgress: number
 }
+
+function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" {...props} />
+        </Box>
+        <Box sx={{ minWidth: 35 }}>
+          <Typography variant="body2" color="text.secondary">{`${Math.round(
+            props.value,
+          )}%`}</Typography>
+        </Box>
+      </Box>
+    );
+  }
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -37,6 +54,7 @@ const FileStatus = ({
     file,
     removeFile,
     upload,
+    uploadProgress,
 }: FileStatusProps) => {
 
     return (
@@ -96,7 +114,9 @@ const FileStatus = ({
                             paddingLeft: '5px',
                             fontWeight: 700,
                         }}
+                        width={'100%'}
                     >
+                        <LinearProgressWithLabel value={uploadProgress} />
                     </Typography>
                 </Box>
             </Box>

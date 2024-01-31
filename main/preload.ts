@@ -31,8 +31,8 @@ contextBridge.exposeInMainWorld('electron', {
     decryptPrivateRSA: (privateKey: string, cipherText: string) =>{
       return ipcRenderer.invoke('decrypt-private-RSA', privateKey, cipherText);
     },
-    encryptSymmetricAES: (keyHex: string, buffer: File) =>{
-      return ipcRenderer.invoke('encrypt-symmetric-AES', keyHex, buffer);
+    encryptSymmetricAES: (keyHex: string, filePath: string, user1Email: string, user2Email: string, fileName: string) =>{
+      return ipcRenderer.invoke('encrypt-symmetric-AES', keyHex, filePath, user1Email, user2Email, fileName);
     }
   },
 });
