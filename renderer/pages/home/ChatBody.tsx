@@ -1,11 +1,13 @@
 import { Box } from "@mui/material";
 import ChatType from "../../types/chat-type";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
 import encryptPublic from "../../helpers/keyExchange/encryptPublic";
 import { useCheckConversationKey, useExchangeSymmetric } from "../../api/hooks/key-hook";
 import { useUser } from "../../providers/UserContext";
-import { addKey } from "../../indexedDB";
+import { Video, addKey, videosDB } from "../../indexedDB";
+import Message from "../../components/Message";
+import { useLiveQuery } from "dexie-react-hooks";
 
 interface Props {
   chat: ChatType;
@@ -15,6 +17,37 @@ export default function ChatBody({ chat }: Props) {
   const { mutate: checkConversationKey } = useCheckConversationKey();
   const { mutate: exchangeSymmetric } = useExchangeSymmetric();
   const {userData, updateUser} = useUser()
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const [ allMessages, setAllMessages ] = useState<Video[]>([])
+  const [sentMessages, setSentMessages] = useState<Video[]>([])
+  const [receivedMessages, setReceivedMessages] = useState<Video[]>([])
+
+
+  useLiveQuery(
+    async () => {
+      const sentMessages = await videosDB.videos
+        .where('sender')
+        .equalsIgnoreCase(userData.email)
+        .and((video) => video.receiver === chat.email)
+        .sortBy('date');
+  
+      setSentMessages(sentMessages)
+    },
+    [forceUpdate, chat]
+  );  
+
+  useLiveQuery(
+    async () => {
+      const receivedMessages = await videosDB.videos
+        .where('receiver')
+        .equalsIgnoreCase(userData.email)
+        .and((video) => video.sender === chat.email)
+        .sortBy('date');
+  
+      setReceivedMessages(receivedMessages)
+    },
+    [forceUpdate, chat]
+  );
 
   const generateConversationKey = async () => {
     const keyHex = await generateSymmetricKey256();
@@ -41,6 +74,13 @@ export default function ChatBody({ chat }: Props) {
     }
   }
 
+  useEffect(()=>{
+    const unsortedMessages = receivedMessages.concat(sentMessages);
+    const sortedMessages = [...unsortedMessages].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    setAllMessages(sortedMessages);
+    console.log(allMessages)
+  }, [receivedMessages, sentMessages])
+
   useEffect(() => {
     // Check the server if there is a conversation key already
     if (userData.jwt) {
@@ -53,10 +93,21 @@ export default function ChatBody({ chat }: Props) {
         }
       );
     }
+    setForceUpdate((prev) => !prev);
   }, [chat]);
 
   return (
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {
+        allMessages?.map((message, index) =>
+          <Message key={index} message={message} incoming={message.receiver===userData.email} />
+        )
+      }
     </Box>
   );
 }
