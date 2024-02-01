@@ -1,18 +1,19 @@
 'use client'
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Dialog } from "@mui/material";
 import secureLocalStorage from "react-secure-storage";
 import { useCheckId, useCheckLocked, useGetId } from "../../api/hooks/device-hook";
 import { useEffect, useState } from "react";
 import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric";
 import { useRouter } from "next/router";
 import { useUser } from "../../providers/UserContext";
+import { checkAccountState, fetchLocked } from "./logicHooks/DeviceModalLogic";
+import { renderDialogContent } from "./logicHooks/renderDialogContent";
 
 interface props{
     open: boolean
     setOpen: (value: boolean)=>void
 }
-
 
 
 export default function DeviceModal({open, setOpen}: props){
@@ -28,34 +29,6 @@ export default function DeviceModal({open, setOpen}: props){
     const router = useRouter()
     const [locked, setLocked ]= useState<boolean>(false)
 
-
-    const fetchLocked =async (jwt:string) => {
-        await checkLocked(
-            {jwt},
-            {
-                onSuccess: (response)=>{
-                    setLocked(response.data)
-                }
-            }
-        )
-    }
-
-    const checkAccountId = async (deviceId: string)=>{
-        await checkId(
-            {deviceId, jwt: userData.jwt},
-            {
-                onSuccess: (response)=>{
-                    if(response.data === true){
-                        setState(0)
-                    }
-                    else{
-                        setState(1)
-                    }
-                }
-            }
-        )
-    }
-
     const lockThisDevice = async ()=>{
         const {publicKey, privateKey} = await generateAsymmetricKeys()
         secureLocalStorage.setItem('privateKey', privateKey)
@@ -70,100 +43,6 @@ export default function DeviceModal({open, setOpen}: props){
         login()
         setOpen(false)
     }
-
-    const checkAccountState =async () => {
-        if(locked){
-            const deviceId = secureLocalStorage.getItem('deviceId')
-            if(deviceId){
-                // call check device id to check state 0 or 1
-                checkAccountId(deviceId.toString())
-            }else{
-                setState(1)
-                // state 1
-            }
-        }else{
-            const deviceId = secureLocalStorage.getItem('deviceId')
-            if(deviceId){
-                setState(2)
-                // state 2
-            }else{
-                setState(3)
-                // state 3
-            }
-            
-        }
-    }
-
-    
-
-    const renderDialogContent = () => {
-        switch (state) {
-            case 0:
-                return (
-                    <>
-                        <DialogTitle id="alert-dialog-title">
-                            {"Signed in"}
-                        </DialogTitle>
-                        <DialogActions>
-                            <Button onClick={login}>Ok</Button>
-                        </DialogActions>
-                    </>
-                );
-            case 1:
-                return (
-                    <>
-                        <DialogTitle id="alert-dialog-title">
-                            {"Your account is locked to another device"}
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Please unlock your account from that device before signing in
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Sign out</Button>
-                        </DialogActions>
-                    </>
-                );
-            case 2:
-                return (
-                    <>
-                        <DialogTitle id="alert-dialog-title">
-                            {"Your device is locked to another account"}
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Please unlock your device before signing in
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>I understand</Button>
-                        </DialogActions>
-                    </>
-                );
-            case 3:
-                return (
-                <>
-                    <DialogTitle id="alert-dialog-title">
-                        {"Do you want to lock the account to this device?"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            You will not be able to change the device for 30 days.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Disagree</Button>
-                        <Button onClick={lockThisDevice} autoFocus>
-                            Agree
-                        </Button>
-                    </DialogActions>
-                </>
-                );
-            default:
-                return "Default content";
-        }
-    };
     
 
     // Logout function
@@ -179,11 +58,11 @@ export default function DeviceModal({open, setOpen}: props){
     }
 
     useEffect(()=>{
-        fetchLocked(userData.jwt)
+        fetchLocked(userData.jwt, checkLocked, setLocked)
     }, [])
 
     useEffect(() => {
-        checkAccountState();
+        checkAccountState(locked, userData, setState, checkId);
     }, [locked]);
 
     return(
@@ -193,7 +72,7 @@ export default function DeviceModal({open, setOpen}: props){
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            {renderDialogContent()}
+            {renderDialogContent(state, login, handleClose, lockThisDevice)}
         </Dialog>
     )
 }
