@@ -3,7 +3,6 @@ import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Lis
 import SearchBox from "../SearchBox";
 import { useSearchUser } from "../../api/hooks/search-hook";
 import { useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatType from "../../types/chat-type";
 import { useUser } from "../../providers/UserContext";

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TextField, InputAdornment } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
-import secureLocalStorage from 'react-secure-storage';
 
 interface Props{
   search : ({email} : {email: string}) => any

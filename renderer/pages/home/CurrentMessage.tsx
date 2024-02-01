@@ -52,25 +52,25 @@ export default function CurrentMessage({
     }, [uploadProgress]);
     
     return (
-        <Box>
-            {isUploadComplete && <TickOverlay onClick={()=>handleClearFile()}/>}
-            {
-            files.length === 0?
-              <UploadFile fileList={files} setFiles={setFiles}/>
-            :
-              <FileStatus 
-                file={files[0]} 
-                removeFile={
-                    ()=>handleClearFile()
-                } 
-                uploadProgress={uploadProgress}
-                upload={
-                  ()=>{
-                    handleUpload()
-                  }
-                }
-              />
-          }
-        </Box>
+      <Box>
+        {isUploadComplete && <TickOverlay onClick={()=>handleClearFile()}/>}
+        {
+          files.length === 0?
+          <UploadFile fileList={files} setFiles={setFiles}/>
+          :
+          <FileStatus 
+            file={files[0]} 
+            removeFile={
+              ()=>handleClearFile()
+            } 
+            uploadProgress={uploadProgress}
+            upload={
+              ()=>{
+                handleUpload()
+              }
+            }
+          />
+        }
+      </Box>
     )
 }
