@@ -34,7 +34,7 @@ export const useHomeLogic = ()=>{
     const processNewMessages = (response) => {
         const newMessages = response.data;
         newMessages.forEach(async (message) => {
-            const date = Date.parse(message.date);
+            const date = Date.parse(message.sentDate);
             const id = addVideo(message.path, message.name, message.senderEmail, message.receiverEmail, date, false);
         });
     };
