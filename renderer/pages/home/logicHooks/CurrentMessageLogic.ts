@@ -1,4 +1,5 @@
 import encryptAES from "../../../helpers/encryption/encryptAES";
+import { addVideo } from "../../../indexedDB";
 
 export const encryptAndUpload = async (key, originalFile, userData, chat, uploadFile, setUploadProgress) => {
   try {
@@ -9,14 +10,23 @@ export const encryptAndUpload = async (key, originalFile, userData, chat, upload
       lastModified: originalFile.lastModified,
     });
 
-    uploadFile({
-      senderEmail: userData.email,
-      receiverEmail: chat.email,
-      name: encryptedFile.name,
-      file: encryptedFile,
-      jwt: userData.jwt,
-      setUploadProgress: setUploadProgress,
-    });
+    uploadFile(
+      {
+        senderEmail: userData.email,
+        receiverEmail: chat.email,
+        name: encryptedFile.name,
+        file: encryptedFile,
+        jwt: userData.jwt,
+        setUploadProgress: setUploadProgress,
+      },
+      {
+        onSuccess: (response)=>{
+          const now = Date.now();
+          addVideo(encryptedFile.path, encryptedFile.name, userData.email, chat.email, now, true)
+        }
+      }
+    );
+
 
   } catch (error) {
     console.error('Error handling upload:', error.message);
