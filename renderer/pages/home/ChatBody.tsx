@@ -1,10 +1,8 @@
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import ChatType from "../../types/chat-type";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
-import secureLocalStorage from "react-secure-storage";
 import encryptPublic from "../../helpers/keyExchange/encryptPublic";
-import formatPublicKey from "../../helpers/keyExchange/formatPublic";
 import { useCheckConversationKey, useExchangeSymmetric } from "../../api/hooks/key-hook";
 import { useUser } from "../../providers/UserContext";
 import { addKey } from "../../indexedDB";

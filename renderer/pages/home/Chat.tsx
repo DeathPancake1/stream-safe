@@ -3,9 +3,6 @@ import Welcome from "../../components/auth/Welcome";
 import ChatBody from "./ChatBody";
 import ChatType from "../../types/chat-type";
 import CurrentMessage from "./CurrentMessage";
-import { keysDB } from "../../indexedDB";
-import { useEffect } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
 
 interface Props {
   chat?: ChatType
@@ -19,16 +16,6 @@ export default function Chat({
     publicKey: ''
   }
 }: Props) {
-
-  // const key = useLiveQuery(
-  //   async()=>{
-  //     const key = await keysDB.keys
-  //       .where('name')
-  //       .equals(chat.email+'-key')
-  //       .first();
-  //     return key;
-  //   }
-  // );
   
   return (
     <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>

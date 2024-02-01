@@ -1,14 +1,14 @@
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import UploadFile from "../../components/uploadFile/UploadFile";
 import FileStatus from "../../components/uploadFile/FileStatus";
 import { useEffect, useState } from "react";
 import ChatType from "../../types/chat-type";
-import encryptAES from "../../helpers/encryption/encryptAES";
 import { useUploadFile } from "../../api/hooks/upload-file-hook";
 import { useUser } from "../../providers/UserContext";
 import TickOverlay from "../../components/TickOverlay";
 import { useLiveQuery } from "dexie-react-hooks";
 import { keysDB } from "../../indexedDB";
+import { encryptAndUpload } from "./logicHooks/CurrentMessageLogic";
 
 interface Props{
     chat: ChatType
@@ -40,35 +40,9 @@ export default function CurrentMessage({
     }
 
     const handleUpload = async () => {
-        try {
-          const key = fetchedKey.value;
-          const originalFile = files[0];
-          
-          // Perform encryption using your encryptAES function
-          const encryptedArrayBuffer =  await encryptAES(key, originalFile.path, userData.email ,chat.email, originalFile.name);
-      
-          // Create a new Blob with the encrypted content
-          const encryptedBlob = new Blob([encryptedArrayBuffer], { type: originalFile.type });
-      
-          // Create a new File with the encrypted Blob
-          const encryptedFile = new File([encryptedBlob], originalFile.name + '.enc', {
-            type: originalFile.type,
-            lastModified: originalFile.lastModified,
-          });
-      
-          // Now you can proceed with uploading the encrypted file
-          uploadFile({
-            senderEmail: userData.email,
-            receiverEmail: chat.email,
-            name: encryptedFile.name,
-            file: encryptedFile,
-            jwt: userData.jwt,
-            setUploadProgress: setUploadProgress
-          });
-      
-        } catch (error) {
-          console.error('Error handling upload:', error.message);
-        }
+      const key = fetchedKey.value;
+      const originalFile = files[0];
+      await encryptAndUpload(key, originalFile, userData, chat, uploadFile, setUploadProgress);
     };
 
     useEffect(() => {
