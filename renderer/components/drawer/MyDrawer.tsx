@@ -1,8 +1,7 @@
-import { Inbox, Mail } from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 import SearchBox from "../SearchBox";
 import { useSearchUser } from "../../api/hooks/search-hook";
-import { useEffect, useState } from "react";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatType from "../../types/chat-type";
 import { useUser } from "../../providers/UserContext";
@@ -19,8 +18,11 @@ export function MyDrawer({
   const { mutate: search } = useSearchUser();
   const [chats, setChats] = useState<ChatType[]>([]);
   const { userData, updateUser } = useUser();
+  const [width, setWidth] = useState<number>(200); // Initial width
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [initialMouseX, setInitialMouseX] = useState<number>(0);
 
-  async function handleSearch({ email }: { email: string }) {
+  const handleSearch = async ({ email }: { email: string }) => {
     search(
       { email, jwt: userData.jwt },
       {
@@ -31,23 +33,48 @@ export function MyDrawer({
         }
       }
     );
-  }
+  };
 
   const handleSetChat = (chat: ChatType) => {
     setSelectedChat(chat);
-  }
+  };
+
+  const handleMouseDown = (event) => {
+    setInitialMouseX(event.clientX);
+    setIsResizing(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsResizing(false);
+  };
+
+  const handleMouseMove = (event) => {
+    if (isResizing) {
+      const deltaX = initialMouseX - event.clientX;
+      const newWidth = Math.min(Math.max(width - deltaX, 200), 700); // Adjust minimum width as needed
+      setWidth(newWidth);
+    }
+  };
 
   useEffect(() => {
     handleSearch({ email: '' });
-  }, []);
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: '17vw',
+        width: `${width}px`,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: '17vw', boxSizing: 'border-box' },
+        [`& .MuiDrawer-paper`]: { width: `${width}px`, boxSizing: 'border-box' },
       }}
     >
       <Toolbar />
@@ -65,12 +92,34 @@ export function MyDrawer({
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
-                <ListItemText primary={chat.email} />
+                <ListItemText
+                  primary={chat.email}
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Box>
+      <div
+        onMouseDown={handleMouseDown}
+        style={{
+          width: '5px',
+          cursor: 'ew-resize',
+          padding: '4px 0 0',
+          borderTop: '1px solid #ddd',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 100,
+          backgroundColor: '#f4f7f9',
+        }}
+      />
     </Drawer>
   );
 }
