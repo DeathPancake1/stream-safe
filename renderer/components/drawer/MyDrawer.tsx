@@ -45,9 +45,9 @@ export function MyDrawer({
     <Drawer
       variant="permanent"
       sx={{
-        width: 300,
+        width: '17vw',
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+        [`& .MuiDrawer-paper`]: { width: '17vw', boxSizing: 'border-box' },
       }}
     >
       <Toolbar />
