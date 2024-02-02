@@ -1,37 +1,38 @@
-import crypto from 'crypto'
-import { Readable } from 'stream';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
-export default async function handleDecryptSymmetricAES (event, keyHex, encryptedBase64) {
-    try {
-      // Convert the base64-encoded string to a Buffer
-      const encryptedBuffer = Buffer.from(encryptedBase64, 'base64');
-  
-      // Extract the IV and the encrypted data
-      const iv = encryptedBuffer.slice(0, 16);
-      const data = encryptedBuffer.slice(16);
-  
-      // Convert keyHex to Buffer
-      const keyBuffer = Buffer.from(keyHex, 'hex');
-  
-      // Create a decipher with AES-256-CBC algorithm
-      const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
-  
-      // Convert the data to a stream
-      const dataStream = new Readable();
-      dataStream.push(data);
-      dataStream.push(null);
-  
-      // Pipe the data stream into the decipher
-      const decryptedBuffer = [];
-      dataStream.pipe(decipher).on('data', chunk => decryptedBuffer.push(chunk));
-  
-      // Wait for the stream to end
-      await new Promise(resolve => decipher.on('end', resolve));
-  
-      // Return the decrypted data
-      return Buffer.concat(decryptedBuffer);
-    } catch (error) {
-      console.error('Symmetric decryption failed:', error.message);
-      return null;
-    }
+export default async function handleDecryptSymmetricAES(event, keyHex, iv, user1Email, user2Email, fileName) {
+  try {
+    const keyBuffer = Buffer.from(keyHex, 'hex');
+    const ivBuffer = Buffer.from(iv, 'hex');
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, ivBuffer);
+
+    let decryptedContent: Buffer = Buffer.alloc(0); // Initialize Buffer to store decrypted content
+
+    const filePath = path.join('videos', user1Email + '_' + user2Email, fileName);
+    const input = fs.createReadStream(filePath);
+
+
+    return new Promise((resolve, reject) => {
+      // Handle events to accumulate decrypted content
+      input.on('data', (chunk) => {
+        const chunkBuffer = (typeof chunk === 'string') ? Buffer.from(chunk, 'binary') : chunk;
+        decryptedContent = Buffer.concat([decryptedContent, decipher.update(chunkBuffer)]);
+      });
+
+      input.on('end', () => {
+        decryptedContent = Buffer.concat([decryptedContent, decipher.final()]);
+        resolve(decryptedContent)
+      });
+
+      // Handle errors during the decryption process
+      decipher.on('error', (err) => reject(err));
+      input.on('error', (err) => reject(err));
+    });
+  } catch (error) {
+    console.error('Symmetric decryption failed:', error.message);
+    return null;
+  }
 }

@@ -1,7 +1,8 @@
 import encryptAES from "../../encryption/encryptAES";
 import { addVideo } from "../../../indexedDB";
+import decryptAES from "../../decryption/decryptAES";
 
-export const encryptAndUpload = async (key, originalFile, userData, chat, uploadFile, setUploadProgress) => {
+export const encryptAndUpload = async (key, originalFile: File, userData, chat, uploadFile, setUploadProgress) => {
   try {
     const {encryptedFileContent, iv} = await encryptAES(key, originalFile.path, userData.email, chat.email, originalFile.name);
     const encryptedBlob = new Blob([encryptedFileContent], { type: originalFile.type });
@@ -22,9 +23,14 @@ export const encryptAndUpload = async (key, originalFile, userData, chat, upload
         setUploadProgress: setUploadProgress,
       },
       {
-        onSuccess: (response)=>{
+        onSuccess: async (response)=>{
           const now = Date.now();
           addVideo(encryptedFile.path, encryptedFile.name, userData.email, chat.email, now, true, iv, originalFile.type)
+          // const decryptedContent:Buffer = await decryptAES(key, iv, userData.email, chat.email, originalFile.name+'.enc')
+          // const decryptedBlob = new Blob([decryptedContent], { type: originalFile.type }); // Replace with your actual file type
+          // const decryptedFile = new File([decryptedBlob], originalFile.name, { type: originalFile.type }); // Replace with your actual file name and type
+          // console.log(await decryptedFile.arrayBuffer())
+          // console.log(await originalFile.arrayBuffer())
         }
       }
     );

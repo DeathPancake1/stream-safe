@@ -29,7 +29,8 @@ export default async function handleEncryptSymmetricAES  (event, keyHex, filePat
           const encryptedFileContent = await fs.promises.readFile(fullPath);
           
           // Resolve with the File object
-          resolve({encryptedFileContent, iv});
+          const ivHex = iv.toString('hex');
+          resolve({encryptedFileContent, iv: ivHex});
         });
   
         // Handle errors during the encryption process
