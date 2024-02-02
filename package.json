@@ -18,6 +18,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
+    "@web-std/file": "^3.0.3",
     "axios": "^1.6.2",
     "dexie": "^3.2.4",
     "dexie-react-hooks": "^1.1.7",

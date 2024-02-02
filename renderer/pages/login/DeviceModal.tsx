@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import generateAsymmetricKeys from "../../helpers/device/generateAsymmetric";
 import { useRouter } from "next/router";
 import { useUser } from "../../providers/UserContext";
-import { checkAccountState, fetchLocked } from "./logicHooks/DeviceModalLogic";
-import { renderDialogContent } from "./logicHooks/renderDialogContent";
+import { checkAccountState, fetchLocked } from "../../helpers/logicHooks/Login/DeviceModalLogic";
+import { renderDialogContent } from "../../helpers/logicHooks/Login/renderDialogContent";
 
 interface props{
     open: boolean

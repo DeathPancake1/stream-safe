@@ -3,7 +3,7 @@ import { MyDrawer } from "../../components/drawer/MyDrawer";
 import Chat from "./Chat";
 import ChatType from "../../types/chat-type";
 import { useState } from "react";
-import { useHomeLogic } from "./logicHooks/HomeLogic";
+import { useHomeLogic } from "../../helpers/logicHooks/Home/HomeLogic";
 
 export default function Home(){
   const [selectedChat, setSelectedChat] = useState<ChatType>({

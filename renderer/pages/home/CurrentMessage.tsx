@@ -8,7 +8,7 @@ import { useUser } from "../../providers/UserContext";
 import TickOverlay from "../../components/TickOverlay";
 import { useLiveQuery } from "dexie-react-hooks";
 import { keysDB } from "../../indexedDB";
-import { encryptAndUpload } from "./logicHooks/CurrentMessageLogic";
+import { encryptAndUpload } from "../../helpers/logicHooks/Home/CurrentMessageLogic";
 
 interface Props{
     chat: ChatType
