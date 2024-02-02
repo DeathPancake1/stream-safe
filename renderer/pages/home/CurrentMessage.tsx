@@ -22,6 +22,18 @@ export default function CurrentMessage({
     const {userData, updateUser} = useUser()
     const [uploadProgress ,setUploadProgress] = useState<number>(0)
     const [isUploadComplete ,setIsUploadComplete] = useState<boolean>(false)
+    const videoTypes = [
+      'video/mp4',
+      'video/webm',
+      'video/ogg',
+      'video/quicktime',
+      'video/x-msvideo',
+      'video/x-ms-wmv',
+      'video/x-matroska',
+      'video/mpeg',
+      'video/ogm',
+      // Add more video MIME types as needed
+    ]
 
     const fetchedKey = useLiveQuery(
       async()=>{
@@ -56,7 +68,14 @@ export default function CurrentMessage({
         {isUploadComplete && <TickOverlay onClick={()=>handleClearFile()}/>}
         {
           files.length === 0?
-          <UploadFile fileList={files} setFiles={setFiles}/>
+          <UploadFile 
+            fileList={files} 
+            setFiles={setFiles}
+            maxSize={1024 * 1024 * 1900} // 1900 MB
+            allowedTypes={
+              videoTypes
+            }
+          />
           :
           <FileStatus 
             file={files[0]} 

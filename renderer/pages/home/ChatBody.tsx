@@ -78,7 +78,6 @@ export default function ChatBody({ chat }: Props) {
     const unsortedMessages = receivedMessages.concat(sentMessages);
     const sortedMessages = [...unsortedMessages].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     setAllMessages(sortedMessages);
-    console.log(allMessages)
   }, [receivedMessages, sentMessages])
 
   useEffect(() => {

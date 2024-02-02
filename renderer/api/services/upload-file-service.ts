@@ -11,13 +11,24 @@ class UploadFileService {
    *POST files/upload
    * @returns
    */
-  async uploadFile(data: {senderEmail: string, receiverEmail : string, name: string, file:File, jwt: string, setUploadProgress: (progress: number)=>void}) {
+  async uploadFile(data: {
+    senderEmail: string,
+    receiverEmail : string,
+    name: string,
+    file:File,
+    jwt: string,
+    iv: string,
+    type: string,
+    setUploadProgress: (progress: number)=>void
+  }) {
     try{
       let formData = new FormData();
       formData.append("senderEmail", data.senderEmail);
       formData.append("receiverEmail", data.receiverEmail);
       formData.append("name", data.name);
       formData.append("file", data.file);
+      formData.append("iv", data.iv);
+      formData.append("type", data.type)
       axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
       const res = axios.post(`${process.env.API_URL}/files/upload`, formData, {
         headers: {

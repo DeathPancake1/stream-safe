@@ -8,6 +8,8 @@ export interface Video {
     receiver: string;
     date: Date;
     downloaded: boolean;
+    iv: string;
+    type: string
 }
 
 class VideoDatabase extends Dexie {
@@ -16,14 +18,14 @@ class VideoDatabase extends Dexie {
   constructor() {
     super('videosDatabase');
     this.version(1).stores({
-      videos: '++id, path, name, sender, receiver, date, downloaded'
+      videos: '++id, path, name, sender, receiver, date, downloaded, iv, type'
     });
   }
 }
 
 export const videosDB = new VideoDatabase();
 
-export async function addVideo(path, name, sender, receiver, date, downloaded) {
+export async function addVideo(path, name, sender, receiver, date, downloaded, iv, type) {
     try{
         const id = await videosDB.videos.add({
             path,
@@ -31,7 +33,9 @@ export async function addVideo(path, name, sender, receiver, date, downloaded) {
             sender,
             receiver,
             date,
-            downloaded
+            downloaded,
+            iv,
+            type
         });
 
         return id;

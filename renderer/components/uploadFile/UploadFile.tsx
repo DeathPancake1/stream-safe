@@ -1,10 +1,12 @@
-import { Button, Typography, styled } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography, styled } from '@mui/material'
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import React, { useState } from 'react'
 
 type Props = {
     fileList: File[]
     setFiles: (files: File[]) => void
+    allowedTypes: string[]
+    maxSize: number
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -19,15 +21,37 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 })
 
-const UploadFile = ({ fileList, setFiles }: Props) => {
-    const handleFileChange = (event) => {
-        const selectedFile = event.target.files[0]
-        if (fileList) {
-            setFiles([...fileList, selectedFile])
-        } else {
+const UploadFile = ({ fileList, setFiles, allowedTypes, maxSize }: Props) => {
+    const [openAlert, setOpenAlert] = useState<boolean>(false);
+    const [sizeError, setSizeError] = useState<boolean>(false);
+    const [typeError, setTypeError] = useState<boolean>(false);
+
+    const setFileInArray = (selectedFile) =>{
+        if(selectedFile){
+            if (allowedTypes && !allowedTypes.includes(selectedFile.type)) {
+                setTypeError(true);
+                setOpenAlert(true);
+                return;
+            }
+            if (maxSize && selectedFile.size > maxSize) {
+                setSizeError(true)
+                setOpenAlert(true);
+                return;
+            }
             setFiles([selectedFile])
         }
     }
+
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0]
+        setFileInArray(selectedFile)
+    }
+
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+        setSizeError(false);
+        setTypeError(false);
+    };
 
     const handleDragOver = (event) => {
         event.preventDefault()
@@ -37,11 +61,7 @@ const UploadFile = ({ fileList, setFiles }: Props) => {
         event.preventDefault()
         const selectedFile = event.dataTransfer.files[0]
         if (selectedFile) {
-            if (fileList) {
-                setFiles([...fileList, selectedFile])
-            } else {
-                setFiles([selectedFile])
-            }
+            setFileInArray(selectedFile)
         }
     }
 
@@ -66,7 +86,23 @@ const UploadFile = ({ fileList, setFiles }: Props) => {
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
-            <VisuallyHiddenInput type='file' onChange={handleFileChange} />
+            <Dialog open={openAlert} onClose={handleCloseAlert}>
+                <DialogTitle id="alert-dialog-title">File Alert</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {
+                            typeError && "File type is not correct"
+                        }
+                        {
+                            sizeError && "File size is too large"
+                        }
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAlert}>Ok</Button>
+                </DialogActions>
+            </Dialog>
+            <VisuallyHiddenInput type='file' onChange={handleFileChange} accept={allowedTypes.join(',')}/>
             <FileUploadIcon />
             <Typography
                 style={{
