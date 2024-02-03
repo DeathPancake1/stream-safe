@@ -43,7 +43,7 @@ export default function Chat({
               sx={{
                 flex: 1,
                 overflowY: "auto",
-                p: 2,
+                padding: '3px',
                 width: "100%",
               }}
           >

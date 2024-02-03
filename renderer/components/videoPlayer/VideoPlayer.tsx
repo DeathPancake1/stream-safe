@@ -35,6 +35,7 @@ export default function VideoPlayer({
     setMuted(false);
     setVideo(null);
     setVisible(false);
+    setCurrentTime(0);
   };
 
   useEffect(() => {
@@ -173,7 +174,6 @@ export default function VideoPlayer({
           muted={muted}
           onReady={() => {
             setPlayerReady(true);
-            setCurrentTime(0);
           }}
           onEnded={() => setPlaying(false)}
           onProgress={(progress) =>
