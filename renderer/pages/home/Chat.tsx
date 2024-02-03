@@ -41,10 +41,10 @@ export default function Chat({
           {/* Display the exchanged messages */}
           <Box
               sx={{
-              flex: 1,
-              overflowY: "auto",
-              p: 2,
-              width: "100%",
+                flex: 1,
+                overflowY: "auto",
+                p: 2,
+                width: "100%",
               }}
           >
               <ChatBody chat={chat}/>
