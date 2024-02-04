@@ -12,14 +12,15 @@ export default function Home(){
     email: '',
     publicKey: ''
   })
+  const [width, setWidth] = useState<number>(200); // Initial width
   
   useHomeLogic()
 
   return (
     <Box sx={{display: 'flex', height: `calc(100vh - 80px)`}}>
-      <MyDrawer selectedChat={selectedChat} setSelectedChat={setSelectedChat}/>
+      <MyDrawer selectedChat={selectedChat} setSelectedChat={setSelectedChat} width={width} setWidth={setWidth}/>
       
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, width: `calc(90% - ${width}px)` }}>
         <Chat chat={selectedChat}/>
       </Box>
     </Box>

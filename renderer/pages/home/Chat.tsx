@@ -18,7 +18,7 @@ export default function Chat({
 }: Props) {
   
   return (
-    <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ maxWidth: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
       {chat.email ? (
         // When email exists, show the chat box
         <Box
@@ -28,7 +28,6 @@ export default function Chat({
             flexDirection: "column",
             justifyContent: "space-evenly",
             height: "100%",
-            overflow: "hidden",
           }}
         >
           <Box>

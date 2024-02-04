@@ -8,17 +8,20 @@ import { useUser } from "../../providers/UserContext";
 
 interface Props {
   selectedChat: ChatType,
-  setSelectedChat: (chat: ChatType) => void
+  setSelectedChat: (chat: ChatType) => void,
+  width: number,
+  setWidth: (width: number)=>void
 }
 
 export function MyDrawer({
   selectedChat,
   setSelectedChat,
+  width,
+  setWidth
 }: Props) {
   const { mutate: search } = useSearchUser();
   const [chats, setChats] = useState<ChatType[]>([]);
   const { userData, updateUser } = useUser();
-  const [width, setWidth] = useState<number>(200); // Initial width
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [initialMouseX, setInitialMouseX] = useState<number>(0);
 

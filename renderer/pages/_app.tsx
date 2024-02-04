@@ -26,7 +26,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                   <UserProvider>
                     <MyAppBar children={undefined}/>
                     <Component {...pageProps} />
-                    <ReactQueryDevtools initialIsOpen={false} />
                   </UserProvider>
                 </ThemeProvider>
             </QueryClientProvider>
