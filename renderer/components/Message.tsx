@@ -67,7 +67,6 @@ export default function Message({ incoming, message, messages, setPlayVideo, set
           if(status){
             markMessageDownloaded()
           }
-          console.log(status)
         }
       }
     )

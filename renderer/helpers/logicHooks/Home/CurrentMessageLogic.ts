@@ -26,11 +26,6 @@ export const encryptAndUpload = async (key, originalFile: File, userData, chat, 
         onSuccess: async (response)=>{
           const now = Date.now();
           addVideo(encryptedFile.path, encryptedFile.name, userData.email, chat.email, now, true, iv, originalFile.type)
-          // const decryptedContent:Buffer = await decryptAES(key, iv, userData.email, chat.email, originalFile.name+'.enc')
-          // const decryptedBlob = new Blob([decryptedContent], { type: originalFile.type }); // Replace with your actual file type
-          // const decryptedFile = new File([decryptedBlob], originalFile.name, { type: originalFile.type }); // Replace with your actual file name and type
-          // console.log(await decryptedFile.arrayBuffer())
-          // console.log(await originalFile.arrayBuffer())
         }
       }
     );
