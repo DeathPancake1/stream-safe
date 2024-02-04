@@ -46,3 +46,11 @@ export async function addVideo(path, name, sender, receiver, date, downloaded, i
 
     }
 }
+
+export async function updateVideo(videoId: number, updatedData: Video){
+  try {
+    await videosDB.videos.update(videoId, updatedData);
+  } catch (error) {
+    console.error(error)
+  }
+}

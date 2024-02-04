@@ -123,6 +123,8 @@ export default function ChatBody({ chat }: Props) {
           <Message 
             key={index} 
             message={message} 
+            messages={allMessages}
+            setMessages={setAllMessages}
             incoming={message.receiver===userData.email} 
             setPlayVideo={setVideoPlayerVisible} 
             setVideo={setSelectedVideo}

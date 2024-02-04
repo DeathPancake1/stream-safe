@@ -38,6 +38,11 @@ contextBridge.exposeInMainWorld('electron', {
       return ipcRenderer.invoke('decrypt-symmetric-AES', keyHex, iv, user1Email, user2Email, fileName);
     }
   },
+  fileSystem: {
+    writeFile: (user1Email: string, user2Email: string, fileName: string, data: string) =>{
+      return ipcRenderer.invoke('write-file', user1Email, user2Email, fileName, data);
+    }
+  }
 });
 
 contextBridge.exposeInMainWorld('ipc', handler)

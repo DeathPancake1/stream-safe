@@ -1,4 +1,4 @@
 import { addKey, Keys, keysDB } from "./keys.db";
-import { addVideo, Video, videosDB } from "./videos.db";
-export { addKey, addVideo, keysDB, videosDB };
+import { addVideo, updateVideo, Video, videosDB } from "./videos.db";
+export { addKey, addVideo, updateVideo, keysDB, videosDB };
 export type { Keys, Video };

@@ -3,6 +3,7 @@ import { app, ipcMain, Menu } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import { decryptPrivate, encryptPublic, generateKeyPair, generateSymmetric, handleDecryptSymmetricAES, handleEncryptSymmetricAES } from './helpers/cryptography'
+import { writeFile } from './helpers/files'
 
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -19,6 +20,8 @@ ipcMain.handle('encrypt-public-RSA', encryptPublic);
 ipcMain.handle('decrypt-private-RSA', decryptPrivate);
 ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
 ipcMain.handle('decrypt-symmetric-AES', handleDecryptSymmetricAES);
+
+ipcMain.handle('write-file', writeFile)
 
 
 ;(async () => {

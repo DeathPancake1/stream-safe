@@ -1,21 +1,27 @@
 import { Box, Button, Typography } from "@mui/material";
-import { Video, keysDB } from "../indexedDB";
+import { Video, keysDB, updateVideo } from "../indexedDB";
 import DownloadIcon from '@mui/icons-material/Download';
 import { useUser } from "../providers/UserContext";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useState } from "react";
 import decryptAES from "../helpers/decryption/decryptAES";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useDownloadFile } from "../api/hooks/download-file-hook";
+import writeFile from "../helpers/fileSystem/writeFile";
 
 interface Props {
     incoming: boolean;
     message: Video;
+    messages: Video[];
     setPlayVideo: (boolean)=>void;
     setVideo: (Video)=>void;
+    setMessages: (videos: Video[])=>void
 }
 
-export default function Message({ incoming, message, setPlayVideo, setVideo }: Props) {
+export default function Message({ incoming, message, messages, setPlayVideo, setVideo, setMessages}: Props) {
   const {userData, updateUser} = useUser()
+  const {mutate: downloadFile} = useDownloadFile()
+  const [downloadProgress, setDownloadProgress] = useState<number>(0)
   const backgroundColor = incoming ? '#e0e0e0' : '#333333'; // Adjust colors as needed
   const textColor = incoming ? '#333' : '#fff'; // Adjust text color for better contrast
 
@@ -30,8 +36,38 @@ export default function Message({ incoming, message, setPlayVideo, setVideo }: P
     }
   );
 
-  const download = async ()=>{
+  const markMessageDownloaded = ()=>{
+    const updatedMessages = [...messages];
+    const messageIndex = updatedMessages.findIndex((msg) => msg.id === message.id);
+    if (messageIndex !== -1) {
+      // Update the downloaded property of the specific message
+      updatedMessages[messageIndex] = {
+        ...updatedMessages[messageIndex],
+        downloaded: true,
+      };
 
+      // Use setMessages to update the state with the modified array
+      setMessages(updatedMessages);
+    }
+
+    // Update the message in IndexedDB
+    updateVideo(message.id, { ...message, downloaded: true });
+  }
+
+  const download = async ()=>{
+    await downloadFile({
+      jwt: userData.jwt,
+      path: message.path,
+      setDownloadProgress
+      },
+      {
+        onSuccess: async (response)=>{
+          const email = incoming? message.sender : message.receiver
+          await writeFile(userData.email, email, message.name, response.data)
+          markMessageDownloaded()
+        }
+      }
+    )
   }
 
   const playVideo = async ()=>{
