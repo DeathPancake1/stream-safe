@@ -63,8 +63,11 @@ export default function Message({ incoming, message, messages, setPlayVideo, set
       {
         onSuccess: async (response)=>{
           const email = incoming? message.sender : message.receiver
-          await writeFile(userData.email, email, message.name, response.data)
-          markMessageDownloaded()
+          const status = await writeFile(userData.email, email, message.name, response.data)
+          if(status){
+            markMessageDownloaded()
+          }
+          console.log(status)
         }
       }
     )
