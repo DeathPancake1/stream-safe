@@ -5,6 +5,7 @@ import { useSearchUser } from "../../api/hooks/search-hook";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatType from "../../types/chat-type";
 import { useUser } from "../../providers/UserContext";
+import Iconbar from "./Iconbar";
 
 interface Props {
   selectedChat: ChatType,
@@ -84,6 +85,7 @@ export function MyDrawer({
       <Box sx={{ overflow: 'auto' }}>
         <List>
           <Divider />
+          <Iconbar />
           <SearchBox search={handleSearch} />
           {chats.map((chat, index) => (
             <ListItem
