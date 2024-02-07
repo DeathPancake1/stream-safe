@@ -43,7 +43,7 @@ export const useHomeLogic = ()=>{
         const intervalId = setInterval(() => {
             receiveKeys({ jwt: userData.jwt }, { onSuccess: processReceivedKeys });
             getNewMessages({ jwt: userData.jwt }, { onSuccess: processNewMessages });
-        }, 10000);
+        }, 3000);
 
         return () => clearInterval(intervalId);
     }, []);
