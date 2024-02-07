@@ -15,6 +15,20 @@ const useSearchUser = ()=>{
     )
 }
 
+const useFindEmail = ()=>{
+    return useMutation(
+        async (data: {email: string, jwt: string})=>{
+            return await searchService.findEmail(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
 export {
     useSearchUser,
+    useFindEmail
 }

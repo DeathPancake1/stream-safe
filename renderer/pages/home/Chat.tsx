@@ -3,19 +3,45 @@ import Welcome from "../../components/auth/Welcome";
 import ChatBody from "./ChatBody";
 import ChatType from "../../types/chat-type";
 import CurrentMessage from "./CurrentMessage";
+import { useFindEmail } from "../../api/hooks/search-hook";
+import { useEffect, useState } from "react";
+import { useUser } from "../../providers/UserContext";
 
 interface Props {
-  chat?: ChatType
+  email?: string
 }
 
 export default function Chat({
-  chat = {
-    firstname: '',
-    lastname: '',
-    email: '',
-    publicKey: ''
-  }
+  email = ''
 }: Props) {
+
+  const {mutate: findEmail} = useFindEmail()
+  const {userData, updateUser}= useUser()
+  const [chat, setChat] = useState<ChatType>(
+    {
+      firstname: '',
+      lastname: '',
+      email: '',
+      publicKey: ''
+    }
+  )
+
+  useEffect(()=>{
+    findEmail(
+      {
+        email,
+        jwt: userData.jwt
+      },
+      {
+        onSuccess: (response)=>{
+          if(response.status === 201){
+            setChat(response.data)
+          }
+          
+        }
+      }
+    )
+  }, [email])
   
   return (
     <Box sx={{ maxWidth: "100%", height: "100%", display: "flex", flexDirection: "column" }}>

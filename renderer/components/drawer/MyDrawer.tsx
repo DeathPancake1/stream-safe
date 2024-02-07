@@ -6,10 +6,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatType from "../../types/chat-type";
 import { useUser } from "../../providers/UserContext";
 import Iconbar from "./Iconbar";
+import { useLiveQuery } from "dexie-react-hooks";
+import { videosDB } from "../../indexedDB";
 
 interface Props {
-  selectedChat: ChatType,
-  setSelectedChat: (chat: ChatType) => void,
+  selectedChat: string,
+  setSelectedChat: (email: string) => void,
   width: number,
   setWidth: (width: number)=>void
 }
@@ -21,10 +23,60 @@ export function MyDrawer({
   setWidth
 }: Props) {
   const { mutate: search } = useSearchUser();
-  const [chats, setChats] = useState<ChatType[]>([]);
+  const [chats, setChats] = useState<string[]>([]);
   const { userData, updateUser } = useUser();
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [initialMouseX, setInitialMouseX] = useState<number>(0);
+  const [uniqueReceivers, setUniqueReceivers] = useState<string[]>([])
+  const [uniqueSenders, setUniqueSenders] = useState<string[]>([])
+  const [combinedUniqueUsers, setCombinedUniqueUsers] = useState<string[]>([]);
+
+
+  useLiveQuery(
+    async () => {
+      const sentMessages = await videosDB.videos
+        .where('sender')
+        .equalsIgnoreCase(userData.email)
+        .sortBy('date');
+  
+      const receivedMessages = await videosDB.videos
+        .where('receiver')
+        .equalsIgnoreCase(userData.email)
+        .sortBy('date');
+  
+      const allMessages = [...sentMessages, ...receivedMessages];
+  
+      const uniqueUsers = Array.from(new Set(allMessages.map((video) => {
+        if (video.sender === userData.email) {
+          return video.receiver;
+        } else {
+          return video.sender;
+        }
+      })));
+  
+      // Sort unique users by the latest message time
+      uniqueUsers.sort((userA, userB) => {
+        const latestMessageTimeA = getLatestMessageTimeForUser(userA, allMessages);
+        const latestMessageTimeB = getLatestMessageTimeForUser(userB, allMessages);
+  
+        return latestMessageTimeB - latestMessageTimeA;
+      });
+  
+      setCombinedUniqueUsers(uniqueUsers);
+    },
+    [userData.email]
+  );
+  
+  const getLatestMessageTimeForUser = (user, messages) => {
+    const latestMessage = messages
+      .filter((video) => video.sender === user || video.receiver === user)
+      .sort((a, b) => b.date - a.date)
+      .shift();
+  
+    return latestMessage ? latestMessage.date : 0;
+  };
+  
+  
 
   const handleSearch = async ({ email }: { email: string }) => {
     search(
@@ -39,8 +91,8 @@ export function MyDrawer({
     );
   };
 
-  const handleSetChat = (chat: ChatType) => {
-    setSelectedChat(chat);
+  const handleSetChat = (email: string) => {
+    setSelectedChat(email);
   };
 
   const handleMouseDown = (event) => {
@@ -72,6 +124,14 @@ export function MyDrawer({
     };
   }, [isResizing]);
 
+  useEffect(() => {
+    // Combine unique senders and receivers into a single array
+    const combinedUsers = Array.from(new Set([...uniqueReceivers, ...uniqueSenders]));
+
+    // Set the combined unique users state
+    setCombinedUniqueUsers(combinedUsers);
+  }, [uniqueReceivers, uniqueSenders]);
+
   return (
     <Drawer
       variant="permanent"
@@ -87,18 +147,18 @@ export function MyDrawer({
           <Divider />
           <Iconbar />
           <SearchBox search={handleSearch} />
-          {chats.map((chat, index) => (
+          {combinedUniqueUsers.map((email, index) => (
             <ListItem
-              key={chat.email}
+              key={email}
               disablePadding
-              selected={selectedChat && selectedChat.email === chat.email}
+              selected={selectedChat && selectedChat === email}
             >
-              <ListItemButton onClick={() => handleSetChat(chat)}>
+              <ListItemButton onClick={() => handleSetChat(email)}>
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={chat.email}
+                  primary={email}
                   sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

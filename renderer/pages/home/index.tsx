@@ -6,12 +6,7 @@ import { useState } from "react";
 import { useHomeLogic } from "../../helpers/logicHooks/Home/HomeLogic";
 
 export default function Home(){
-  const [selectedChat, setSelectedChat] = useState<ChatType>({
-    firstname: '',
-    lastname: '',
-    email: '',
-    publicKey: ''
-  })
+  const [selectedChat, setSelectedChat] = useState<string>('')
   const [width, setWidth] = useState<number>(200); // Initial width
   
   useHomeLogic()
@@ -21,7 +16,7 @@ export default function Home(){
       <MyDrawer selectedChat={selectedChat} setSelectedChat={setSelectedChat} width={width} setWidth={setWidth}/>
       
       <Box component="main" sx={{ flexGrow: 1, p: 3, width: `calc(90% - ${width}px)` }}>
-        <Chat chat={selectedChat}/>
+        <Chat email={selectedChat}/>
       </Box>
     </Box>
   )
