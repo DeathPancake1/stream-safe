@@ -13,7 +13,6 @@ export default async function handleEncryptSymmetricAES  (event, keyHex, filePat
       if (!fs.existsSync(streamSafePath)) {
         // Create the folder
         fs.mkdirSync(streamSafePath);
-        console.log('Folder created:', streamSafePath);
       }
 
       // Create the cipher

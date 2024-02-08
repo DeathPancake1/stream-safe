@@ -12,7 +12,6 @@ export default async function handleDecryptSymmetricAES(event, keyHex, iv, user1
     if (!fs.existsSync(streamSafePath)) {
       // Create the folder
       fs.mkdirSync(streamSafePath);
-      console.log('Folder created:', streamSafePath);
     }
 
     const keyBuffer = Buffer.from(keyHex, 'hex');
