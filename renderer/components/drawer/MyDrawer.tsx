@@ -77,18 +77,19 @@ export function MyDrawer({
   };
   
   
-
   const handleSearch = async ({ email }: { email: string }) => {
-    search(
-      { email, jwt: userData.jwt },
-      {
-        onSuccess: (response) => {
-          if (response.data) {
-            setChats(response.data);
+    if(email.length >= 3){
+      search(
+        { email, jwt: userData.jwt },
+        {
+          onSuccess: (response) => {
+            if (response.data) {
+              setChats(response.data);
+            }
           }
         }
-      }
-    );
+      );
+    }
   };
 
   const handleSetChat = (email: string) => {

@@ -1,9 +1,20 @@
 import crypto from 'crypto';
+import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
 export default async function handleDecryptSymmetricAES(event, keyHex, iv, user1Email, user2Email, fileName) {
   try {
+    const appDataPath = app.getPath('appData');
+    const appName = 'stream-safe';
+
+    const streamSafePath = path.join(appDataPath, appName);
+    if (!fs.existsSync(streamSafePath)) {
+      // Create the folder
+      fs.mkdirSync(streamSafePath);
+      console.log('Folder created:', streamSafePath);
+    }
+
     const keyBuffer = Buffer.from(keyHex, 'hex');
     const ivBuffer = Buffer.from(iv, 'hex');
 
@@ -11,7 +22,7 @@ export default async function handleDecryptSymmetricAES(event, keyHex, iv, user1
 
     let decryptedContent: Buffer = Buffer.alloc(0); // Initialize Buffer to store decrypted content
 
-    const filePath = path.join('videos', user1Email + '_' + user2Email, fileName);
+    const filePath = path.join(streamSafePath, 'videos', user1Email + '_' + user2Email, fileName);
     const input = fs.createReadStream(filePath);
 
 

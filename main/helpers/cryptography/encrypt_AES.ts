@@ -1,4 +1,4 @@
-import { ipcMain } from "electron";
+import { app, ipcMain } from "electron";
 import crypto from 'crypto'
 import path from "path";
 import fs from 'fs'
@@ -6,17 +6,27 @@ import fs from 'fs'
 // Always make user1Email your own email
 export default async function handleEncryptSymmetricAES  (event, keyHex, filePath, user1Email, user2Email, fileName) {
     try{
+      const appDataPath = app.getPath('appData');
+      const appName = 'stream-safe';
+
+      const streamSafePath = path.join(appDataPath, appName);
+      if (!fs.existsSync(streamSafePath)) {
+        // Create the folder
+        fs.mkdirSync(streamSafePath);
+        console.log('Folder created:', streamSafePath);
+      }
+
       // Create the cipher
       const keyBuffer = Buffer.from(keyHex, 'hex');
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
   
       const outputFileName = fileName + '.enc';
-      const outputFilePath = path.join('videos',user1Email + '_' + user2Email);
+      const outputFilePath = path.join(streamSafePath, 'videos',user1Email + '_' + user2Email);
       fs.mkdir(outputFilePath, { recursive: true }, (err) => {
         if (err) throw err;
       });
-      const fullPath = path.join('videos',user1Email + '_' + user2Email, outputFileName);
+      const fullPath = path.join(streamSafePath, 'videos',user1Email + '_' + user2Email, outputFileName);
   
       const input = fs.createReadStream(filePath)
       const output = fs.createWriteStream(fullPath)
