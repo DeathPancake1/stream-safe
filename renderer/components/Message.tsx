@@ -8,13 +8,15 @@ import decryptAES from "../helpers/decryption/decryptAES";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useDownloadFile } from "../api/hooks/download-file-hook";
 import writeFile from "../helpers/fileSystem/writeFile";
+import setKeys from "../helpers/express/setKeys";
+import { localUrl } from "../config";
 
 interface Props {
     incoming: boolean;
     message: Video;
     messages: Video[];
     setPlayVideo: (boolean)=>void;
-    setVideo: (Video)=>void;
+    setVideo: (videoUrl: string)=>void;
     setMessages: (videos: Video[])=>void
 }
 
@@ -74,10 +76,9 @@ export default function Message({ incoming, message, messages, setPlayVideo, set
 
   const playVideo = async ()=>{
     const email = incoming? message.sender : message.receiver
-    const decryptedContent:Buffer = await decryptAES(fetchedKey.value, message.iv, userData.email, email, message.name)
-    const decryptedBlob = new Blob([decryptedContent], { type: message.type });
-    const decryptedFile = new File([decryptedBlob], message.name, { type: message.type });
-    setVideo(decryptedFile)
+    setKeys(fetchedKey.value, message.iv)
+    const base_url = localUrl;
+    setVideo(base_url+'/decrypt/'+userData.email+'/'+email+'/'+message.name)
     setPlayVideo(true)
   }
 

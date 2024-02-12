@@ -9,15 +9,15 @@ import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   visible: boolean;
-  video: File;
-  setVideo: (video: File | null) => void;
+  videoUrl: string;
+  setVideoUrl: (video: string) => void;
   setVisible: (visible: boolean) => void;
 }
 
 export default function VideoPlayer({
   visible,
-  video,
-  setVideo,
+  videoUrl,
+  setVideoUrl,
   setVisible,
 }: Props) {
   const [controlsVisible, setControlsVisible] = useState(true);
@@ -33,7 +33,7 @@ export default function VideoPlayer({
   const handleClose = () => {
     setPlaying(false);
     setMuted(false);
-    setVideo(null);
+    setVideoUrl('');
     setVisible(false);
     setCurrentTime(0);
   };
@@ -58,8 +58,8 @@ export default function VideoPlayer({
 
   useEffect(() => {
     // Create the blob URL when the component mounts
-    if (video) {
-      const url = URL.createObjectURL(video);
+    if (videoUrl) {
+      const url = videoUrl
       setBlobUrl(url);
 
       return () => {
@@ -67,7 +67,7 @@ export default function VideoPlayer({
         URL.revokeObjectURL(url);
       };
     }
-  }, [video]);
+  }, [videoUrl]);
 
   const handleSeek = (event: Event, value: number | number[]) => {
     if (Array.isArray(value)) {
@@ -164,7 +164,7 @@ export default function VideoPlayer({
         </IconButton>
       </Box>
       {controlsOverlay}
-      {video && (
+      {videoUrl && (
         <ReactPlayer
           ref={playerRef}
           width={"100%"}

@@ -19,7 +19,7 @@ export default function ChatBody({ chat }: Props) {
   const { mutate: exchangeSymmetric } = useExchangeSymmetric();
   const {userData, updateUser} = useUser()
   const [ videoPlayerVisible, setVideoPlayerVisible] = useState<boolean>(false);
-  const [selectedVideo, setSelectedVideo] = useState<File | null>(null)
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>('')
   const [forceUpdate, setForceUpdate] = useState(false);
   const [ allMessages, setAllMessages ] = useState<Video[]>([])
   const [sentMessages, setSentMessages] = useState<Video[]>([])
@@ -114,8 +114,8 @@ export default function ChatBody({ chat }: Props) {
     >
       <VideoPlayer 
         visible={videoPlayerVisible} 
-        video={selectedVideo} 
-        setVideo={setSelectedVideo} 
+        videoUrl={selectedVideoUrl} 
+        setVideoUrl={setSelectedVideoUrl} 
         setVisible={setVideoPlayerVisible} 
       />
       {
@@ -127,7 +127,7 @@ export default function ChatBody({ chat }: Props) {
             setMessages={setAllMessages}
             incoming={message.receiver===userData.email} 
             setPlayVideo={setVideoPlayerVisible} 
-            setVideo={setSelectedVideo}
+            setVideo={setSelectedVideoUrl}
           />
         )
       }

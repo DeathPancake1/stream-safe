@@ -42,6 +42,11 @@ contextBridge.exposeInMainWorld('electron', {
     writeFile: (user1Email: string, user2Email: string, fileName: string, data: string) =>{
       return ipcRenderer.invoke('write-file', user1Email, user2Email, fileName, data);
     }
+  },
+  express: {
+    setKeys: (keyHex: string, ivHex: string) =>{
+      return ipcRenderer.invoke('set-keys', keyHex, ivHex);
+    }
   }
 });
 

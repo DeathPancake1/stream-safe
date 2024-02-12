@@ -5,9 +5,11 @@ import { createWindow } from './helpers'
 import { decryptPrivate, encryptPublic, generateKeyPair, generateSymmetric, handleDecryptSymmetricAES, handleEncryptSymmetricAES } from './helpers/cryptography'
 import { writeFile } from './helpers/files'
 import express from 'express'
+import { decryptRouter, setKeys } from './helpers/expressEndPoints/decryptEndPoint'
+import morgan from 'morgan'
 import fs from 'fs'
-import range from 'range-parser';
-import crypto from 'crypto'
+import https from 'https'
+import { certificate, privateKey } from './config'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -20,65 +22,13 @@ if (isProd) {
 const expressApp = express();
 const port = 3171;
 
-expressApp.get('/decrypt/:user1Email/:user2Email/:fileName', async (req, res) => {
-  const { user1Email, user2Email, fileName } = req.params;
-  const { keyHex, ivHex } = req.query;
+expressApp.use(decryptRouter);
 
-  try {
-    const appDataPath = app.getPath('appData');
-    const appName = 'stream-safe';
-    const streamSafePath = path.join(appDataPath, appName);
 
-    const keyBuffer = Buffer.from(keyHex, 'hex');
-    const ivBuffer = Buffer.from(ivHex, 'hex');
-
-    const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, ivBuffer);
-    decipher.setAutoPadding(false); 
-
-    const filePath = path.join(streamSafePath, 'videos', user1Email + '_' + user2Email, fileName);
-
-    if (!fs.existsSync(filePath)) {
-      res.status(404).send('File not found');
-      return;
-    }
-
-    const stat = fs.statSync(filePath);
-    const fileSize = stat.size;
-
-    // Parse range headers
-    const rangeHeader = req.headers.range;
-    const ranges = rangeHeader ? range(fileSize, rangeHeader, { combine: true }) : null;
-
-    if (ranges === -1) {
-      // Invalid range
-      res.status(416).send('Requested Range Not Satisfiable');
-      return;
-    }
-
-    // Use the first range (if any)
-    const rangeFirst = ranges ? ranges[0] : null;
-
-    res.status(206)
-      .header({
-        'Content-Range': `bytes ${rangeFirst.start || 0}-${rangeFirst.end || fileSize - 1}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': rangeFirst ? rangeFirst.end - rangeFirst.start + 1 : fileSize,
-        'Content-Type': 'video/mp4',
-      });
-
-    const encryptedStream = fs.createReadStream(filePath, { start: rangeFirst ? rangeFirst.start : 0, end: rangeFirst ? rangeFirst.end : fileSize - 1 });
-    
-    // Pipe the encrypted stream through the decipher stream and then to the response
-    encryptedStream.pipe(decipher).pipe(res);
-  } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 const startExpressServer = () => {
-  expressApp.listen(port, () => {
-    console.log(`Express server is running on http://localhost:${port}`);
+  server.listen(port, () => {
+    console.log(`App listening on https://localhost:${port}`);
   });
 };
 
@@ -88,8 +38,22 @@ ipcMain.handle('encrypt-public-RSA', encryptPublic);
 ipcMain.handle('decrypt-private-RSA', decryptPrivate);
 ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
 ipcMain.handle('decrypt-symmetric-AES', handleDecryptSymmetricAES);
-
+ipcMain.handle('set-keys', setKeys);
 ipcMain.handle('write-file', writeFile)
+
+expressApp.use(morgan("dev"));
+
+expressApp.get("/", (req, res) => {
+  res.send("WELCOME TO THE BASIC EXPRESS APP WITH AN HTTPS SERVER");
+});
+
+const options = {
+  key: privateKey,
+  cert: certificate,
+};
+
+// Create HTTPS server
+const server = https.createServer(options, expressApp);
 
 
 ;(async () => {
@@ -121,6 +85,20 @@ ipcMain.handle('write-file', writeFile)
 app.on('window-all-closed', () => {
   app.quit()
 })
+
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  // On certificate error if https://localhost:3171 we disable default behaviour (stop loading the page)
+  // and we then say "it is all fine - true" to the callback
+  if (url.startsWith(`https://localhost:${port}`)) {
+    // On certificate error, disable default behavior (stop loading the page)
+    // and then say "it is all fine - true" to the callback
+    event.preventDefault();
+    callback(true);
+  } else {
+    // Do nothing for other URLs
+    callback(false);
+  }
+});
 
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
