@@ -43,10 +43,6 @@ ipcMain.handle('write-file', writeFile)
 
 expressApp.use(morgan("dev"));
 
-expressApp.get("/", (req, res) => {
-  res.send("WELCOME TO THE BASIC EXPRESS APP WITH AN HTTPS SERVER");
-});
-
 const options = {
   key: privateKey,
   cert: certificate,
