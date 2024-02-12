@@ -4,12 +4,14 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { useUser } from "../providers/UserContext";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { MouseEventHandler, useState } from "react";
-import decryptAES from "../helpers/decryption/decryptAES";
+import decryptAES from "../helpers/decryption/decryptAESHex";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useDownloadFile } from "../api/hooks/download-file-hook";
 import writeFile from "../helpers/fileSystem/writeFile";
 import setKeys from "../helpers/express/setKeys";
 import { localUrl } from "../config";
+import decryptAESHex from "../helpers/decryption/decryptAESHex";
+import secureLocalStorage from "react-secure-storage";
 
 interface Props {
     incoming: boolean;
@@ -76,7 +78,9 @@ export default function Message({ incoming, message, messages, setPlayVideo, set
 
   const playVideo = async ()=>{
     const email = incoming? message.sender : message.receiver
-    setKeys(fetchedKey.value, message.iv)
+    const masterKey = secureLocalStorage.getItem('masterKey').toString()
+    const decryptedKey = await decryptAESHex(masterKey, fetchedKey.value)
+    setKeys(decryptedKey, message.iv)
     const base_url = localUrl;
     setVideo(base_url+'/decrypt/'+userData.email+'/'+email+'/'+message.name)
     setPlayVideo(true)

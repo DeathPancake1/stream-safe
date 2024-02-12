@@ -2,9 +2,11 @@ import { app, ipcMain } from "electron";
 import crypto from 'crypto'
 import path from "path";
 import fs from 'fs'
+import axios from "axios";
+import FromData from 'form-data'
 
 // Always make user1Email your own email
-export default async function handleEncryptSymmetricAES  (event, keyHex, filePath, user1Email, user2Email, fileName) {
+export default async function handleEncryptSymmetricAES  (event, keyHex, filePath, user1Email, user2Email, fileName, apiUrl, apiKey, jwt, type) {
     try{
       const appDataPath = app.getPath('appData');
       const appName = 'stream-safe';
@@ -22,6 +24,10 @@ export default async function handleEncryptSymmetricAES  (event, keyHex, filePat
   
       const outputFileName = fileName + '.enc';
       const outputFilePath = path.join(streamSafePath, 'videos',user1Email + '_' + user2Email);
+      if (!fs.existsSync(outputFilePath)) {
+        // Create the folder
+        fs.mkdirSync(outputFilePath);
+      }
       fs.mkdir(outputFilePath, { recursive: true }, (err) => {
         if (err) throw err;
       });
@@ -34,14 +40,33 @@ export default async function handleEncryptSymmetricAES  (event, keyHex, filePat
   
       return new Promise((resolve, reject) => {
         output.on('finish', async () => {
-          // Read the content of the encrypted file
-          const encryptedFileContent = await fs.promises.readFile(fullPath);
-          
-          // Resolve with the File object
           const ivHex = iv.toString('hex');
-          resolve({encryptedFileContent, iv: ivHex});
+          const encryptedFileContent = fs.createReadStream(fullPath);
+
+          const formData = new FromData();
+          formData.append("senderEmail", user1Email);
+          formData.append("receiverEmail", user2Email);
+          formData.append("name", fileName);
+          formData.append("iv", ivHex);
+          formData.append("type", type);
+          formData.append("file", encryptedFileContent, fileName+'.enc')
+
+          // Axios request with a stream-based approach
+          try {
+            const response = await axios.post(apiUrl, formData, {
+              headers: {
+                'Authorization': `Bearer ${jwt}`,
+                'Content-Type': 'application/octet-stream',
+                'api-key': apiKey,
+                ...formData.getHeaders()
+              },
+            });
+
+            resolve({ iv: ivHex });
+          } catch (apiError) {
+            reject(apiError);
+          }
         });
-  
         // Handle errors during the encryption process
         cipher.on('error', (err) => reject(err));
         input.on('error', (err) => reject(err));

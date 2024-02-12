@@ -1,13 +1,20 @@
-import path, { resolve } from 'path'
+import path from 'path'
 import { app, ipcMain, Menu } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import { decryptPrivate, encryptPublic, generateKeyPair, generateSymmetric, handleDecryptSymmetricAES, handleEncryptSymmetricAES } from './helpers/cryptography'
+import { 
+  decryptPrivate, 
+  encryptPublic, 
+  generateKeyPair, 
+  generateSymmetric, 
+  handleDecryptSymmetricAESHex, 
+  handleEncryptSymmetricAES, 
+  handleEncryptSymmetricAESHex 
+} from './helpers/cryptography'
 import { writeFile } from './helpers/files'
 import express from 'express'
 import { decryptRouter, setKeys } from './helpers/expressEndPoints/decryptEndPoint'
 import morgan from 'morgan'
-import fs from 'fs'
 import https from 'https'
 import { certificate, privateKey } from './config'
 
@@ -37,7 +44,8 @@ ipcMain.handle('generate-symmetric-256', generateSymmetric);
 ipcMain.handle('encrypt-public-RSA', encryptPublic);
 ipcMain.handle('decrypt-private-RSA', decryptPrivate);
 ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
-ipcMain.handle('decrypt-symmetric-AES', handleDecryptSymmetricAES);
+ipcMain.handle('decrypt-symmetric-AES-hex', handleDecryptSymmetricAESHex);
+ipcMain.handle('encrypt-symmetric-AES-hex', handleEncryptSymmetricAESHex);
 ipcMain.handle('set-keys', setKeys);
 ipcMain.handle('write-file', writeFile)
 

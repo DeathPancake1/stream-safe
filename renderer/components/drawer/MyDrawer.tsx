@@ -23,7 +23,7 @@ export function MyDrawer({
   setWidth
 }: Props) {
   const { mutate: search } = useSearchUser();
-  const [chats, setChats] = useState<string[]>([]);
+  const [chats, setChats] = useState<ChatType[]>([]);
   const { userData, updateUser } = useUser();
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [initialMouseX, setInitialMouseX] = useState<number>(0);
@@ -90,6 +90,9 @@ export function MyDrawer({
         }
       );
     }
+    else{
+      setChats([])
+    }
   };
 
   const handleSetChat = (email: string) => {
@@ -147,28 +150,53 @@ export function MyDrawer({
         <List>
           <Divider />
           <Iconbar />
-          <SearchBox search={handleSearch} />
-          {combinedUniqueUsers.map((email, index) => (
-            <ListItem
-              key={email}
-              disablePadding
-              selected={selectedChat && selectedChat === email}
-            >
-              <ListItemButton onClick={() => handleSetChat(email)}>
-                <ListItemIcon>
-                  <AccountCircleIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={email}
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          <SearchBox search={handleSearch}/>
+          {
+            chats.length>0?
+            chats.map((chat, index) => (
+              <ListItem
+                key={chat.email}
+                disablePadding
+                selected={selectedChat && selectedChat === chat.email}
+              >
+                <ListItemButton onClick={() => handleSetChat(chat.email)}>
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={chat.email}
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))
+            :
+            combinedUniqueUsers.map((email, index) => (
+              <ListItem
+                key={email}
+                disablePadding
+                selected={selectedChat && selectedChat === email}
+              >
+                <ListItemButton onClick={() => handleSetChat(email)}>
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={email}
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))
+          }
         </List>
       </Box>
       <div

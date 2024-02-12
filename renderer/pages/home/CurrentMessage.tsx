@@ -9,6 +9,8 @@ import TickOverlay from "../../components/TickOverlay";
 import { useLiveQuery } from "dexie-react-hooks";
 import { keysDB } from "../../indexedDB";
 import { encryptAndUpload } from "../../helpers/logicHooks/Home/CurrentMessageLogic";
+import decryptAESHex from "../../helpers/decryption/decryptAESHex";
+import secureLocalStorage from "react-secure-storage";
 
 interface Props{
     chat: ChatType
@@ -20,7 +22,6 @@ export default function CurrentMessage({
     const [files, setFiles] = useState<File[]>([])
     const {mutate: uploadFile} = useUploadFile()
     const {userData, updateUser} = useUser()
-    const [uploadProgress ,setUploadProgress] = useState<number>(0)
     const [isUploadComplete ,setIsUploadComplete] = useState<boolean>(false)
     const videoTypes = [
       'video/mp4',
@@ -47,21 +48,16 @@ export default function CurrentMessage({
 
     const handleClearFile = ()=>{
         setFiles([])
-        setUploadProgress(0)
         setIsUploadComplete(false)
     }
 
     const handleUpload = async () => {
-      const key = fetchedKey.value;
+      const encryptedKey = fetchedKey.value;
+      const masterKey = secureLocalStorage.getItem('masterKey').toString()
+      const decryptedKey = await decryptAESHex(masterKey, encryptedKey)
       const originalFile = files[0];
-      await encryptAndUpload(key, originalFile, userData, chat, uploadFile, setUploadProgress);
+      await encryptAndUpload(decryptedKey, originalFile, userData, chat, setIsUploadComplete);
     };
-
-    useEffect(() => {
-        if (uploadProgress === 100) {
-            setIsUploadComplete(true);
-        }
-    }, [uploadProgress]);
     
     return (
       <Box>
@@ -82,7 +78,6 @@ export default function CurrentMessage({
             removeFile={
               ()=>handleClearFile()
             } 
-            uploadProgress={uploadProgress}
             upload={
               ()=>{
                 handleUpload()

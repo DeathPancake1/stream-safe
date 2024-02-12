@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useUser } from "../../providers/UserContext";
 import { checkAccountState, fetchLocked } from "../../helpers/logicHooks/Login/DeviceModalLogic";
 import { renderDialogContent } from "../../helpers/logicHooks/Login/renderDialogContent";
+import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
 
 interface props{
     open: boolean
@@ -31,6 +32,8 @@ export default function DeviceModal({open, setOpen}: props){
 
     const lockThisDevice = async ()=>{
         const {publicKey, privateKey} = await generateAsymmetricKeys()
+        const masterKey = await generateSymmetricKey256()
+        secureLocalStorage.setItem('masterKey', masterKey)
         secureLocalStorage.setItem('privateKey', privateKey)
         const deviceId = await getId(
             {publicKey, jwt: userData.jwt},

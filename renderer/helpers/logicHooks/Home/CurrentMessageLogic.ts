@@ -1,35 +1,12 @@
 import encryptAES from "../../encryption/encryptAES";
 import { addVideo } from "../../../indexedDB";
-import decryptAES from "../../decryption/decryptAES";
 
-export const encryptAndUpload = async (key, originalFile: File, userData, chat, uploadFile, setUploadProgress) => {
+export const encryptAndUpload = async (key, originalFile: File, userData, chat, setUploadProgress) => {
   try {
-    const {encryptedFileContent, iv} = await encryptAES(key, originalFile.path, userData.email, chat.email, originalFile.name);
-    const encryptedBlob = new Blob([encryptedFileContent], { type: originalFile.type });
-    const encryptedFile = new File([encryptedBlob], originalFile.name + '.enc', {
-      type: originalFile.type,
-      lastModified: originalFile.lastModified,
-    });
-
-    uploadFile(
-      {
-        senderEmail: userData.email,
-        receiverEmail: chat.email,
-        name: encryptedFile.name,
-        file: encryptedFile,
-        jwt: userData.jwt,
-        iv: iv,
-        type: originalFile.type,
-        setUploadProgress: setUploadProgress,
-      },
-      {
-        onSuccess: async (response)=>{
-          const now = Date.now();
-          addVideo(encryptedFile.path, encryptedFile.name, userData.email, chat.email, now, true, iv, originalFile.type)
-        }
-      }
-    );
-
+    const { iv } = await encryptAES(key, originalFile.path, userData.email, chat.email, originalFile.name, process.env.API_URL+'/files/upload', process.env.API_KEY, userData.jwt, originalFile.type);
+    const now = Date.now();
+    setUploadProgress
+    addVideo('', originalFile.name+'.enc', userData.email, chat.email, now, true, iv, originalFile.type)
 
   } catch (error) {
     console.error('Error handling upload:', error.message);

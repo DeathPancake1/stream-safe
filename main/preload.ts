@@ -31,11 +31,14 @@ contextBridge.exposeInMainWorld('electron', {
     decryptPrivateRSA: (privateKey: string, cipherText: string) =>{
       return ipcRenderer.invoke('decrypt-private-RSA', privateKey, cipherText);
     },
-    encryptSymmetricAES: (keyHex: string, filePath: string, user1Email: string, user2Email: string, fileName: string) =>{
-      return ipcRenderer.invoke('encrypt-symmetric-AES', keyHex, filePath, user1Email, user2Email, fileName);
+    encryptSymmetricAES: (keyHex: string, filePath: string, user1Email: string, user2Email: string, fileName: string, apiUrl: string, apiKey: string, jwt: string, type: string) =>{
+      return ipcRenderer.invoke('encrypt-symmetric-AES', keyHex, filePath, user1Email, user2Email, fileName, apiUrl, apiKey, jwt, type);
     },
-    decryptSymmetricAES: (keyHex: string, iv: string, user1Email: string, user2Email: string, fileName: string) =>{
-      return ipcRenderer.invoke('decrypt-symmetric-AES', keyHex, iv, user1Email, user2Email, fileName);
+    decryptSymmetricAESHex: (keyHex: string, encryptedString: string) =>{
+      return ipcRenderer.invoke('decrypt-symmetric-AES-hex', keyHex, encryptedString);
+    },
+    encryptSymmetricAESHex: (keyHex: string, plaintext: string) =>{
+      return ipcRenderer.invoke('encrypt-symmetric-AES-hex', keyHex, plaintext);
     }
   },
   fileSystem: {

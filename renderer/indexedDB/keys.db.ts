@@ -1,5 +1,6 @@
 import Dexie, { Table } from 'dexie';
-import { useLiveQuery } from 'dexie-react-hooks';
+import secureLocalStorage from 'react-secure-storage';
+import encryptAESHex from '../helpers/encryption/encryptAESHex';
 
 export interface Keys {
     id?: number;
@@ -21,17 +22,19 @@ class KeysDatabase extends Dexie {
 export const keysDB = new KeysDatabase();
 
 export async function addKey(name, value) {
-    try{
-        const id = await keysDB.keys.add({
-            name,
-            value
-        });
+  try{
+    const masterKey = secureLocalStorage.getItem('masterKey').toString()
+    const encryptedKey = await encryptAESHex(masterKey, value)
+    const id = await keysDB.keys.add({
+        name,
+        value: encryptedKey
+    });
 
-        return id;
+    return id;
 
-    }catch(error){
+  }catch(error){
 
-        console.error(error)
+    console.error(error)
 
-    }
+  }
 }
