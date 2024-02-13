@@ -59,21 +59,14 @@ export default function Message({ incoming, message, messages, setPlayVideo, set
   }
 
   const download = async ()=>{
-    await downloadFile({
-      jwt: userData.jwt,
-      path: message.path,
-      setDownloadProgress
-      },
-      {
-        onSuccess: async (response)=>{
-          const email = incoming? message.sender : message.receiver
-          const status = await writeFile(userData.email, email, message.name, response.data)
-          if(status){
-            markMessageDownloaded()
-          }
-        }
-      }
-    )
+    const email = incoming? message.sender : message.receiver
+    const jwt = userData.jwt
+    const url = process.env.API_URL
+    const apiKey = process.env.API_KEY
+    const status = await writeFile(userData.email, email, message.name, jwt, url+'/files/downloadVideo', apiKey, message.path)
+    if(status){
+      markMessageDownloaded()
+    }
   }
 
   const playVideo = async ()=>{

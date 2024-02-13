@@ -9,6 +9,8 @@ import { Video, addKey, videosDB } from "../../indexedDB";
 import Message from "../../components/Message";
 import { useLiveQuery } from "dexie-react-hooks";
 import VideoPlayer from "../../components/videoPlayer/VideoPlayer";
+import encryptAESHex from "../../helpers/encryption/encryptAESHex";
+import secureLocalStorage from "react-secure-storage";
 
 interface Props {
   chat: ChatType;
@@ -73,7 +75,9 @@ export default function ChatBody({ chat }: Props) {
   const handleNewKey = async (keyExists: boolean)=>{
     if(!keyExists){
       const key = await generateConversationKey()
-      const id = await addKey(chat.email, key)
+      const masterKey = secureLocalStorage.getItem('masterKey').toString()
+      const encryptedKey = await encryptAESHex(masterKey, key)
+      const id = await addKey(chat.email, encryptedKey)
       await encryptAndSendSymmetricKey(key)
     }
   }
