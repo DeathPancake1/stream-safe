@@ -23,6 +23,10 @@ export default async function handleEncryptSymmetricAES  (event, keyHex, filePat
       const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
   
       const outputFileName = fileName + '.enc';
+      if (!fs.existsSync(path.join(streamSafePath, 'videos'))) {
+        // Create the folder
+        fs.mkdirSync(path.join(streamSafePath, 'videos'));
+      }
       const outputFilePath = path.join(streamSafePath, 'videos',user1Email + '_' + user2Email);
       if (!fs.existsSync(outputFilePath)) {
         // Create the folder
