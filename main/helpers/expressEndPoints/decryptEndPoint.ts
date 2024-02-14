@@ -7,32 +7,21 @@ import range from 'range-parser';
 
 const decryptRouter = express.Router()
 
-let keyHexGlobal = ''
-let ivHexGlobal = ''
-
-export async function setKeys (event, keyHex, ivHex)  {
-    // Implement the actual symmetric key generation using crypto module
-    // TODO: Add nonce
-    keyHexGlobal = keyHex
-    ivHexGlobal = ivHex
-    return true;
-}
-
-decryptRouter.get('/decrypt/:user1Email/:user2Email/:fileName', async (req, res) => {
-    const { user1Email, user2Email, fileName } = req.params;
+decryptRouter.get('/decrypt/:user1Email/:user2Email/:fileName/:key/:iv', async (req, res) => {
+    const { user1Email, user2Email, fileName, key, iv } = req.params;
   
     try {
       const appDataPath = app.getPath('appData');
       const appName = 'stream-safe';
       const streamSafePath = path.join(appDataPath, appName);
   
-      if(!keyHexGlobal || !ivHexGlobal){
+      if(!key || !iv){
         res.status(401).send('Unauthorized');
         return;
       }
       
-      const keyBuffer = Buffer.from(keyHexGlobal, 'hex');
-      const ivBuffer = Buffer.from(ivHexGlobal, 'hex');
+      const keyBuffer = Buffer.from(key, 'hex');
+      const ivBuffer = Buffer.from(iv, 'hex');
 
       const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, ivBuffer);
       decipher.setAutoPadding(false); 

@@ -13,7 +13,7 @@ import {
 } from './helpers/cryptography'
 import { writeFile } from './helpers/files'
 import express from 'express'
-import { decryptRouter, setKeys } from './helpers/expressEndPoints/decryptEndPoint'
+import { decryptRouter } from './helpers/expressEndPoints/decryptEndPoint'
 import morgan from 'morgan'
 import https from 'https'
 import { certificate, privateKey } from './config'
@@ -46,7 +46,6 @@ ipcMain.handle('decrypt-private-RSA', decryptPrivate);
 ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
 ipcMain.handle('decrypt-symmetric-AES-hex', handleDecryptSymmetricAESHex);
 ipcMain.handle('encrypt-symmetric-AES-hex', handleEncryptSymmetricAESHex);
-ipcMain.handle('set-keys', setKeys);
 ipcMain.handle('write-file', writeFile)
 
 expressApp.use(morgan("dev"));
