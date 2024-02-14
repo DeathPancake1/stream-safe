@@ -67,7 +67,7 @@ export default function CurrentMessage({
           <UploadFile 
             fileList={files} 
             setFiles={setFiles}
-            maxSize={1024 * 1024 * 1900} // 1900 MB
+            maxSize={1024 * 1024 * 5000} // 5000 MB
             allowedTypes={
               videoTypes
             }
