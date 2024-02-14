@@ -72,7 +72,10 @@ export default function SignupForm() {
     }
 
     const fields = getSignupFields(errors, watch)
-
+    
+    const routeToForgetPassword = () => {
+        router.push('/forgetPassword');
+      };      
 
     return (
         <Box
@@ -113,6 +116,7 @@ export default function SignupForm() {
                         sx={{
                             marginLeft: '10px'
                         }}
+                        onClick={routeToForgetPassword}
                     >
                         forgot password?
                     </Button>

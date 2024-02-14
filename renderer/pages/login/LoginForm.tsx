@@ -8,6 +8,7 @@ import { useSignin } from "../../api/hooks/auth-hook"
 import { useEffect, useState } from "react"
 import secureLocalStorage from "react-secure-storage"
 import DeviceModal from "./DeviceModal"
+import { useRouter } from 'next/router';
 import { useUser } from "../../providers/UserContext"
 
 interface FormData {
@@ -20,6 +21,7 @@ export default function LoginForm() {
     const [openModal, setOpenModal] = useState<boolean>()
     const {mutate: login} = useSignin()
     const { userData, updateUser } = useUser();
+    const router = useRouter()
     const {
         handleSubmit,
         formState: { errors },
@@ -58,6 +60,11 @@ export default function LoginForm() {
         }
     }
     const fields = getSigninFields(errors)
+
+    const routeToForgetPassword = () => {
+        router.push('/forgetPassword');
+      }; 
+
 
     // on initial load set user email to empty
     useEffect(()=>{
@@ -102,6 +109,7 @@ export default function LoginForm() {
                         sx={{
                             marginLeft: '10px'
                         }}
+                        onClick={routeToForgetPassword}
                     >
                         forgot password?
                     </Button>
