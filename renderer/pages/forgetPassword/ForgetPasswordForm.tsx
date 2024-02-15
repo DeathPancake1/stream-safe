@@ -4,13 +4,13 @@ import { Box, Button, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { useRouter } from 'next/router'
-import { getForgetPasswordField } from "../../helpers/auth/forgetPasswordFields"
+import { getForgetPasswordFields } from "../../helpers/auth/forgetPasswordFields"
 
 interface FormData {
     email: string
 }
 
-export default function SignupForm() {
+export default function ForgetPasswordForm() {
     
     const router = useRouter()
 
@@ -28,7 +28,7 @@ export default function SignupForm() {
         router.push('/verify');
     }
 
-    const fields = getForgetPasswordField(errors)
+    const fields = getForgetPasswordFields(errors)
 
     const goBack = () => {
         router.back();

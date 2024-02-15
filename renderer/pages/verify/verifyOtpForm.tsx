@@ -56,7 +56,7 @@ export default function VerifyOtpForm() {
                 value={otp}
                 onChange={setOtp}
                 numInputs={6}
-                renderSeparator={<span>-</span>}
+                renderSeparator={<span> </span>}
                 //placeholder='xxxxxx'
                 inputType='tel'
                 renderInput={(props) => <input {...props} />}

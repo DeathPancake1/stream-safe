@@ -1,6 +1,6 @@
 import FieldType from "../../types/field-type"
 
-export function getForgetPasswordField(errors: any): FieldType[] {
+export function getForgetPasswordFields(errors: any): FieldType[] {
     return [
         {
             name: 'email', error: errors.email, placeholder: 'email@example.com', type: 'text',
