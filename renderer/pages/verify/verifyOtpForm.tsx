@@ -11,28 +11,24 @@ interface FormData {
 export default function VerifyOtpForm() {
     const [otp, setOtp] = useState('');
     const router = useRouter()
-
-    const {
-        handleSubmit,
-        formState: { errors },
-        control,
-    } = useForm<FormData>({
-        defaultValues: {
-            otp: '',
-        },
-    })
     
-    const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        console.log("submitted otp")
+    const onSubmit = async (event) => {
+        event.preventDefault()
+        if(otp.length===6){
+            console.log(otp)
+        }else{
+            console.log('error')
+        }
+        
     }
 
     const goBack = () => {
         router.back();
     };
 
-    const handleSendAgain = () => {
-        handleSubmit(onSubmit)();
-      };
+    const handleSendAgain = (event) => {
+        onSubmit(event)
+    };
     
     return (
         <Box
@@ -44,8 +40,8 @@ export default function VerifyOtpForm() {
                 flexDirection: 'column'
             }}
         >
-            <form onSubmit={handleSubmit(onSubmit)}>
-            <Typography variant="h4" align="center" sx={{ marginBottom: '20px' }}>
+            <form onSubmit={onSubmit}>
+                <Typography variant="h4" align="center" sx={{ marginBottom: '20px' }}>
                     Verify
                 </Typography>
                 <Typography variant="h6" align="center" sx={{ marginBottom: '50px' }}>
@@ -53,25 +49,25 @@ export default function VerifyOtpForm() {
                 </Typography>
 
                 <OtpInput
-                value={otp}
-                onChange={setOtp}
-                numInputs={6}
-                renderSeparator={<span> </span>}
-                //placeholder='xxxxxx'
-                inputType='tel'
-                renderInput={(props) => <input {...props} />}
-                containerStyle={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginBottom: '20px',
-                }}
-                inputStyle={{
-                    width: '50px', 
-                    height: '50px', 
-                    fontSize: '24px', 
-                    margin: '0 10px', 
-                }}
+                    value={otp}
+                    onChange={setOtp}
+                    numInputs={6}
+                    renderSeparator={<span> </span>}
+                    //placeholder='xxxxxx'
+                    inputType='tel'
+                    renderInput={(props) => <input {...props} />}
+                    containerStyle={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: '20px',
+                    }}
+                    inputStyle={{
+                        width: '50px', 
+                        height: '50px', 
+                        fontSize: '24px', 
+                        margin: '0 10px', 
+                    }}
                 />
                 <Button 
                     variant="contained" 
