@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
 import { Box, Button, Link, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
@@ -11,7 +11,29 @@ interface FormData {
 export default function VerifyOtpForm() {
     const [otp, setOtp] = useState('');
     const router = useRouter()
+    const [timer, setTimer] = useState(60);
+    const [isTimerActive, setIsTimerActive] = useState(true);
 
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+    
+        if (isTimerActive && timer > 0) {
+          intervalId = setInterval(() => {
+            setTimer((prevTimer) => prevTimer - 1);
+          }, 1000);
+        }
+    
+        return () => {
+            clearInterval(intervalId);
+                    };
+            }, [isTimerActive, timer]);
+
+    useEffect(() => {
+        if (timer === 0) {
+            setIsTimerActive(false);
+        }
+    }, [timer]);
+      
     const {
         handleSubmit,
         formState: { errors },
@@ -31,7 +53,13 @@ export default function VerifyOtpForm() {
     };
 
     const handleSendAgain = () => {
+        setTimer(60); 
+        setIsTimerActive(true);
         handleSubmit(onSubmit)();
+    };
+    
+      const resetPassword = () => {
+        router.push('/resetPassword');
       };
     
     return (
@@ -81,6 +109,7 @@ export default function VerifyOtpForm() {
                         margin: '20px 10px 5px 10px'
                     }}
                     type="submit"
+                    onClick={resetPassword}
                 >
                     Verify
                 </Button>
@@ -99,12 +128,16 @@ export default function VerifyOtpForm() {
                 <Box>
                     <Typography noWrap component="div" textAlign={'center'}>
                         {/* eslint-disable-next-line react/no-unescaped-entities*/}
-                        Didn't recieve code?
-                        <Link onClick={handleSendAgain}>
-                            <Button variant="text">
+                        Didn't recieve code?{' '}
+                        {isTimerActive ? (
+                            <span>{timer}s</span>
+                        ) : (
+                            <Link onClick={handleSendAgain}>
+                                <Button variant="text" disabled={isTimerActive}>
                                 Send again
-                            </Button>
-                        </Link>
+                                </Button>
+                            </Link>
+                        )}
                     </Typography>
                 </Box>
             </form>
