@@ -33,21 +33,13 @@ export default function VerifyOtpForm() {
             setIsTimerActive(false);
         }
     }, [timer]);
-      
-    const {
-        handleSubmit,
-        formState: { errors },
-        control,
-    } = useForm<FormData>({
-        defaultValues: {
-            otp: '',
-        },
-    })
+    
     
     const onSubmit = async (event) => {
         event.preventDefault()
         if(otp.length===6){
             console.log(otp)
+            router.push('/resetPassword');
         }else{
             console.log('error')
         }
@@ -58,15 +50,11 @@ export default function VerifyOtpForm() {
         router.back();
     };
 
-    const handleSendAgain = () => {
+    const handleSendAgain = (event) => {
         setTimer(60); 
         setIsTimerActive(true);
-        handleSubmit(onSubmit)();
+        onSubmit(event);
     };
-    
-      const resetPassword = () => {
-        router.push('/resetPassword');
-      };
     
     return (
         <Box
@@ -115,7 +103,6 @@ export default function VerifyOtpForm() {
                         margin: '20px 10px 5px 10px'
                     }}
                     type="submit"
-                    onClick={resetPassword}
                 >
                     Verify
                 </Button>
