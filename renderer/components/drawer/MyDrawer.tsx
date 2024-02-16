@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
+import { Box, CircularProgress, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 import SearchBox from "../SearchBox";
 import { useSearchUser } from "../../api/hooks/search-hook";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -22,7 +22,7 @@ export function MyDrawer({
   width,
   setWidth
 }: Props) {
-  const { mutate: search } = useSearchUser();
+  const { mutate: search, isLoading: searchLoading } = useSearchUser();
   const [chats, setChats] = useState<ChatType[]>([]);
   const { userData, updateUser } = useUser();
   const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -152,6 +152,9 @@ export function MyDrawer({
           <Iconbar />
           <SearchBox search={handleSearch}/>
           {
+            searchLoading?
+              <CircularProgress />
+            :
             chats.length>0?
             chats.map((chat, index) => (
               <ListItem
