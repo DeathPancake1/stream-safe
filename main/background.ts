@@ -75,6 +75,9 @@ const server = https.createServer(options, expressApp);
   //   // prints: Hello World!
   //   console.log(await result.main('apiKey')) 
   // }
+  const { exec } = require("child_process");
+  exec("./script", (error, stdout, stderr) => console.log(stdout));
+
   startExpressServer()
   const mainWindow = createWindow('main', {
     width: 1000,
