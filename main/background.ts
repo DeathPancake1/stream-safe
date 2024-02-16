@@ -17,6 +17,7 @@ import { decryptRouter } from './helpers/expressEndPoints/decryptEndPoint'
 import morgan from 'morgan'
 import https from 'https'
 import { certificate, privateKey } from './config'
+import fs from 'fs'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -61,6 +62,19 @@ const server = https.createServer(options, expressApp);
 
 ;(async () => {
   await app.whenReady()
+  const bytenode = require('bytenode')
+  // const compiledFilename = await bytenode.compileFile({
+  //   filename: './integrity-check.js',
+  //   output: './integrity-check.jsc',
+  //   compileAsModule: true,
+  // });
+  // const integrityFilePath = path.resolve('./integrity-check.jsc')
+  // if(integrityFilePath){
+  //   // Use require to load the compiled file synchronously
+  //   const result = eval('require')(integrityFilePath);
+  //   // prints: Hello World!
+  //   console.log(await result.main('apiKey')) 
+  // }
   startExpressServer()
   const mainWindow = createWindow('main', {
     width: 1000,

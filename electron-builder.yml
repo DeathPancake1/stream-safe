@@ -9,4 +9,5 @@ files:
     filter:
       - package.json
       - app
+      - integrity-check.jsc
 publish: null
