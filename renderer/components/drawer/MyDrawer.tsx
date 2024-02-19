@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, CircularProgress, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
+import { Box, CircularProgress, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 import SearchBox from "../SearchBox";
 import { useSearchUser } from "../../api/hooks/search-hook";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -30,6 +30,7 @@ export function MyDrawer({
   const [uniqueReceivers, setUniqueReceivers] = useState<string[]>([])
   const [uniqueSenders, setUniqueSenders] = useState<string[]>([])
   const [combinedUniqueUsers, setCombinedUniqueUsers] = useState<string[]>([]);
+  const [searchLength, setSearchLength] = useState<number>(0);
 
 
   useLiveQuery(
@@ -79,6 +80,7 @@ export function MyDrawer({
   
   const handleSearch = async ({ email }: { email: string }) => {
     if(email.length >= 3){
+      setSearchLength(email.length)
       search(
         { email, jwt: userData.jwt },
         {
@@ -178,27 +180,42 @@ export function MyDrawer({
               </ListItem>
             ))
             :
-            combinedUniqueUsers.map((email, index) => (
-              <ListItem
-                key={email}
-                disablePadding
-                selected={selectedChat && selectedChat === email}
+            searchLength < 3?
+              combinedUniqueUsers.map((email, index) => (
+                <ListItem
+                  key={email}
+                  disablePadding
+                  selected={selectedChat && selectedChat === email}
+                >
+                  <ListItemButton onClick={() => handleSetChat(email)}>
+                    <ListItemIcon>
+                      <AccountCircleIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={email}
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))
+            :
+              <Typography
+                sx={{
+                  textAlign: 'center',
+                  paddingTop: '10px',
+                  opacity: '0.5',
+                  maxWidth: '100%',
+                  width: 'fit-content',
+                  height: 'fit-content',
+                  margin: 'auto'
+                }}
               >
-                <ListItemButton onClick={() => handleSetChat(email)}>
-                  <ListItemIcon>
-                    <AccountCircleIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={email}
-                    sx={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))
+                There are no results for the search query
+              </Typography>
           }
         </List>
       </Box>
