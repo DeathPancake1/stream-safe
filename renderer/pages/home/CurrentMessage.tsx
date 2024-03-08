@@ -57,6 +57,7 @@ export default function CurrentMessage({
       const decryptedKey = await decryptAESHex(masterKey, encryptedKey)
       const originalFile = files[0];
       await encryptAndUpload(decryptedKey, originalFile, userData, chat, setIsUploadComplete);
+      setFiles([])
     };
     
     return (
@@ -67,7 +68,7 @@ export default function CurrentMessage({
           <UploadFile 
             fileList={files} 
             setFiles={setFiles}
-            maxSize={1024 * 1024 * 5000} // 5000 MB
+            maxSize={1024 * 1024 * 2000} // 2000 MB
             allowedTypes={
               videoTypes
             }

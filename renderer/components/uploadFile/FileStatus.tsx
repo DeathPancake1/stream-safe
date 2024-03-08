@@ -7,7 +7,7 @@ import {
     LinearProgress,
     Typography,
 } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -23,6 +23,8 @@ const FileStatus = ({
     removeFile,
     upload,
 }: FileStatusProps) => {
+
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     return (
         <Box
@@ -66,7 +68,18 @@ const FileStatus = ({
                 >
                     {file?.name}
                 </Typography>
-                <Button component="label" variant="contained" startIcon={<CloudUploadIcon />} onClick={()=>upload(file)} fullWidth>
+                <Button 
+                    component="label" 
+                    variant="contained" 
+                    startIcon={<CloudUploadIcon />} 
+                    disabled={isLoading}
+                    onClick={()=>{
+                        upload(file) 
+                        setIsLoading(true)
+                        }
+                    } 
+                    fullWidth
+                >
                     Upload file
                 </Button>
                 <Box
@@ -83,7 +96,7 @@ const FileStatus = ({
                         }}
                         width={'100%'}
                     >
-                        <LinearProgress />
+                        { isLoading && <LinearProgress /> }
                     </Typography>
                 </Box>
             </Box>
