@@ -1,4 +1,4 @@
-import { Box, IconButton, Slider } from "@mui/material";
+import { Box, IconButton, Slider, Typography } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
@@ -6,6 +6,7 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import CloseIcon from "@mui/icons-material/Close";
+import theme from "../../themes/theme";
 
 interface Props {
   visible: boolean;
@@ -93,6 +94,18 @@ export default function VideoPlayer({
     setDuration(newDuration);
   };
 
+  const formatTime = (timeInSeconds) => {
+    if (timeInSeconds === 0) {
+      return "00:00";
+    }
+  
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+  
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+  
+
   const controlsOverlay = (
     <Box
       sx={{
@@ -106,27 +119,71 @@ export default function VideoPlayer({
         backgroundColor: "rgba(0, 0, 0, 1)",
         padding: 0.5,
         zIndex: 2001,
+        flexDirection: "column"
       }}
     >
-      <IconButton
-        color="secondary"
-        onClick={() => setPlaying((prev) => !prev)}
+      <Box
+        sx={{
+          width: "95%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
       >
-        {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
-      </IconButton>
-      <IconButton
-        color="secondary"
-        onClick={() => setMuted((prev) => !prev)}
+        <Box
+          sx={{
+            opacity: "0"
+          }}
+        >
+          invisible
+        </Box>
+        <IconButton
+          color="secondary"
+          style={{
+            alignSelf: "center",
+            fontSize: "5rem"
+          }}
+          size={"large"}
+          onClick={() => setPlaying((prev) => !prev)}
+        >
+          {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
+        </IconButton>
+        <IconButton
+          color="secondary"
+          onClick={() => setMuted((prev) => !prev)}
+        >
+          {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+        </IconButton>
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row"
+        }}
       >
-        {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-      </IconButton>
-      <Slider
-        min={0}
-        max={duration || 0} // Use duration as the max value
-        value={currentTime}
-        onChange={handleSeek}
-        sx={{ color: "secondary.main", width: "200px" }}
-      />
+        <Typography variant="body2" color={theme.palette.secondary.main} mr={"1px"} ml={"3px"} fontSize={15}>
+          {
+            currentTime && formatTime(currentTime.toFixed(0))
+          }
+        </Typography>
+        <Slider
+          min={0}
+          max={duration || 0} // Use duration as the max value
+          value={currentTime}
+          onChange={handleSeek}
+          sx={{
+            color: "secondary.main",
+            width: "92%",
+            margin: "auto"
+          }}
+        />
+        <Typography variant="body2" color={theme.palette.secondary.main} mr={"3px"} ml={"1px"} fontSize={15}>
+          {
+            duration && formatTime(parseInt(duration.toFixed(0)))
+          }
+        </Typography>
+      </Box>
     </Box>
   );
 
@@ -137,13 +194,14 @@ export default function VideoPlayer({
         position: "absolute",
         top: 0,
         right: 0,
-        marginLeft: "auto",
-        marginRight: "auto",
         textAlign: "center",
         zIndex: 2000,
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         width: "100vw",
         height: "100vh",
+        padding: "0",
+        margin: "0",
+        overflow: "hidden"
       }}
     >
       <Box
