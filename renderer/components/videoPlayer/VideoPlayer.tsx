@@ -57,6 +57,15 @@ export default function VideoPlayer({
     };
   }, []);
 
+  useEffect(()=>{
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        handleClose()
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown)
+  }, [])
+
   useEffect(() => {
     // Create the blob URL when the component mounts
     if (videoUrl) {
