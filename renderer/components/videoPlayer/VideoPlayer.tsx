@@ -1,8 +1,8 @@
 import { Box, IconButton, Slider, Typography } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import CloseIcon from "@mui/icons-material/Close";
@@ -113,7 +113,7 @@ export default function VideoPlayer({
   
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
-  
+
 
   const controlsOverlay = (
     <Box
@@ -150,12 +150,12 @@ export default function VideoPlayer({
           color="secondary"
           style={{
             alignSelf: "center",
-            fontSize: "5rem"
+            fontSize: "50px"
           }}
           size={"large"}
           onClick={() => setPlaying((prev) => !prev)}
         >
-          {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
+          {playing ? <PauseIcon fontSize="large"/> : <PlayArrowIcon  fontSize="large"/> }
         </IconButton>
         <IconButton
           color="secondary"
@@ -171,9 +171,9 @@ export default function VideoPlayer({
           flexDirection: "row"
         }}
       >
-        <Typography variant="body2" color={theme.palette.secondary.main} mr={"1px"} ml={"3px"} fontSize={15}>
+        <Typography variant="body2" color={theme.palette.secondary.main} sx={{margin:"auto"}} fontSize={15}>
           {
-            currentTime && formatTime(currentTime.toFixed(0))
+            formatTime(parseInt(currentTime.toFixed(0))) || "00:00"
           }
         </Typography>
         <Slider
@@ -183,11 +183,11 @@ export default function VideoPlayer({
           onChange={handleSeek}
           sx={{
             color: "secondary.main",
-            width: "92%",
+            width: "85%",
             margin: "auto"
           }}
         />
-        <Typography variant="body2" color={theme.palette.secondary.main} mr={"3px"} ml={"1px"} fontSize={15}>
+        <Typography variant="body2" color={theme.palette.secondary.main} sx={{margin:"auto"}} fontSize={15}>
           {
             duration && formatTime(parseInt(duration.toFixed(0)))
           }
@@ -242,7 +242,10 @@ export default function VideoPlayer({
           onReady={() => {
             setPlayerReady(true);
           }}
-          onEnded={() => setPlaying(false)}
+          onEnded={() => {
+            setPlaying(false)
+            setCurrentTime(duration)
+          }}
           onProgress={(progress) =>
             setCurrentTime(Math.floor(progress.playedSeconds))
           }
