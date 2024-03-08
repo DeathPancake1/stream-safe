@@ -7,6 +7,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import CloseIcon from "@mui/icons-material/Close";
 import theme from "../../themes/theme";
+import { useUser } from "../../providers/UserContext";
 
 interface Props {
   visible: boolean;
@@ -29,7 +30,21 @@ export default function VideoPlayer({
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number | null>(null);
   const playerRef = useRef<ReactPlayer | null>(null);
+  const playerContainerRef = useRef(null);
   const seekTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const {userData, updateUser} = useUser()
+  const [position, setPosition] = useState({ top: '0%', left: '0%' });
+
+
+  const updatePosition = () => {
+    if (playerContainerRef.current) {
+      const playerRect = playerContainerRef.current.getBoundingClientRect()
+      setPosition({
+        top: `${Math.floor(Math.random() * (playerRect.bottom - 50 - playerRect.top + 1)) + playerRect.top}px`,
+        left: `${Math.floor(Math.random() * (playerRect.right - 200 - playerRect.left + 1)) + playerRect.left}px`,
+      });
+    }
+  };
 
   const handleClose = () => {
     setPlaying(false);
@@ -55,6 +70,12 @@ export default function VideoPlayer({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(updatePosition, 3000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(()=>{
@@ -114,6 +135,25 @@ export default function VideoPlayer({
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+  const watermarkOverlay = (
+    <Box
+      sx={{
+        position: "absolute",
+        left: position.left,
+        top: position.top,
+        zIndex: 2002,
+        backgroundColor: 'rgb(0, 0, 0, 0.7)',
+        width: "fit-content",
+        padding: "4px",
+        borderRadius: "2px",
+        cursor: "default"
+      }}
+    >
+      <Typography variant="body2" color={theme.palette.secondary.main} sx={{margin:"auto"}} fontSize={20}>
+        {userData.email}
+      </Typography>
+    </Box>
+  )
 
   const controlsOverlay = (
     <Box
@@ -231,26 +271,36 @@ export default function VideoPlayer({
         </IconButton>
       </Box>
       {controlsOverlay}
+      {watermarkOverlay}
       {videoUrl && (
-        <ReactPlayer
-          ref={playerRef}
-          width={"100%"}
-          height={"100%"}
-          url={blobUrl}
-          playing={playerReady && playing}
-          muted={muted}
-          onReady={() => {
-            setPlayerReady(true);
+        <Box 
+          ref={playerContainerRef} 
+          sx={{
+            width: "fit-content",
+            height: "fit-content",
+            margin: "auto"
           }}
-          onEnded={() => {
-            setPlaying(false)
-            setCurrentTime(duration)
-          }}
-          onProgress={(progress) =>
-            setCurrentTime(Math.floor(progress.playedSeconds))
-          }
-          onDuration={handleDuration}
-        />
+        >
+          <ReactPlayer
+            ref={playerRef}
+            width={"100%"}
+            height={"100%"}
+            url={blobUrl}
+            playing={playerReady && playing}
+            muted={muted}
+            onReady={() => {
+              setPlayerReady(true);
+            }}
+            onEnded={() => {
+              setPlaying(false)
+              setCurrentTime(duration)
+            }}
+            onProgress={(progress) =>
+              setCurrentTime(Math.floor(progress.playedSeconds))
+            }
+            onDuration={handleDuration}
+          />
+        </Box>
       )}
     </Box>
   );
