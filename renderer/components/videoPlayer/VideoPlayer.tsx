@@ -173,6 +173,26 @@ export default function VideoPlayer({
     >
       <Box
         sx={{
+          zIndex: 2002,
+          position: "fixed",
+          top: 0,
+          right: 0,
+          backgroundColor: 'rgb(0, 0, 0, 0.7)',
+          padding: "4px",
+          borderRadius: " 0 0 0 15px",
+        }}
+      >
+        <IconButton
+          onClick={handleClose}
+          size="large"
+          sx={{ width: 35, height: 35 }}
+          color="secondary"
+        >
+          <CloseIcon sx={{ width: 35, height: 35 }} />
+        </IconButton>
+      </Box>
+      <Box
+        sx={{
           width: "95%",
           display: "flex",
           justifyContent: "space-between",
@@ -253,23 +273,6 @@ export default function VideoPlayer({
         overflow: "hidden"
       }}
     >
-      <Box
-        sx={{
-          zIndex: 2002,
-          position: "absolute",
-          top: 0,
-          right: 0,
-        }}
-      >
-        <IconButton
-          onClick={handleClose}
-          size="large"
-          sx={{ width: 35, height: 35 }}
-          color="secondary"
-        >
-          <CloseIcon sx={{ width: 35, height: 35 }} />
-        </IconButton>
-      </Box>
       {controlsOverlay}
       {watermarkOverlay}
       {videoUrl && (
