@@ -56,6 +56,8 @@ export default function Iconbar(){
               sx={{
                 boxShadow: 'none'
               }}
+              // Untill the feature is implemented correctly
+              disabled
               onClick={openUnlockModal}
             >
               <LockOpenIcon />
