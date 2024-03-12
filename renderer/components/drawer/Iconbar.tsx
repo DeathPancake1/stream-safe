@@ -66,7 +66,7 @@ export default function Iconbar(){
           <Tooltip title="Refresh messages">
             <RefreshButton />
           </Tooltip>
-          <Tooltip title="Start new chat">
+          <Tooltip title="Start new channel">
             <AddButton />
           </Tooltip>
         </Box>

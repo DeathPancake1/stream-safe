@@ -74,7 +74,7 @@ export default function ChatBody({ chat }: Props) {
   const handleNewKey = async (keyExists: boolean)=>{
     if(!keyExists){
       const key = await generateConversationKey()
-      const id = await addKey(chat.email, key)
+      const id = await addKey(chat.email, key, 'user')
       await encryptAndSendSymmetricKey(key)
     }
   }
