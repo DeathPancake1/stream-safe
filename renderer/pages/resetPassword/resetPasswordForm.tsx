@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import { getResetPasswordFields } from "../../helpers/auth/resetPasswordFields"
 import React, { useState } from 'react';
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useChangePassword } from "../../api/hooks/auth-hook"
+import { useUser } from "../../providers/UserContext"
 
 
 interface FormData {
@@ -14,7 +16,9 @@ interface FormData {
 
 export default function ResetPasswordForm() {
     const router = useRouter()
+    const { mutate: changePassword, isLoading: sendVerifyLoading } = useChangePassword();
     const [open, setOpen] = useState<boolean>()
+    const {userData,updateUser}= useUser()
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         setOpen(false);
     };
@@ -31,11 +35,17 @@ export default function ResetPasswordForm() {
     })
 
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        setOpen(true); // alerts the user that the password is changed
-        setTimeout(() => {
-            setOpen(false); 
-            router.push('/login'); 
-          }, 1000);
+        changePassword({email: userData.email, password: data.password},
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200) {
+                        router.push('/login');
+                    }
+                    else{
+                        setOpen(true)
+                    }
+                }
+                })
     }
 
     const fields = getResetPasswordFields(errors, watch)
@@ -55,18 +65,18 @@ export default function ResetPasswordForm() {
         }}
         >
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="success" 
-                sx={{
-                    width: '100%',
-                    backgroundColor: '#4CAF50',
-                    color: '#FFF', 
-                    display: 'flex',
-                    alignItems: 'center'
-                    }}
-                action={
-                <CheckCircleIcon fontSize="inherit" sx={{ marginRight: 0.5 }} />} >
-                Password Changed Successfully
-            </Alert>
+                <Alert onClose={handleClose} severity="success" 
+                    sx={{
+                        width: '100%',
+                        backgroundColor: '#4CAF50',
+                        color: '#FFF', 
+                        display: 'flex',
+                        alignItems: 'center'
+                        }}
+                    action={
+                    <CheckCircleIcon fontSize="inherit" sx={{ marginRight: 0.5 }} />} >
+                    couldn't change password
+                </Alert>
             </Snackbar>
             <form 
                 onSubmit={handleSubmit(onSubmit)}

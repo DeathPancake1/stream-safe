@@ -2,6 +2,9 @@ import axios from "axios";
 import SignupType from '../../types/signup-type'
 import SigninType from '../../types/signin-type'
 import * as dotenv from 'dotenv'
+import SendVerMail from "../../types/send-verify";
+import receiveOTP from "../../types/receive-otp";
+import changePassword from "../../types/change-password";
 
 dotenv.config()
 axios.defaults.headers.common['api-key']=`${process.env.API_KEY}`
@@ -40,6 +43,56 @@ class AuthService {
         }
     }
     
+  }
+
+    /**
+   *POST sendVerMail
+   * @returns
+   */
+   async sendVerMail(data: SendVerMail) {
+    try{
+      const res = await axios.post(`${process.env.API_URL}/user/sendVerMail`, data);
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+        }
+    }
+    
+  }
+
+
+      /**
+   *POST receiveOTP
+   * @returns
+   */
+   async receiveOTP(data: receiveOTP) {
+    try{
+      const res = await axios.post(`${process.env.API_URL}/user/receiveOTP`, data);
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+        }
+    }
+  }
+
+    /**
+   *POST changePassword
+   * @returns
+   */
+   async changePassword(data: changePassword) {
+    try{
+      const res = await axios.post(`${process.env.API_URL}/user/changePassword`, data);
+      return res;
+    }catch(error){
+      return {
+          status: 401,
+          data: ''
+        }
+    }
   }
 
 }

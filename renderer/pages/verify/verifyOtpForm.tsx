@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
-import { Box, Button, Link, Typography } from "@mui/material"
+import { Alert, Box, Button, Link, Snackbar, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useRouter } from 'next/router'
+import { useReceiveOTP, useSendVer } from '../../api/hooks/auth-hook';
+import { useUser } from '../../providers/UserContext';
+
 
 interface FormData {
     otp: string
 }
 
+
 export default function VerifyOtpForm() {
     const [otp, setOtp] = useState('');
     const router = useRouter()
-    const [timer, setTimer] = useState(60);
+    const [timer, setTimer] = useState(120);
     const [isTimerActive, setIsTimerActive] = useState(true);
+    const { mutate: receiveOTP, isLoading: receiveOTPLoading } = useReceiveOTP();
+    const { mutate: sendVerify, isLoading: sendVerifyLoading } = useSendVer();
+    const {userData,updateUser}= useUser()
+    const [open, setOpen] = useState<boolean>()
+    const [openOTP6, setOpenOTP6] = useState<boolean>()
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        setOpen(false);
+    };
+
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -38,12 +51,21 @@ export default function VerifyOtpForm() {
     const onSubmit = async (event) => {
         event.preventDefault()
         if(otp.length===6){
-            console.log(otp)
-            router.push('/resetPassword');
-        }else{
-            console.log('error')
+            receiveOTP({email:userData.email , otp:otp},
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200) {
+                        router.push('/resetPassword');
+                    }
+                    else{
+                        setOpen(true)
+                    }
+                }
+                })
         }
-        
+        else{
+            setOpenOTP6(true)
+        }
     }
 
     const goBack = () => {
@@ -51,9 +73,13 @@ export default function VerifyOtpForm() {
     };
 
     const handleSendAgain = (event) => {
-        setTimer(60); 
+        setTimer(120); 
         setIsTimerActive(true);
-        onSubmit(event);
+        sendVerify({email : userData.email},
+            {
+            onSuccess: (response) => {
+            }
+          })
     };
     
     return (
@@ -66,6 +92,12 @@ export default function VerifyOtpForm() {
                 flexDirection: 'column'
             }}
         >
+            <Snackbar open={openOTP6} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>OTP less than 6 digits!</Alert>
+            </Snackbar> 
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>invalid OTP</Alert>
+            </Snackbar> 
             <form onSubmit={onSubmit}>
                 <Typography variant="h4" align="center" sx={{ marginBottom: '20px' }}>
                     Verify

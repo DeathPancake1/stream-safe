@@ -1,19 +1,29 @@
 "use client"
 
-import { Box, Button, Typography } from "@mui/material"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Alert, Box, Button, Snackbar, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Field from "../../components/auth/Field"
 import { useRouter } from 'next/router'
 import { getForgetPasswordFields } from "../../helpers/auth/forgetPasswordFields"
+import { useSendVer } from "../../api/hooks/auth-hook"
+import { useState } from "react"
+import { useUser } from "../../providers/UserContext";
 
 interface FormData {
     email: string
 }
 
 export default function ForgetPasswordForm() {
-    
+    const { mutate: sendVerify, isLoading: sendVerifyLoading } = useSendVer();
+    const [open, setOpen] = useState<boolean>()
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        setOpen(false);
+    };
     const router = useRouter()
+    const {userData,updateUser}= useUser()
 
+    
     const {
         handleSubmit,
         formState: { errors },
@@ -25,7 +35,18 @@ export default function ForgetPasswordForm() {
     })
 
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        router.push('/verify');
+        sendVerify({email : data.email},
+            {
+            onSuccess: (response) => {
+              if (response.status === 201) {
+                updateUser(data.email,"")
+                router.push('/verify');
+              }
+              else{
+                setOpen(true)
+              }
+            }
+          })
     }
 
     const fields = getForgetPasswordFields(errors)
@@ -44,6 +65,9 @@ export default function ForgetPasswordForm() {
                 flexDirection: 'column'
             }}
         >
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Couldn't find the email</Alert>
+        </Snackbar>
         <form 
                 onSubmit={handleSubmit(onSubmit)}
             >
