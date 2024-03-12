@@ -1,0 +1,121 @@
+.container {
+    display: grid;
+    place-items: center;
+    max-height: 100%;  /* Adjust this to fit your layout */
+}
+.homeBody {
+    background: url('background.png') no-repeat center center fixed;
+    background-size: cover;
+}
+.faqBody{
+    background: url('faq.png') no-repeat center center fixed;
+    background-size: cover;
+}
+.txtfont{
+    height: 100vh; 
+    font-size: larger; 
+    margin-top: 3%;
+    align-items: center;
+    justify-content: center;
+}
+.footerCss{
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); 
+    margin-top: 5%;
+    background-color: #000000c9; 
+    color: #fbfbfb;
+}
+
+.streamNav{
+    padding-left: 3%;
+}
+.streamNav:hover{
+    color: black;
+}
+#navbarNav{
+    padding-right: 3%;
+}
+.ssn{
+    margin-top: 30px;
+}
+.downloadBtn{
+    color: white;
+    background-color: black;
+}
+
+.nav-link, .streamNav {
+    color: black;
+    position: relative;
+    text-decoration: none;
+  }
+  
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background-color: #18272F;
+    bottom: 0;
+    left: 0;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform .3s ease-in-out;
+  }
+  
+  .nav-link:hover::before {
+    transform-origin: left;
+    transform: scaleX(1);
+  }
+
+  .nav-link:hover{
+    color: rgba(27, 25, 25, 0.573)
+  }
+
+li{
+    margin-top: 3%;
+}
+.downloadButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 15px;
+    color: white;
+    background-color: #181717;
+    outline: 3px #181717 solid;
+    outline-offset: -3px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 400ms;
+    width: 100%;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .downloadButton .text {
+    color: white;
+    font-weight: 700;
+    font-size: 4em;
+    transition: 400ms;
+  }
+  
+  .downloadButton svg path {
+    transition: 400ms;
+  }
+  
+  .downloadButton:hover {
+    background-color: white;
+    color: black;
+  }
+  
+  .downloadButton:hover svg path {
+    fill: black;
+  }
+
+  .accordion-button{
+    font-size: 20px;
+  }
+  .accordion-item{
+    margin-bottom: 10%;
+  }
