@@ -39,7 +39,11 @@ contextBridge.exposeInMainWorld('electron', {
     },
     encryptSymmetricAESHex: (keyHex: string, plaintext: string) =>{
       return ipcRenderer.invoke('encrypt-symmetric-AES-hex', keyHex, plaintext);
+    },
+    encryptSymmetricAESChannel: (keyHex: string, filePath: string, channelId: string, fileName: string, apiUrl: string, apiKey: string, jwt: string, type: string) =>{
+      return ipcRenderer.invoke('encrypt-symmetric-AES-channel', keyHex, filePath, channelId, fileName, apiUrl, apiKey, jwt, type);
     }
+
   },
   fileSystem: {
     writeFile: (user1Email: string, user2Email: string, fileName: string, jwt: string, url: string, apiKey: string, path: string) =>{

@@ -93,7 +93,8 @@ export function MyDrawer({
           return {
             name: channel.name,
             channelId: channel.channelId,
-            ownerEmail: channel.ownerEmail
+            ownerEmail: channel.ownerEmail,
+            key: channel.channelKey
           };
       })));
       
@@ -141,7 +142,6 @@ export function MyDrawer({
   const handleSetChannel = (channel: ChannelType) => {
     setSelectedType(ChatTypeEnum.channel)
     setSelectedChannel(channel);
-    console.log(channel)
   };
 
   const handleMouseDown = (event) => {

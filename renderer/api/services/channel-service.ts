@@ -29,6 +29,28 @@ class ChannelService {
     
   }
 
+  /**
+   *POST channel/addMembers
+   * @returns
+   */
+   async addMembers(data: {channelId: string, newMembers: string[], jwt: string}) {
+    try{
+        axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
+        const res = await axios.post(`${process.env.API_URL}/channel/addMembers`, 
+        {
+            channelId: data.channelId,
+            newMemberEmail: data.newMembers,
+        });
+        return res;
+    }catch(error){
+        return {
+            status: 401,
+            data: ''
+        }
+    }
+    
+  }
+
 }
 
 export default new ChannelService();

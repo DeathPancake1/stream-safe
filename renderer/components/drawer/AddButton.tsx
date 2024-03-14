@@ -8,7 +8,7 @@ import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric
 import { useCreateChannel } from "../../api/hooks/channel-hook";
 import { useUser } from "../../providers/UserContext";
 import { addKey } from "../../indexedDB";
-import { addChannel } from "../../indexedDB/channel.db";
+import { addChannel } from "../../indexedDB";
 
 interface FormData {
     title: string
