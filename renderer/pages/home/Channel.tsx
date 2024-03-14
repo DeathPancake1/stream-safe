@@ -1,4 +1,4 @@
-import { Box, Divider, Typography, Button } from "@mui/material";
+import { Box, Divider, Typography, Button, Popover } from "@mui/material";
 import Welcome from "../../components/auth/Welcome";
 import ChatBody from "./ChatBody";
 import ChatType from "../../types/chat-type";
@@ -8,6 +8,7 @@ import { useUser } from "../../providers/UserContext";
 import ChannelType from "../../types/channel-type";
 import ChannelCurrentMessage from "./ChannelCurrentMessage";
 import ChannelBody from "./ChannelBody";
+import React from "react";
 
 interface Props {
   channel?: ChannelType
@@ -23,6 +24,18 @@ export default function Channel({
 }: Props) {
 
   const {userData, updateUser}= useUser()
+  const [openPopover, setOpenPopover] = useState<boolean>(false)
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+  const handleOpenPopover = (event)=>{
+    setAnchorEl(event.currentTarget);
+    setOpenPopover(true)
+  }
+
+  const handleClose = (event)=>{
+    setAnchorEl(null)
+    setOpenPopover(false)
+  }
   
   return (
     <Box sx={{ maxWidth: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -37,11 +50,27 @@ export default function Channel({
             height: "100%",
           }}
         >
-          <Box>
+          <Box
+            onClick={handleOpenPopover}
+            sx={{
+              cursor: 'pointer'
+            }}
+          >
               <Typography fontSize={24}>{channel.name}</Typography>
               <Typography fontSize={12}>{"Owner Email: " + channel.ownerEmail}</Typography>
               <Divider />
           </Box>
+          <Popover
+            open={openPopover}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
+          </Popover>
         
 
           {/* Display the exchanged messages */}
