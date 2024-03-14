@@ -36,7 +36,7 @@ export default function RefreshButton(){
           
           const privateKey = getPrivateKey();
           const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-          const id = addKey(senderEmail, decryptedKey, 'user');
+          const id = addKey(senderEmail, decryptedKey);
       });
     };
   

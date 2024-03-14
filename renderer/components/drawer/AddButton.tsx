@@ -8,6 +8,7 @@ import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric
 import { useCreateChannel } from "../../api/hooks/channel-hook";
 import { useUser } from "../../providers/UserContext";
 import { addKey } from "../../indexedDB";
+import { addChannel } from "../../indexedDB/channel.db";
 
 interface FormData {
     title: string
@@ -52,9 +53,9 @@ export default function AddButton(){
             },
             {
                 onSuccess: (response)=>{
-                    addKey(response.data, channelSymmetricKey, 'channel')
+                    addChannel(data.title, response.data, channelSymmetricKey, userData.email, userData.email)
                     handleCloseModal()
-                }
+                } 
             }
         )
         

@@ -3,22 +3,35 @@ import { Box, CircularProgress, Divider, Drawer, List, ListItem, ListItemButton,
 import SearchBox from "../SearchBox";
 import { useSearchUser } from "../../api/hooks/search-hook";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GroupsIcon from '@mui/icons-material/Groups';
 import ChatType from "../../types/chat-type";
 import { useUser } from "../../providers/UserContext";
 import Iconbar from "./Iconbar";
 import { useLiveQuery } from "dexie-react-hooks";
 import { videosDB } from "../../indexedDB";
+import { channelsDB } from "../../indexedDB/channel.db";
+import ChannelType from "../../types/channel-type";
+import { ChatTypeEnum } from "../../types/chat-type-enum";
+import theme from "../../themes/theme";
 
 interface Props {
   selectedChat: string,
+  selectedType: ChatTypeEnum,
+  selectedChannel: ChannelType
   setSelectedChat: (email: string) => void,
+  setSelectedChannel: (channel: ChannelType) => void,
+  setSelectedType: (type: ChatTypeEnum) => void,
   width: number,
   setWidth: (width: number)=>void
 }
 
 export function MyDrawer({
   selectedChat,
+  selectedChannel,
+  selectedType,
   setSelectedChat,
+  setSelectedChannel,
+  setSelectedType,
   width,
   setWidth
 }: Props) {
@@ -31,6 +44,7 @@ export function MyDrawer({
   const [uniqueSenders, setUniqueSenders] = useState<string[]>([])
   const [combinedUniqueUsers, setCombinedUniqueUsers] = useState<string[]>([]);
   const [searchLength, setSearchLength] = useState<number>(0);
+  const [channels, setChannels] = useState<ChannelType[]>();
 
 
   useLiveQuery(
@@ -67,6 +81,26 @@ export function MyDrawer({
     },
     [userData.email]
   );
+
+  useLiveQuery(
+    async () => {
+      const channelsFromDb = await channelsDB.channels
+        .where('userEmail')
+        .equalsIgnoreCase(userData.email)
+        .sortBy('date');
+
+      const uniqueChannel = Array.from(new Set(channelsFromDb.map((channel) => {
+          return {
+            name: channel.name,
+            channelId: channel.channelId,
+            ownerEmail: channel.ownerEmail
+          };
+      })));
+      
+      setChannels(uniqueChannel)
+    },
+    [userData.email]
+  );
   
   const getLatestMessageTimeForUser = (user, messages) => {
     const latestMessage = messages
@@ -79,8 +113,8 @@ export function MyDrawer({
   
   
   const handleSearch = async ({ email }: { email: string }) => {
+    setSearchLength(email.length)
     if(email.length >= 3){
-      setSearchLength(email.length)
       search(
         { email, jwt: userData.jwt },
         {
@@ -98,7 +132,16 @@ export function MyDrawer({
   };
 
   const handleSetChat = (email: string) => {
+    setSelectedType(ChatTypeEnum.chat)
     setSelectedChat(email);
+    console.log(email)
+  };
+
+
+  const handleSetChannel = (channel: ChannelType) => {
+    setSelectedType(ChatTypeEnum.channel)
+    setSelectedChannel(channel);
+    console.log(channel)
   };
 
   const handleMouseDown = (event) => {
@@ -153,6 +196,49 @@ export function MyDrawer({
           <Divider />
           <Iconbar />
           <SearchBox search={handleSearch}/>
+          <Typography
+            sx={{
+              textAlign: 'center'
+            }}
+            fontSize={12}
+            color={theme.palette.grey[400]}
+          >
+            Channels
+          </Typography>
+          {
+            (channels && channels.map((channel, index) => (
+              <ListItem
+                key={index}
+                disablePadding
+              >
+                <ListItemButton 
+                  selected={selectedChannel && selectedChannel === channel && selectedType === ChatTypeEnum.channel} 
+                  onClick={() => handleSetChannel(channel)}
+                >
+                  <ListItemIcon>
+                    <GroupsIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={channel.name}
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )))
+          }
+          <Typography
+            sx={{
+              textAlign: 'center'
+            }}
+            fontSize={12}
+            color={theme.palette.grey[400]}
+          >
+            Chats
+          </Typography>
           {
             searchLoading?
               <CircularProgress />
@@ -185,9 +271,11 @@ export function MyDrawer({
                 <ListItem
                   key={email}
                   disablePadding
-                  selected={selectedChat && selectedChat === email}
                 >
-                  <ListItemButton onClick={() => handleSetChat(email)}>
+                  <ListItemButton 
+                    selected = {selectedChat && selectedChat === email && selectedType === ChatTypeEnum.chat} 
+                    onClick={() => handleSetChat(email)}
+                  >
                     <ListItemIcon>
                       <AccountCircleIcon />
                     </ListItemIcon>

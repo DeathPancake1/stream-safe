@@ -28,13 +28,13 @@ export const useHomeLogic = ()=>{
                 
                 const privateKey = getPrivateKey();
                 const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-                const id = addKey(senderEmail, decryptedKey, 'user');
+                const id = addKey(senderEmail, decryptedKey);
             }else{
                 const channelId = key.channelId
                 const encryptedKey = key.encryptedKey;
                 const privateKey = getPrivateKey();
                 const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-                const id = addKey(channelId, decryptedKey, 'channel');
+                const id = addKey(channelId, decryptedKey);
             }
             
         });
