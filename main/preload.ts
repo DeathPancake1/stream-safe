@@ -48,6 +48,9 @@ contextBridge.exposeInMainWorld('electron', {
   fileSystem: {
     writeFile: (user1Email: string, user2Email: string, fileName: string, jwt: string, url: string, apiKey: string, path: string) =>{
       return ipcRenderer.invoke('write-file', user1Email, user2Email, fileName, jwt, url, apiKey, path);
+    },
+    writeFileChannel: (channelId, fileName: string, jwt: string, url: string, apiKey: string, path: string) =>{
+      return ipcRenderer.invoke('write-file-channel', channelId, fileName, jwt, url, apiKey, path);
     }
   }
 });

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
 import ChannelType from "../../types/channel-type";
 import ChannelCurrentMessage from "./ChannelCurrentMessage";
+import ChannelBody from "./ChannelBody";
 
 interface Props {
   channel?: ChannelType
@@ -52,7 +53,7 @@ export default function Channel({
                 width: "100%",
               }}
           >
-              {/* <ChatBody chat={chat}/> */}
+              <ChannelBody channel={channel}/>
           </Box>
 
           {/* Divider */}

@@ -135,7 +135,6 @@ export function MyDrawer({
   const handleSetChat = (email: string) => {
     setSelectedType(ChatTypeEnum.chat)
     setSelectedChat(email);
-    console.log(email)
   };
 
 

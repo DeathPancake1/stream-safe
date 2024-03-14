@@ -10,14 +10,14 @@ import {
   handleDecryptSymmetricAESHex, 
   handleEncryptSymmetricAES, 
   handleEncryptSymmetricAESChannel, 
-  handleEncryptSymmetricAESHex 
 } from './helpers/cryptography'
-import { writeFile } from './helpers/files'
+import { writeFile, writeFileChannel } from './helpers/files'
 import express from 'express'
 import { decryptRouter } from './helpers/expressEndPoints/decryptEndPoint'
 import morgan from 'morgan'
 import https from 'https'
 import { certificate, privateKey } from './config'
+import {decryptChannelRouter} from './helpers/expressEndPoints/decryptEndPointChannel'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -31,7 +31,7 @@ const expressApp = express();
 const port = 3171;
 
 expressApp.use(decryptRouter);
-
+expressApp.use(decryptChannelRouter);
 
 
 const startExpressServer = () => {
@@ -48,6 +48,7 @@ ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
 ipcMain.handle('decrypt-symmetric-AES-hex', handleDecryptSymmetricAESHex);
 ipcMain.handle('encrypt-symmetric-AES-channel', handleEncryptSymmetricAESChannel);
 ipcMain.handle('write-file', writeFile)
+ipcMain.handle('write-file-channel', writeFileChannel)
 
 expressApp.use(morgan("dev"));
 
