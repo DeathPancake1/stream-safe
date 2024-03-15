@@ -1,14 +1,12 @@
 import { Box, Divider, Typography, Button, Popover } from "@mui/material";
 import Welcome from "../../components/auth/Welcome";
-import ChatBody from "./ChatBody";
-import ChatType from "../../types/chat-type";
-import CurrentMessage from "./CurrentMessage";
 import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
 import ChannelType from "../../types/channel-type";
 import ChannelCurrentMessage from "./ChannelCurrentMessage";
 import ChannelBody from "./ChannelBody";
 import React from "react";
+import MembersPopover from "./MembersPopover";
 
 interface Props {
   channel?: ChannelType
@@ -60,17 +58,12 @@ export default function Channel({
               <Typography fontSize={12}>{"Owner Email: " + channel.ownerEmail}</Typography>
               <Divider />
           </Box>
-          <Popover
-            open={openPopover}
+          <MembersPopover 
             anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-          >
-            <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-          </Popover>
+            openPopover={openPopover}
+            handleClose={handleClose}
+            channelId={channel.channelId}
+          />
         
 
           {/* Display the exchanged messages */}

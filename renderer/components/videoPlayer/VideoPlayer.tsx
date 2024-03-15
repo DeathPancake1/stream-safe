@@ -42,6 +42,7 @@ export default function VideoPlayer({
 
 
   useEffect(() => {
+    updatePosition()
     const intervalId = setInterval(updatePosition, 3000);
 
     return () => clearInterval(intervalId);

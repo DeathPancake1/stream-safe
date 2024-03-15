@@ -41,8 +41,22 @@ const useGetMessagesFromChannel = () =>{
     )
 }
 
+const useGetMembers = () =>{
+    return useMutation(
+        async (data: {channelId: string, jwt: string})=>{
+            return await channelService.getMembers(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
 export {
     useCreateChannel,
     useAddMembers,
-    useGetMessagesFromChannel
+    useGetMessagesFromChannel,
+    useGetMembers
 }
