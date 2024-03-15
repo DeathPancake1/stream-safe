@@ -9,7 +9,8 @@ import {
   generateSymmetric, 
   handleDecryptSymmetricAESHex, 
   handleEncryptSymmetricAES, 
-  handleEncryptSymmetricAESChannel, 
+  handleEncryptSymmetricAESChannel,
+  handleEncryptSymmetricAESHex, 
 } from './helpers/cryptography'
 import { writeFile, writeFileChannel } from './helpers/files'
 import express from 'express'
@@ -48,6 +49,7 @@ ipcMain.handle('encrypt-symmetric-AES', handleEncryptSymmetricAES);
 ipcMain.handle('decrypt-symmetric-AES-hex', handleDecryptSymmetricAESHex);
 ipcMain.handle('encrypt-symmetric-AES-channel', handleEncryptSymmetricAESChannel);
 ipcMain.handle('write-file', writeFile)
+ipcMain.handle('encrypt-symmetric-AES-hex', handleEncryptSymmetricAESHex);
 ipcMain.handle('write-file-channel', writeFileChannel)
 
 expressApp.use(morgan("dev"));

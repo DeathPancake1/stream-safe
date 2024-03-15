@@ -85,35 +85,36 @@ export default function MembersPopover({
 
     const handleAddMember = async (newMember) =>{
         let chat: ChatType
-        await findUnique(
+        findUnique(
             {
                 email: newMember,
                 jwt: userData.jwt
             },
             {
-                onSuccess: (response) =>{
+                onSuccess: async (response) =>{
                     chat = response.data
+                    const masterKey = secureLocalStorage.getItem('masterKey').toString()
+                    const decryptedKey = await decryptAESHex(masterKey, channel.key)
+                    const encryptedWithPublic = await encryptPublic(chat.publicKey, decryptedKey)
+                    await addMember(
+                        {
+                            channelId: channel.channelId,
+                            newMember,
+                            key: encryptedWithPublic,
+                            jwt: userData.jwt
+                        },
+                        {
+                            onSuccess(response) {
+                                fetchMembers()
+                                setSearchChats([])
+                                setSearchLength(0)
+                            },
+                        }
+                    )
                 }
             }
         )
-        const masterKey = secureLocalStorage.getItem('masterKey').toString()
-        const decryptedKey = await decryptAESHex(masterKey, channel.key)
-        const encryptedWithPublic = await encryptPublic(chat.publicKey, decryptedKey)
-        addMember(
-            {
-                channelId: channel.channelId,
-                newMember,
-                key: encryptedWithPublic,
-                jwt: userData.jwt
-            },
-            {
-                onSuccess(response) {
-                    fetchMembers()
-                    setSearchChats([])
-                    setSearchLength(0)
-                },
-            }
-        )
+        
     }
 
     return (

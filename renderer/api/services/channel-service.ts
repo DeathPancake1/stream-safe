@@ -39,6 +39,7 @@ class ChannelService {
             const res = await axios.post(`${process.env.API_URL}/channel/addMember`, 
             {
                 channelId: data.channelId,
+                key: data.key,
                 newMemberEmails: data.newMember,
             });
             return res;
