@@ -11,7 +11,7 @@ import { useGetNewMessages } from "../../api/hooks/messages-hook";
 import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import secureLocalStorage from "react-secure-storage";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
-import { addKey, addVideo } from "../../indexedDB";
+import { addChannel, addKey, addVideo } from "../../indexedDB";
 import { Fab } from '@mui/material';
 
 export default function RefreshButton(){
@@ -30,13 +30,24 @@ export default function RefreshButton(){
   
     const processReceivedKeys = (response) => {
       const newKeys = response.data;
+      console.log(newKeys)
       newKeys.forEach(async (key) => {
-          const senderEmail = key.senderEmail;
-          const encryptedKey = key.encryptedKey;
+          if(key.type === "USER"){
+              const senderEmail = key.senderEmail;
+              const encryptedKey = key.encryptedKey;
+              
+              const privateKey = getPrivateKey();
+              const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
+              const id = addKey(senderEmail, decryptedKey);
+          }else{
+              const channelId = key.channelId
+              const encryptedKey = key.encryptedKey;
+              const privateKey = getPrivateKey();
+              const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
+              const channel = key.channel
+              const id = addChannel(channel.title, channelId, decryptedKey, key.senderEmail, userData.email);
+          }
           
-          const privateKey = getPrivateKey();
-          const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-          const id = addKey(senderEmail, decryptedKey);
       });
     };
   
