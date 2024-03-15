@@ -7,6 +7,7 @@ import ChannelCurrentMessage from "./ChannelCurrentMessage";
 import ChannelBody from "./ChannelBody";
 import React from "react";
 import MembersPopover from "./MembersPopover";
+import theme from "../../themes/theme";
 
 interface Props {
   channel?: ChannelType
@@ -26,8 +27,10 @@ export default function Channel({
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = (event)=>{
-    setAnchorEl(event.currentTarget);
-    setOpenPopover(true)
+    if(channel.ownerEmail === userData.email){
+      setAnchorEl(event.currentTarget);
+      setOpenPopover(true)
+    }
   }
 
   const handleClose = (event)=>{
@@ -51,10 +54,11 @@ export default function Channel({
           <Box
             onClick={handleOpenPopover}
             sx={{
-              cursor: 'pointer'
+              cursor: channel.ownerEmail === userData.email? 'pointer' : 'default'
             }}
           >
               <Typography fontSize={24}>{channel.name}</Typography>
+              <Typography fontSize={10} color={theme.palette.grey[700]}>{"Click for more info"}</Typography>
               <Typography fontSize={12}>{"Owner Email: " + channel.ownerEmail}</Typography>
               <Divider />
           </Box>
