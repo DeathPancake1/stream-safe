@@ -22,12 +22,21 @@ export const useHomeLogic = ()=>{
     const processReceivedKeys = (response) => {
         const newKeys = response.data;
         newKeys.forEach(async (key) => {
-            const senderEmail = key.senderEmail;
-            const encryptedKey = key.encryptedKey;
+            if(key.type === "USER"){
+                const senderEmail = key.senderEmail;
+                const encryptedKey = key.encryptedKey;
+                
+                const privateKey = getPrivateKey();
+                const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
+                const id = addKey(senderEmail, decryptedKey, 'user');
+            }else{
+                const channelId = key.channelId
+                const encryptedKey = key.encryptedKey;
+                const privateKey = getPrivateKey();
+                const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
+                const id = addKey(channelId, decryptedKey, 'channel');
+            }
             
-            const privateKey = getPrivateKey();
-            const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-            const id = addKey(senderEmail, decryptedKey);
         });
     };
 
