@@ -62,7 +62,7 @@ export default function Channel({
             anchorEl={anchorEl}
             openPopover={openPopover}
             handleClose={handleClose}
-            channelId={channel.channelId}
+            channel={channel}
           />
         
 

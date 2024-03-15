@@ -4,23 +4,27 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import SearchBox from "../../components/SearchBox";
 import { useEffect, useState } from "react";
-import { useSearchUser } from "../../api/hooks/search-hook";
+import { useFindEmail, useSearchUser } from "../../api/hooks/search-hook";
 import { useUser } from "../../providers/UserContext";
 import ChatType from "../../types/chat-type";
 import { useAddMembers, useGetMembers } from "../../api/hooks/channel-hook";
+import encryptPublic from "../../helpers/keyExchange/encryptPublic";
+import ChannelType from "../../types/channel-type";
+import secureLocalStorage from "react-secure-storage";
+import decryptAESHex from "../../helpers/decryption/decryptAESHex";
 
 interface Props{
     openPopover: boolean
     anchorEl: HTMLButtonElement | null
     handleClose: (event: any)=> void
-    channelId: string
+    channel: ChannelType
 }
 
 export default function MembersPopover({
     openPopover,
     anchorEl,
     handleClose,
-    channelId
+    channel
 }: Props){
     const [searchLength, setSearchLength] = useState<number>(0)
     const {userData, updateUser} = useUser()
@@ -30,11 +34,12 @@ export default function MembersPopover({
     const { mutate: search, isLoading: searchLoading } = useSearchUser();
     const { mutate: getMembers, isLoading: isLoadingMembers } = useGetMembers();
     const { mutate: addMember } = useAddMembers()
+    const { mutate: findUnique } = useFindEmail()
 
     const fetchMembers = async () => {
         await getMembers(
             {
-                channelId,
+                channelId: channel.channelId,
                 jwt: userData.jwt
             },
             {
@@ -48,7 +53,7 @@ export default function MembersPopover({
 
     useEffect(() => {
         fetchMembers();
-    }, [channelId, getMembers, userData.jwt, openPopover]);
+    }, [channel, getMembers, userData.jwt, openPopover]);
 
     
 
@@ -78,12 +83,27 @@ export default function MembersPopover({
         }
     };
 
-    const handleAddMembers = async (email) =>{
-        const newMembers = [email]
+    const handleAddMember = async (newMember) =>{
+        let chat: ChatType
+        await findUnique(
+            {
+                email: newMember,
+                jwt: userData.jwt
+            },
+            {
+                onSuccess: (response) =>{
+                    chat = response.data
+                }
+            }
+        )
+        const masterKey = secureLocalStorage.getItem('masterKey').toString()
+        const decryptedKey = await decryptAESHex(masterKey, channel.key)
+        const encryptedWithPublic = await encryptPublic(chat.publicKey, decryptedKey)
         addMember(
             {
-                channelId,
-                newMembers,
+                channelId: channel.channelId,
+                newMember,
+                key: encryptedWithPublic,
                 jwt: userData.jwt
             },
             {
@@ -159,7 +179,7 @@ export default function MembersPopover({
                         />
                         <IconButton
                             onClick={
-                                ()=>handleAddMembers(chat.email)
+                                ()=>handleAddMember(chat.email)
                             }
                         >
                             <AddIcon />

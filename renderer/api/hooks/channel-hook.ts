@@ -17,8 +17,8 @@ const useCreateChannel = ()=>{
 
 const useAddMembers = () =>{
     return useMutation(
-        async (data: {channelId: string, newMembers: string[], jwt: string})=>{
-            return await channelService.addMembers(data)
+        async (data: {channelId: string, newMember: string, key: string, jwt: string})=>{
+            return await channelService.addMember(data)
         },
         {
             onSuccess: (response)=>{

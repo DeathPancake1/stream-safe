@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { addKey, addVideo } from "../../../indexedDB"
+import { addChannel, addKey, addVideo } from "../../../indexedDB"
 import decryptPrivate from "../../keyExchange/decryptPrivate"
 import formatPrivateKey from "../../keyExchange/formatPrivate"
 import secureLocalStorage from "react-secure-storage"
@@ -34,7 +34,8 @@ export const useHomeLogic = ()=>{
                 const encryptedKey = key.encryptedKey;
                 const privateKey = getPrivateKey();
                 const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
-                const id = addKey(channelId, decryptedKey);
+                const channel = key.channel
+                const id = addChannel(channel.name, channelId, decryptedKey, channel.ownerEmail, userData.email);
             }
             
         });

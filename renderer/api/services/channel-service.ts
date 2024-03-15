@@ -30,16 +30,16 @@ class ChannelService {
     }
 
     /**
-     *POST channel/addMembers
+     *POST channel/addMember
     * @returns
     */
-    async addMembers(data: {channelId: string, newMembers: string[], jwt: string}) {
+    async addMember(data: {channelId: string, newMember: string, key: string, jwt: string}) {
         try{
             axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
-            const res = await axios.post(`${process.env.API_URL}/channel/addMembers`, 
+            const res = await axios.post(`${process.env.API_URL}/channel/addMember`, 
             {
                 channelId: data.channelId,
-                newMemberEmails: data.newMembers,
+                newMemberEmails: data.newMember,
             });
             return res;
         }catch(error){
