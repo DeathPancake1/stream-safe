@@ -1,23 +1,21 @@
 import { Box } from "@mui/material";
 import UploadFile from "../../components/uploadFile/UploadFile";
 import FileStatus from "../../components/uploadFile/FileStatus";
-import { useEffect, useState } from "react";
-import ChatType from "../../types/chat-type";
+import { useState } from "react";
 import { useUploadFile } from "../../api/hooks/upload-file-hook";
 import { useUser } from "../../providers/UserContext";
 import TickOverlay from "../../components/TickOverlay";
-import { useLiveQuery } from "dexie-react-hooks";
-import { keysDB } from "../../indexedDB";
-import { encryptAndUpload } from "../../helpers/logicHooks/Home/CurrentMessageLogic";
 import decryptAESHex from "../../helpers/decryption/decryptAESHex";
 import secureLocalStorage from "react-secure-storage";
+import ChannelType from "../../types/channel-type";
+import { channelEncryptAndUpload } from "../../helpers/logicHooks/Home/ChannelCurrentMessageLogic";
 
 interface Props{
-    chat: ChatType
+    channel: ChannelType
 }
 
-export default function CurrentMessage({
-    chat
+export default function ChannelCurrentMessage({
+    channel
 }: Props){
     const [files, setFiles] = useState<File[]>([])
     const {mutate: uploadFile} = useUploadFile()
@@ -36,27 +34,17 @@ export default function CurrentMessage({
       // Add more video MIME types as needed
     ]
 
-    const fetchedKey = useLiveQuery(
-      async()=>{
-        const key = await keysDB.keys
-          .where('name')
-          .equals(chat.email)
-          .first();
-        return key;
-      }
-    );
-
     const handleClearFile = ()=>{
         setFiles([])
         setIsUploadComplete(false)
     }
 
     const handleUpload = async () => {
-      const encryptedKey = fetchedKey.value;
+      const encryptedKey = channel.key;
       const masterKey = secureLocalStorage.getItem('masterKey').toString()
       const decryptedKey = await decryptAESHex(masterKey, encryptedKey)
       const originalFile = files[0];
-      await encryptAndUpload(decryptedKey, originalFile, userData, chat.email, setIsUploadComplete);
+      await channelEncryptAndUpload(decryptedKey, originalFile, userData, channel.channelId, setIsUploadComplete);
       setFiles([])
     };
     

@@ -6,6 +6,7 @@ import encryptPublic from './encrypt_public'
 import decryptPrivate from './decrypt_private'
 import handleDecryptSymmetricAESHex from './decrypt_AES_hex'
 import encryptAESHex from './encrypt_AES_hex'
+import handleEncryptSymmetricAESChannel from './encrypt_AES_channel'
 
 export {
     handleEncryptSymmetricAESHex,
@@ -15,5 +16,6 @@ export {
     encryptPublic,
     decryptPrivate,
     handleDecryptSymmetricAESHex,
-    encryptAESHex
+    encryptAESHex,
+    handleEncryptSymmetricAESChannel
 }
