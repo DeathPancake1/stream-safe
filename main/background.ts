@@ -75,7 +75,10 @@ const server = https.createServer(options, expressApp);
   })
 
   // Disables screen recording and screenshots
-  //mainWindow.setContentProtection(true);
+  if(isProd){
+    mainWindow.setContentProtection(true);
+  }
+
 
   const menu = Menu.buildFromTemplate([]);
   mainWindow.setMenu(menu);
