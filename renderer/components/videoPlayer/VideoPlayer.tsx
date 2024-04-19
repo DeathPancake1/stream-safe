@@ -1,12 +1,9 @@
-import { Box, IconButton, Slider, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
-import VolumeOffIcon from "@mui/icons-material/VolumeOff";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import CloseIcon from "@mui/icons-material/Close";
 import theme from "../../themes/theme";
+import { useUser } from "../../providers/UserContext";
+import ControlsOverlay from "./ControlsOverlay";
 
 interface Props {
   visible: boolean;
@@ -21,7 +18,6 @@ export default function VideoPlayer({
   setVideoUrl,
   setVisible,
 }: Props) {
-  const [controlsVisible, setControlsVisible] = useState(true);
   const [playing, setPlaying] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(false);
   const [playerReady, setPlayerReady] = useState<boolean>(false);
@@ -29,42 +25,27 @@ export default function VideoPlayer({
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number | null>(null);
   const playerRef = useRef<ReactPlayer | null>(null);
-  const seekTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const playerContainerRef = useRef(null);
+  const {userData, updateUser} = useUser()
+  const [position, setPosition] = useState({ top: '0%', left: '0%' });
 
-  const handleClose = () => {
-    setPlaying(false);
-    setMuted(false);
-    setVideoUrl('');
-    setVisible(false);
-    setCurrentTime(0);
+
+  const updatePosition = () => {
+    if (playerContainerRef.current) {
+      const playerRect = playerContainerRef.current.getBoundingClientRect()
+      setPosition({
+        top: `${Math.floor(Math.random() * (playerRect.bottom - 50 - playerRect.top + 1)) + playerRect.top}px`,
+        left: `${Math.floor(Math.random() * (playerRect.right - 200 - playerRect.left + 1)) + playerRect.left}px`,
+      });
+    }
   };
 
+
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    const intervalId = setInterval(updatePosition, 3000);
 
-    const handleMouseMove = () => {
-      setControlsVisible(true);
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        setControlsVisible(false);
-      }, 5000);
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
+    return () => clearInterval(intervalId);
   }, []);
-
-  useEffect(()=>{
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        handleClose()
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown)
-  }, [])
 
   useEffect(() => {
     // Create the blob URL when the component mounts
@@ -79,122 +60,30 @@ export default function VideoPlayer({
     }
   }, [videoUrl]);
 
-  const handleSeek = (event: Event, value: number | number[]) => {
-    if (Array.isArray(value)) {
-      return;
-    }
-
-    setCurrentTime(value);
-
-    // Debounce the seek operation
-    if (seekTimeoutRef.current) {
-      clearTimeout(seekTimeoutRef.current);
-    }
-
-    seekTimeoutRef.current = setTimeout(() => {
-      if (playerRef.current) {
-        playerRef.current.seekTo(value, "seconds");
-      }
-    }, 300); // Adjust the debounce delay as needed
-  };
-
   // Handle the duration event to get the video duration
   const handleDuration = (newDuration: number) => {
     setDuration(newDuration);
   };
 
-  const formatTime = (timeInSeconds) => {
-    if (timeInSeconds === 0) {
-      return "00:00";
-    }
-  
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-  
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  };
-  
-
-  const controlsOverlay = (
+  const watermarkOverlay = (
     <Box
       sx={{
         position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: controlsVisible ? "flex" : "none",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 1)",
-        padding: 0.5,
-        zIndex: 2001,
-        flexDirection: "column"
+        left: position.left,
+        top: position.top,
+        zIndex: 2002,
+        backgroundColor: 'rgb(0, 0, 0, 0.7)',
+        width: "fit-content",
+        padding: "4px",
+        borderRadius: "2px",
+        cursor: "default"
       }}
     >
-      <Box
-        sx={{
-          width: "95%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}
-      >
-        <Box
-          sx={{
-            opacity: "0"
-          }}
-        >
-          invisible
-        </Box>
-        <IconButton
-          color="secondary"
-          style={{
-            alignSelf: "center",
-            fontSize: "5rem"
-          }}
-          size={"large"}
-          onClick={() => setPlaying((prev) => !prev)}
-        >
-          {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
-        </IconButton>
-        <IconButton
-          color="secondary"
-          onClick={() => setMuted((prev) => !prev)}
-        >
-          {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-        </IconButton>
-      </Box>
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "row"
-        }}
-      >
-        <Typography variant="body2" color={theme.palette.secondary.main} mr={"1px"} ml={"3px"} fontSize={15}>
-          {
-            currentTime && formatTime(currentTime.toFixed(0))
-          }
-        </Typography>
-        <Slider
-          min={0}
-          max={duration || 0} // Use duration as the max value
-          value={currentTime}
-          onChange={handleSeek}
-          sx={{
-            color: "secondary.main",
-            width: "92%",
-            margin: "auto"
-          }}
-        />
-        <Typography variant="body2" color={theme.palette.secondary.main} mr={"3px"} ml={"1px"} fontSize={15}>
-          {
-            duration && formatTime(parseInt(duration.toFixed(0)))
-          }
-        </Typography>
-      </Box>
+      <Typography variant="body2" color={theme.palette.secondary.main} sx={{margin:"auto"}} fontSize={20}>
+        {userData.email}
+      </Typography>
     </Box>
-  );
+  )
 
   return (
     <Box
@@ -213,41 +102,49 @@ export default function VideoPlayer({
         overflow: "hidden"
       }}
     >
-      <Box
-        sx={{
-          zIndex: 2002,
-          position: "absolute",
-          top: 0,
-          right: 0,
-        }}
-      >
-        <IconButton
-          onClick={handleClose}
-          size="large"
-          sx={{ width: 35, height: 35 }}
-          color="secondary"
-        >
-          <CloseIcon sx={{ width: 35, height: 35 }} />
-        </IconButton>
-      </Box>
-      {controlsOverlay}
+      <ControlsOverlay
+        playing={playing}
+        setPlaying={setPlaying}
+        setVisible={setVisible}
+        setCurrentTime={setCurrentTime}
+        setDuration={setDuration}
+        setMuted={setMuted}
+        setVideoUrl={setVideoUrl}
+        playerRef={playerRef}
+        muted={muted}
+        currentTime={currentTime}
+        duration={duration}
+      />
+      {watermarkOverlay}
       {videoUrl && (
-        <ReactPlayer
-          ref={playerRef}
-          width={"100%"}
-          height={"100%"}
-          url={blobUrl}
-          playing={playerReady && playing}
-          muted={muted}
-          onReady={() => {
-            setPlayerReady(true);
+        <Box 
+          ref={playerContainerRef} 
+          sx={{
+            width: "fit-content",
+            height: "fit-content",
+            margin: "auto"
           }}
-          onEnded={() => setPlaying(false)}
-          onProgress={(progress) =>
-            setCurrentTime(Math.floor(progress.playedSeconds))
-          }
-          onDuration={handleDuration}
-        />
+        >
+          <ReactPlayer
+            ref={playerRef}
+            width={"100%"}
+            height={"100%"}
+            url={blobUrl}
+            playing={playerReady && playing}
+            muted={muted}
+            onReady={() => {
+              setPlayerReady(true);
+            }}
+            onEnded={() => {
+              setPlaying(false)
+              setCurrentTime(duration)
+            }}
+            onProgress={(progress) =>
+              setCurrentTime(Math.floor(progress.playedSeconds))
+            }
+            onDuration={handleDuration}
+          />
+        </Box>
       )}
     </Box>
   );
