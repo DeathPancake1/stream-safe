@@ -16,7 +16,7 @@ interface FormData {
 
 export default function ResetPasswordForm() {
     const router = useRouter()
-    const { mutate: changePassword, isLoading: sendVerifyLoading } = useChangePassword();
+    const { mutate: changePassword, isLoading: changePasswordLoading } = useChangePassword();
     const [open, setOpen] = useState<boolean>()
     const {userData,updateUser}= useUser()
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {

@@ -35,7 +35,7 @@ export default function ForgetPasswordForm() {
     })
 
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        sendVerify({email : data.email},
+        sendVerify({email : data.email, verifyOrForget: false},
             {
             onSuccess: (response) => {
               if (response.status === 201) {

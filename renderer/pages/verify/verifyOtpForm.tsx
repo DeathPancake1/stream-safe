@@ -51,7 +51,7 @@ export default function VerifyOtpForm() {
     const onSubmit = async (event) => {
         event.preventDefault()
         if(otp.length===6){
-            receiveOTP({email:userData.email , otp:otp},
+            receiveOTP({email:userData.email , otp:otp, verifyOrForget:false},
             {
                 onSuccess: (response) => {
                     if (response.status === 200) {
@@ -75,7 +75,7 @@ export default function VerifyOtpForm() {
     const handleSendAgain = (event) => {
         setTimer(120); 
         setIsTimerActive(true);
-        sendVerify({email : userData.email},
+        sendVerify({email : userData.email, verifyOrForget:false},
             {
             onSuccess: (response) => {
             }
