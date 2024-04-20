@@ -1,4 +1,4 @@
 export default interface SendVerMail{
     email: string,
-    verifyOrForget: boolean,
+    type: string,
 }
