@@ -1,18 +1,12 @@
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { useRouter } from "next/router";
 
 export const renderDialogContent = (state: number, login, handleClose, lockThisDevice) => {
+    const router = useRouter()
+    
     switch (state) {
         case 0:
-            return (
-                <>
-                    <DialogTitle id="alert-dialog-title">
-                        {"Signed in"}
-                    </DialogTitle>
-                    <DialogActions>
-                        <Button onClick={login}>Ok</Button>
-                    </DialogActions>
-                </>
-            );
+            router.push('/home')
         case 1:
             return (
                 <>

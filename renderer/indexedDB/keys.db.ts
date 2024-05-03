@@ -6,7 +6,6 @@ export interface Keys {
     id?: number;
     name: string;
     value: string; 
-    type: string;
 }
 
 class KeysDatabase extends Dexie {
@@ -15,21 +14,20 @@ class KeysDatabase extends Dexie {
   constructor() {
     super('keysDatabase');
     this.version(1).stores({
-      keys: '++id, name, value, type'
+      keys: '++id, name, value'
     });
   }
 }
 
 export const keysDB = new KeysDatabase();
 
-export async function addKey(name, value, type) {
+export async function addKey(name, value) {
   try{
     const masterKey = secureLocalStorage.getItem('masterKey').toString()
     const encryptedKey = await encryptAESHex(masterKey, value)
     const id = await keysDB.keys.add({
         name,
         value: encryptedKey,
-        type
     });
 
     return id;
