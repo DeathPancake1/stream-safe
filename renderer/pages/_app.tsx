@@ -24,7 +24,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider theme={theme}>
                   <UserProvider>
-                    <MyAppBar children={undefined}/>
+                    {/* <MyAppBar children={undefined}/> */}
                     <Component {...pageProps} />
                   </UserProvider>
                 </ThemeProvider>

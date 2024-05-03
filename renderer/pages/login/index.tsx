@@ -3,6 +3,7 @@ import { Box, ThemeProvider, Typography } from "@mui/material";
 import LoginForm from "./LoginForm";
 import theme from "../../themes/theme";
 import Welcome from "../../components/auth/Welcome";
+import SideBar from "../../components/sideBar/sideBar";
 
 export default function Page() {
   return (
@@ -18,6 +19,7 @@ export default function Page() {
           marginTop: '5%'
         }}
       >
+        <SideBar/>
         <Welcome/>
         <LoginForm />
       </Box>
