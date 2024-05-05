@@ -19,7 +19,6 @@ export default function Page() {
           marginTop: '5%'
         }}
       >
-        <SideBar/>
         <Welcome/>
         <LoginForm />
       </Box>

@@ -6,7 +6,21 @@ export const renderDialogContent = (state: number, login, handleClose, lockThisD
     
     switch (state) {
         case 0:
-            router.push('/home')
+            return (
+                <>
+                    <DialogTitle id="alert-dialog-title">
+                        {"Your account is locked to another device"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Please unlock your account from that device before signing in
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={login}>Sign out</Button>
+                    </DialogActions>
+                </>
+            );
         case 1:
             return (
                 <>

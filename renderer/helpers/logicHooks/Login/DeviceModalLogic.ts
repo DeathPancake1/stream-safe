@@ -1,8 +1,9 @@
 import secureLocalStorage from "react-secure-storage"
 
 export const checkAccountState =async (locked, userData, setState, checkId) => {
+    const deviceId = secureLocalStorage.getItem('deviceId')
+    console.log(deviceId)
     if(locked){
-        const deviceId = secureLocalStorage.getItem('deviceId')
         if(deviceId){
             // call check device id to check state 0 or 1
             checkAccountId(deviceId.toString(), checkId ,setState, userData)
@@ -11,7 +12,7 @@ export const checkAccountState =async (locked, userData, setState, checkId) => {
             // state 1
         }
     }else{
-        const deviceId = secureLocalStorage.getItem('deviceId')
+        
         if(deviceId){
             setState(2)
             // state 2
@@ -44,6 +45,7 @@ export const fetchLocked =async (jwt:string, checkLocked, setLocked) => {
         {jwt},
         {
             onSuccess: (response)=>{
+                console.log(response.data)
                 setLocked(response.data)
             }
         }
