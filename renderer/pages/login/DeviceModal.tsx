@@ -28,7 +28,7 @@ export default function DeviceModal({open, setOpen}: props){
     // 2 means not locked but this device is locked to another account
     // 3 means both device and account are unlocked
     const router = useRouter()
-    const [locked, setLocked ]= useState<boolean | null>(null)
+    const [locked, setLocked ]= useState<boolean>(false)
 
     const lockThisDevice = async ()=>{
         const {publicKey, privateKey} = await generateAsymmetricKeys()
@@ -57,7 +57,7 @@ export default function DeviceModal({open, setOpen}: props){
     };
 
     const login = () =>{
-        router.push('/home')
+        router.push('/test')
     }
 
     useEffect(()=>{
@@ -65,13 +65,8 @@ export default function DeviceModal({open, setOpen}: props){
     }, [])
 
     useEffect(() => {
-        if(locked != null)
         checkAccountState(locked, userData, setState, checkId);
     }, [locked]);
-
-    useEffect(() => {
-        console.log(state)
-    }, [state]);
 
     return(
         <Dialog
