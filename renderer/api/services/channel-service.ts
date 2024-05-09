@@ -103,7 +103,7 @@ class ChannelService {
             axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
             const res = await axios.post(`${process.env.API_URL}/channel/getChannelInfoById`, 
             {
-                channelId: data.channelId,
+                id: data.channelId,
             });
             return res;
         }catch(error){
