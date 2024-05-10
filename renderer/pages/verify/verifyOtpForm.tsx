@@ -12,7 +12,7 @@ interface FormData {
 }
 
 
-export default function VerifyOtpForm() {
+export default function VerifyOtpForm({ type }) {
     const [otp, setOtp] = useState('');
     const router = useRouter()
     const [timer, setTimer] = useState(120);
@@ -25,7 +25,6 @@ export default function VerifyOtpForm() {
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         setOpen(false);
     };
-
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -51,11 +50,14 @@ export default function VerifyOtpForm() {
     const onSubmit = async (event) => {
         event.preventDefault()
         if(otp.length===6){
-            receiveOTP({email:userData.email , otp:otp},
+            receiveOTP({email:userData.email , otp:otp, type:type},
             {
                 onSuccess: (response) => {
                     if (response.status === 200) {
-                        router.push('/resetPassword');
+                        if(type == "FORGETPASSWORD")
+                            router.push('/resetPassword');
+                        else if(type == "VERIFYEMAIL")
+                            router.push('/login');
                     }
                     else{
                         setOpen(true)
@@ -75,13 +77,12 @@ export default function VerifyOtpForm() {
     const handleSendAgain = (event) => {
         setTimer(120); 
         setIsTimerActive(true);
-        sendVerify({email : userData.email},
+        sendVerify({email : userData.email, type:"false"},
             {
             onSuccess: (response) => {
             }
           })
     };
-    
     return (
         <Box
             sx={{

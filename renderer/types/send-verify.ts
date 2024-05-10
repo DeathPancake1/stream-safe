@@ -1,3 +1,4 @@
 export default interface SendVerMail{
-    email: string
+    email: string,
+    type: string,
 }

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useState } from 'react'
 import { UserProvider } from '../providers/UserContext'
+import SideBar from '../components/sideBar/sideBar'
  
 export default function MyApp({ Component, pageProps }: AppProps) {
     const [queryClient] = useState(() => new QueryClient({
@@ -24,7 +25,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider theme={theme}>
                   <UserProvider>
-                    <MyAppBar children={undefined}/>
+                    {/* <MyAppBar children={undefined}/> */}
                     <Component {...pageProps} />
                   </UserProvider>
                 </ThemeProvider>

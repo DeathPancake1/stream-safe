@@ -3,7 +3,7 @@ import { Box, ThemeProvider, Typography } from "@mui/material";
 import LoginForm from "./LoginForm";
 import theme from "../../themes/theme";
 import Welcome from "../../components/auth/Welcome";
-import SearchAppBar from "../../components/searchBar/SearchTextField";
+import SideBar from "../../components/sideBar/sideBar";
 
 export default function Page() {
   return (

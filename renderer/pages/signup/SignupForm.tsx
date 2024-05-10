@@ -8,6 +8,8 @@ import { useSignup } from "../../api/hooks/auth-hook"
 import { useEffect, useState } from "react"
 import { useRouter } from 'next/router'
 import { useUser } from "../../providers/UserContext"
+import { useSendVer } from "../../api/hooks/auth-hook"
+
 
 interface FormData {
     firstname: string
@@ -21,8 +23,9 @@ interface FormData {
 export default function SignupForm() {
     const [open, setOpen] = useState<boolean>()
     const [email, setEmail] = useState<string>('')
-    
+    const [openOTP, setOpenOTP] = useState<boolean>()
     const router = useRouter()
+    const { mutate: sendVerify, isLoading: sendVerifyLoading } = useSendVer();
 
     const {
         handleSubmit,
@@ -56,10 +59,26 @@ export default function SignupForm() {
                 {
                     onSuccess: (response) => {
                         if(response.status===201){
-                            router.push('/login');
+                            sendVerify({email : data.email, type: "VERIFYEMAIL"},
+                            {
+                                onSuccess: (response2) => {
+                                    if (response2.status === 201) {
+                                        updateUser(data.email,"")
+                                        router.push({pathname: '/verify',
+                                                query: {
+                                                type: "VERIFYEMAIL"
+                                                }
+                                            });
+                                    }
+                                    else{
+                                        setOpenOTP(true)
+                                    }
+                                }
+                          })
                         }
                         else{
                             setOpen(true)
+                            return
                         }
                     },
                 }    
@@ -67,7 +86,9 @@ export default function SignupForm() {
         }
         catch(error){
             setOpen(true)
+            return
         }
+
         
     }
 
@@ -84,6 +105,9 @@ export default function SignupForm() {
                 maxWidth: '60%'
             }}
         >
+            <Snackbar open={openOTP} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Something rong happend while sending OTP</Alert>
+            </Snackbar>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Email already exists</Alert>
             </Snackbar>

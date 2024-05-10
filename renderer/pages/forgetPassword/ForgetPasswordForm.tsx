@@ -35,12 +35,17 @@ export default function ForgetPasswordForm() {
     })
 
     const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-        sendVerify({email : data.email},
+        sendVerify({email : data.email, type: "FORGETPASSWORD"},
             {
             onSuccess: (response) => {
               if (response.status === 201) {
                 updateUser(data.email,"")
-                router.push('/verify');
+                router.push({pathname: '/verify',
+                        query: {
+                        type: "FORGETPASSWORD"
+                     // Add more props as needed
+                        }
+                    });
               }
               else{
                 setOpen(true)

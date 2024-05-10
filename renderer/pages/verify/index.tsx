@@ -1,8 +1,12 @@
 import { Box, ThemeProvider } from "@mui/material";
 import theme from "../../themes/theme";
 import VerifyOtpForm from "./verifyOtpForm";
+import { useRouter } from "next/router";
 
 export default function Page() {
+  
+  const router = useRouter();
+  const type  = router.query.type;
     return (
       <ThemeProvider theme={theme}>
         <Box
@@ -17,7 +21,7 @@ export default function Page() {
           }}
         >
         </Box>
-        <VerifyOtpForm/>
+        <VerifyOtpForm type={type} />
       </ThemeProvider>
     );
   }
