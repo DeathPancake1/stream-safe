@@ -6,15 +6,20 @@ import DoneIcon from '@mui/icons-material/Done';
 import { useGetChannelInfoById } from "../../api/hooks/channel-hook";
 import { useUser } from "../../providers/UserContext";
 import { useEffect, useState } from "react";
+import { useGetPhotoByPath, useGetPhotoPathById } from "../../api/hooks/photo-hook";
 
 export default function ChannelInfo({ id }) {
     const primaryColor = theme.palette.primary.main
     const secondaryColor = theme.palette.secondary.main
     const { mutate: getChannelInfoById, isLoading: getChannelInfoByIdLoading } = useGetChannelInfoById();
+    const { mutate: getPhotoPathById, isLoading: getPhotoPathByIdLoading } = useGetPhotoPathById();
+    const { mutate: getPhotoByPath, isLoading: getPhotoByPathLoading } = useGetPhotoByPath();
     const { userData, updateUser } = useUser()
     const [channelInfo, setChannelInfo] = useState<any>()
+    const [ photoPath, setPhotoPath ] = useState<string>()
     const [open, setOpen] = useState<boolean>()
     const [mid,setMid] = useState<number>(0)
+    const [ imageUrl,setImageUrl ] = useState<string>()
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         setOpen(false);
     };
@@ -25,7 +30,6 @@ export default function ChannelInfo({ id }) {
             {
                 onSuccess: (response) => {
                     if (response.status === 201) {
-                        console.log(response)
                         setChannelInfo(response.data.message)
                     }
                     else {
@@ -36,8 +40,20 @@ export default function ChannelInfo({ id }) {
     }, [id])
 
     useEffect(() => {
-        console.log(channelInfo)
         if(channelInfo!=undefined){
+            if(channelInfo.thumbnailId){
+                getPhotoPathById({ photoId: channelInfo.thumbnailId, jwt: userData.jwt },
+                    {
+                        onSuccess: (response) => {
+                            if (response.status === 201) {
+                                var apiPath = response.data.message
+                                setPhotoPath(apiPath)
+                            }
+
+                        }
+                    }
+                )
+            }
             if (channelInfo.channelContent.length % 2 == 0) {
                 setMid( channelInfo.channelContent.length / 2)
             }
@@ -45,6 +61,29 @@ export default function ChannelInfo({ id }) {
         }
 
     }, [channelInfo])
+
+    useEffect(()=>{
+        if(photoPath!=undefined){
+            getPhotoByPath({ photoPath, jwt: userData.jwt },
+                {
+                    onSuccess: async (response) => {
+                        if (response.status === 201) {
+                            const url = await URL.createObjectURL(response.data);
+                            setImageUrl(url);
+                        }
+                        else{
+                            setImageUrl('https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg');
+                        }
+                    }
+                }
+            )
+        }
+        else{
+            setImageUrl('https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg');
+        }
+        
+    },[photoPath])
+
     return (
 
         <Box sx={{ backgroundColor: secondaryColor }}>
@@ -85,7 +124,9 @@ export default function ChannelInfo({ id }) {
                         </Typography>
                     </Box>
                     <Box style={{ display: "flex", flexDirection: "column", alignItems: "center",width:"100%" }}>
-                        <img style={{ width: "70%", height: "70%", marginBottom: "0.5rem" }} src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2023/01/Capstone_Course.jpeg.jpg" />
+                        {imageUrl &&
+                            <img style={{ width: "70%", height: "70%", marginBottom: "0.5rem" }} src={imageUrl} />
+                        } 
                         <Button style={{ padding: "0.5rem", width: "70%", backgroundColor: primaryColor, color: secondaryColor, marginBottom: "2rem" }}>Subscribe Now</Button>
                         <Box style={{ width: "70%", border: "2px solid #e8edea", borderRadius: "0.3rem" }}>
                             <Typography variant="h5" sx={{ fontWeight: "500", m: "1rem 1rem" }} >Channel content</Typography>
