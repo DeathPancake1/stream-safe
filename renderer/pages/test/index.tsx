@@ -3,6 +3,7 @@ import theme from "../../themes/theme";
 import { Box } from "@mui/material";
 import SideBar from "../../components/sideBar/sideBar";
 import ChannelInfo from "../../components/channelInfo/channelInfo";
+import AllChannelPage from "../../components/allChannelPage/allChannelPage";
 
 export default function Test(){
     return (
@@ -15,7 +16,8 @@ export default function Test(){
             marginTop: '5%'
           }}
         >
-          <SideBar childrenFunction={ChannelInfo({id:"1ec622a1-39bd-44c8-bbdf-28ec2779af0b"})}/>
+          <AllChannelPage/>
+          {/* <SideBar childrenFunction={ChannelInfo({id:"1ec622a1-39bd-44c8-bbdf-28ec2779af0b"})}/> */}
         </Box>
       </ThemeProvider>
       )

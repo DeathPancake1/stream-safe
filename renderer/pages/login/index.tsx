@@ -19,7 +19,6 @@ export default function Page() {
           marginTop: '5%'
         }}
       >
-        <SearchAppBar/>
         <Welcome/>
         <LoginForm />
       </Box>
