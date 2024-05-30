@@ -15,7 +15,7 @@ export default function Test(){
             marginTop: '5%'
           }}
         >
-          <SideBar childrenFunction={ChannelInfo({id:"1ec622a1-39bd-44c8-bbdf-28ec2779af0b"})}/>
+          <SideBar childrenFunction={ChannelInfo({id:"d61e7a63-9363-4eae-b7e1-2619722889db"})}/>
         </Box>
       </ThemeProvider>
       )
