@@ -67,10 +67,24 @@ const useGetChannelInfoById = () =>{
     )
 }
 
+const useSearchAllChannels = () =>{
+    return useMutation(
+        async (data: {jwt: string, name: string})=>{
+            return await channelService.searchAllChannels(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
 export {
     useCreateChannel,
     useAddMembers,
     useGetMessagesFromChannel,
     useGetMembers,
-    useGetChannelInfoById
+    useGetChannelInfoById,
+    useSearchAllChannels
 }

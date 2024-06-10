@@ -56,7 +56,7 @@ export default function ChannelCard({ title, imageId, description, ownerId }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">See More</Button>
+        <Button fullWidth variant={"outlined"}>See More</Button>
       </CardActions>
     </Card>
   );
