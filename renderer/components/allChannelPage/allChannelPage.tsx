@@ -28,7 +28,7 @@ export default function AllChannelPage() {
                 <div key={channel.id} style={{ margin: '10px' }}>
                     <RecipeReviewCard
                         title={channel.title}
-                        subheader={channel.ownerId}
+                        ownerId={channel.ownerId}
                         imageId={channel.thumbnailId}
                         description={channel.description}
                     />

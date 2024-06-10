@@ -1,53 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import * as React from 'react';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
+import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useUser } from '../../providers/UserContext';
 import usePhotoPath from '../../api/hooks/photo-path-hook';
 import useUserInfo from '../../api/hooks/user-info';
-import { useRouter } from 'next/router';
 
-const StyledCard = styled(Card)({
-  maxWidth: 345,
-});
+export default function ChannelCard({ title, imageId, description, ownerId }) {
+  const imageUrl = usePhotoPath(imageId);
+  const userInfo = useUserInfo(ownerId);
 
-export default function RecipeReviewCard({ title, subheader, imageId, description }) {
-  const { userData } = useUser();
-  const imageUrl = usePhotoPath(imageId); // Fetch photo path
-  const userInfo = useUserInfo(subheader); // Fetch user information
   return (
-    <StyledCard>
+    <Card sx={{ maxWidth: 345, minWidth: 250 }}>
       <CardMedia
-        component="img"
-        height="170"
+        sx={{ height: 140 }}
         image={imageUrl}
-        alt="image"
-      />
-      <Typography variant="h5" color="text.secondary" sx={{ margin: '5% 0 0 5% ', fontWeight: 'bold', color: 'black' }}>
-        {title}
-      </Typography>
-      <CardHeader
-        avatar={
-          <Avatar></Avatar>
-        }
-        title={
-          userInfo &&
-          <Typography >
-            <b>{ userInfo.firstname }</b>
-          </Typography>
-        }
+        title={title}
       />
       <CardContent>
-        <Typography color="text.secondary">
+        <Typography gutterBottom variant="h5" component="div">
+          {title}
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          Owner: <i>{userInfo?.firstname}</i>
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
           {description}
         </Typography>
       </CardContent>
-    </StyledCard>
+      <CardActions>
+        <Button size="small">See More</Button>
+      </CardActions>
+    </Card>
   );
 }
