@@ -23,13 +23,15 @@ import secureLocalStorage from "react-secure-storage";
 
 interface Props {
   childrenFunction: any;
+  width: number;
+  setWidth:React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function SideBar(props: Props) {
-  const [width, setWidth] = useState<number>(290);
   const [initialMouseX, setInitialMouseX] = useState<number>(0);
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const { userData, updateUser } = useUser();
+  const [display,setDisplay] = useState<string>("none")
   const handleMouseDown = (event) => {
     setInitialMouseX(event.clientX);
     setIsResizing(true);
@@ -42,8 +44,8 @@ export default function SideBar(props: Props) {
   const handleMouseMove = (event) => {
     if (isResizing) {
       const deltaX = initialMouseX - event.clientX;
-      const newWidth = Math.min(Math.max(width - deltaX, 290), 700); // Adjust minimum width as needed
-      setWidth(newWidth);
+      const newWidth = Math.min(Math.max(props.width - deltaX, 290), 700); // Adjust minimum width as needed
+      props.setWidth(newWidth);
     }
   };
   useEffect(() => {
@@ -63,22 +65,33 @@ export default function SideBar(props: Props) {
     router.push("/login");
   };
 
+  useEffect(()=>{
+    if(userData.email===""){
+      setDisplay("none")
+      props.setWidth(0)
+    }else{
+      setDisplay("block")
+      props.setWidth(290)
+    }
+  },[userData.email])
+
   useHomeLogic()
 
   return (
-    <Box>
+    <Box sx={{display:`${display}`}}>
       <Drawer
         variant="permanent"
         open={true}
         sx={{
-          width: `${width}px`,
+          width: `${props.width}px`,
           "& .MuiDrawer-paper": {
-            width: `${width}px`,
+            width: `${props.width}px`,
             backgroundColor: theme.palette.primary.main,
             padding: "0.5rem",
             height: "100vh",
             overflow: "auto",
-            margin: "0px",
+            margin: "0px"
+           
           },
         }}
       >
@@ -187,11 +200,7 @@ export default function SideBar(props: Props) {
           }}
         />
       </Drawer>
-      <Box
-        sx={{ width: `calc(96% - ${width}px )`, ml: `calc(${width}px + 4%)` }}
-      >
-        {props.childrenFunction}
-      </Box>
+      
     </Box>
   );
 }
