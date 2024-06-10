@@ -30,7 +30,6 @@ export default function RefreshButton(){
   
     const processReceivedKeys = (response) => {
       const newKeys = response.data;
-      console.log(newKeys)
       newKeys.forEach(async (key) => {
           if(key.type === "USER"){
               const senderEmail = key.senderEmail;
