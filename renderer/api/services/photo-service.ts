@@ -10,7 +10,7 @@ class PhotoService {
      *POST channel/createChannel
     * @returns
     */
-    async getPhotoPathById(data: {photoId: number,jwt: string}) {
+    async getPhotoPathById(data: {photoId: string,jwt: string}) {
         try{
             axios.defaults.headers.common['Authorization']=`Bearer ${data.jwt}`
             const res = await axios.post(`${process.env.API_URL}/photos/getPhotoPathById`, 
