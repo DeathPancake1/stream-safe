@@ -1,34 +1,24 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useGetOwnedChannels, useGetSubscribedChannels } from "../../api/hooks/channel-hook";
 import { useUser } from "../../providers/UserContext";
 import ChannelCard from "../../components/channelCard/channelCard";
+import { useGetMyChannels } from "../../api/hooks/channel-hook";
 
 export default function myChannels() {
     const [registeredOrOwned, setRegisteredOrOwned] = useState<boolean>(false)
     const { userData } = useUser();
 
-    const { mutate: getOwnedChannels, isLoading: getOwnedChannelsLoading } = useGetOwnedChannels();
-    const { mutate: getSubscribedChannels, isLoading: getSubscribedChannelsLoading } = useGetSubscribedChannels();
+    const { mutate: getMyChannels, isLoading: getMyChannelsLoading } = useGetMyChannels();
     const [registeredChannelsArray, setRegisteredChannelsArray] = useState([])
     const [ownedChannelsArray, setOwnedChannelsArray] = useState([])
     useEffect(() => {
-        getOwnedChannels(
+        getMyChannels(
             { jwt: userData.jwt },
             {
                 onSuccess: (response) => {
                     if (response.status === 201) {
                         setOwnedChannelsArray(response.data.message["ownedChannels"]);
-                    }
-                },
-            }
-        );
-        getSubscribedChannels(
-            { jwt: userData.jwt },
-            {
-                onSuccess: (response) => {
-                    if (response.status === 201) {
-                        setRegisteredChannelsArray(response.data.message["subscribedChannels"]);
+                        setRegisteredChannelsArray(response.data.message["registeredchannels"])
                     }
                 },
             }

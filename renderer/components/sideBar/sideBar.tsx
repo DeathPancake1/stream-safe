@@ -134,6 +134,8 @@ export default function SideBar(props: Props) {
                 onClick={() => {
                   if (text === "Logout") {
                     logout();
+                  }else if (text === "My Channels") {
+                    router.push(`/myChannels`);
                   }
                 }}
               >

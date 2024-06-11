@@ -82,10 +82,10 @@ const useSearchAllChannels = () =>{
     )
 }
 
-const useGetSubscribedChannels = () =>{
+const useGetMyChannels = () =>{
     return useMutation(
         async (data: {jwt: string})=>{
-            return await myChannelsService.getSubscribedChannels(data)
+            return await myChannelsService.getMyChannels(data)
         },
         {
             onSuccess: (response)=>{
@@ -95,18 +95,6 @@ const useGetSubscribedChannels = () =>{
     )
 }
 
-const useGetOwnedChannels = () =>{
-    return useMutation(
-        async (data: {jwt: string})=>{
-            return await myChannelsService.getOwnedChannels(data)
-        },
-        {
-            onSuccess: (response)=>{
-                
-            }
-        }
-    )
-}
 
 
 
@@ -117,6 +105,5 @@ export {
     useGetMembers,
     useGetChannelInfoById,
     useSearchAllChannels,
-    useGetSubscribedChannels,
-    useGetOwnedChannels
+    useGetMyChannels
 }
