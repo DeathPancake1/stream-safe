@@ -1,5 +1,7 @@
 import { useMutation } from "react-query"
 import channelService from "../services/channel-service"
+import myChannels from "../../pages/myChannels"
+import myChannelsService from "../services/my-channels-service"
 
 
 const useCreateChannel = ()=>{
@@ -80,11 +82,41 @@ const useSearchAllChannels = () =>{
     )
 }
 
+const useGetSubscribedChannels = () =>{
+    return useMutation(
+        async (data: {jwt: string})=>{
+            return await myChannelsService.getSubscribedChannels(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
+const useGetOwnedChannels = () =>{
+    return useMutation(
+        async (data: {jwt: string})=>{
+            return await myChannelsService.getOwnedChannels(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
+
+
 export {
     useCreateChannel,
     useAddMembers,
     useGetMessagesFromChannel,
     useGetMembers,
     useGetChannelInfoById,
-    useSearchAllChannels
+    useSearchAllChannels,
+    useGetSubscribedChannels,
+    useGetOwnedChannels
 }
