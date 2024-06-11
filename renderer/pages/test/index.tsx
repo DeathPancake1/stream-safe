@@ -11,7 +11,7 @@ export default function Test(){
 
   const goToChannelInfo = () => {
       const channelId = "bf275cd7-5c57-49fd-a166-11b4e6c75093";
-      router.push(`/channelInfo/${channelId}`);
+      router.push(`/myChannels`);
   };
     return (
         <ThemeProvider theme={theme}>
