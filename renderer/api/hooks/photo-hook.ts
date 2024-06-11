@@ -4,7 +4,7 @@ import photoService from "../services/photo-service"
 
 const useGetPhotoPathById = ()=>{
     return useMutation(
-        async (data: {photoId: number,jwt: string})=>{
+        async (data: {photoId: string,jwt: string})=>{
             return await photoService.getPhotoPathById(data)
         },
         {

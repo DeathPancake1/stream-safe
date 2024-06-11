@@ -1,53 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useUser } from '../../providers/UserContext';
-import usePhotoPath from '../../api/hooks/photo-path-hook';
-import useUserInfo from '../../api/hooks/user-info';
-import { useRouter } from 'next/router';
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import useUserInfo from "../../api/hooks/user-info";
+import { useGetPhotoPathById } from "../../api/hooks/photo-hook";
+import { useEffect, useState } from "react";
+import { useUser } from "../../providers/UserContext";
 
-const StyledCard = styled(Card)({
-  maxWidth: 345,
-});
+export default function ChannelCard({ title, imageId, description, ownerId }) {
+  const { userData, updateUser } = useUser();
+  const { mutate: getImageURL } = useGetPhotoPathById();
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const ownerInfo = useUserInfo(ownerId);
 
-export default function RecipeReviewCard({ title, subheader, imageId, description }) {
-  const { userData } = useUser();
-  const imageUrl = usePhotoPath(imageId); // Fetch photo path
-  const userInfo = useUserInfo(subheader); // Fetch user information
+  const handleGetImageUrl = async () => {
+    if (imageId) {
+      getImageURL(
+        { photoId: imageId, jwt: userData.jwt },
+        {
+          onSuccess: (response) => {
+            if (response.data) {
+              setImageUrl(response.data);
+            } else {
+              setImageUrl(
+                "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg"
+              );
+            }
+          },
+        }
+      );
+    } else {
+      setImageUrl(
+        "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg"
+      );
+    }
+  };
+  useEffect(() => {
+    handleGetImageUrl();
+  }, []);
   return (
-    <StyledCard>
-      <CardMedia
-        component="img"
-        height="170"
-        image={imageUrl}
-        alt="image"
-      />
-      <Typography variant="h5" color="text.secondary" sx={{ margin: '5% 0 0 5% ', fontWeight: 'bold', color: 'black' }}>
-        {title}
-      </Typography>
-      <CardHeader
-        avatar={
-          <Avatar></Avatar>
-        }
-        title={
-          userInfo &&
-          <Typography >
-            <b>{ userInfo.firstname }</b>
-          </Typography>
-        }
-      />
+    <Card sx={{ maxWidth: 345, minWidth: 250, height: "330px" }}>
+      <CardMedia sx={{ height: 140 }} image={imageUrl} title={title} />
       <CardContent>
-        <Typography color="text.secondary">
+        <Typography gutterBottom variant="h5" component="div">
+          {title}
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          Owner: <i>{ownerInfo?.firstname}</i>
+        </Typography>
+        <Typography variant="body2" color="text.secondary" style={{overflow: "hidden"}}>
           {description}
         </Typography>
       </CardContent>
-    </StyledCard>
+      <CardActions>
+        <Button fullWidth variant={"outlined"}>See More</Button>
+      </CardActions>
+    </Card>
   );
 }
