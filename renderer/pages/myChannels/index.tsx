@@ -1,8 +1,9 @@
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Fab, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
 import ChannelCard from "../../components/channelCard/channelCard";
 import { useGetMyChannels } from "../../api/hooks/channel-hook";
+import AddIcon from '@mui/icons-material/Add';
 
 export default function myChannels() {
     const [registeredOrOwned, setRegisteredOrOwned] = useState<boolean>(false)
@@ -53,6 +54,13 @@ export default function myChannels() {
                     </div>
                 ))}
             </div>
+            <Fab color="primary" aria-label="add" sx={{
+                position: 'absolute',
+                bottom: 16,
+                right: 16,
+            }}>
+                <AddIcon />
+            </Fab>
         </Box>
     )
 }

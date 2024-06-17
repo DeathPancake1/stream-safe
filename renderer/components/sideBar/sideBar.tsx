@@ -11,27 +11,27 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { ChildCare, Face, Logout } from "@mui/icons-material";
-import { useUser } from "../../providers/UserContext";
-import { useRouter } from "next/router";
 import { Search, Groups, Settings, HelpOutline } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import icon from "../../../resources/icon.ico";
-import MuiListItem from "@mui/material/ListItem";
-import { useHomeLogic } from "../../helpers/logicHooks/Home/HomeLogic";
 import secureLocalStorage from "react-secure-storage";
+import { useUser } from "../../providers/UserContext";
+import { useRouter } from "next/router";
+import { useHomeLogic } from "../../helpers/logicHooks/Home/HomeLogic";
 
 interface Props {
   childrenFunction: any;
   width: number;
-  setWidth:React.Dispatch<React.SetStateAction<number>>;
+  setWidth: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function SideBar(props: Props) {
   const [initialMouseX, setInitialMouseX] = useState<number>(0);
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const { userData, updateUser } = useUser();
-  const [display,setDisplay] = useState<string>("none")
+  const [display, setDisplay] = useState<string>("none");
+  const [selectedItem, setSelectedItem] = useState<string>("Explore");
+
   const handleMouseDown = (event) => {
     setInitialMouseX(event.clientX);
     setIsResizing(true);
@@ -48,6 +48,7 @@ export default function SideBar(props: Props) {
       props.setWidth(newWidth);
     }
   };
+
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -57,6 +58,7 @@ export default function SideBar(props: Props) {
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isResizing]);
+
   const router = useRouter();
 
   const logout = () => {
@@ -65,20 +67,29 @@ export default function SideBar(props: Props) {
     router.push("/login");
   };
 
-  useEffect(()=>{
-    if(userData.email===""){
-      setDisplay("none")
-      props.setWidth(0)
-    }else{
-      setDisplay("block")
-      props.setWidth(290)
+  useEffect(() => {
+    if (userData.email === "") {
+      setDisplay("none");
+      props.setWidth(0);
+    } else {
+      setDisplay("block");
+      props.setWidth(290);
     }
-  },[userData.email])
+  }, [userData.email]);
 
-  useHomeLogic()
+  useHomeLogic();
+
+  const handleItemClick = (text) => {
+    if (text === "Logout") {
+      logout();
+    } else if (text === "My Channels") {
+      router.push(`/myChannels`);
+    }
+    setSelectedItem(text);
+  };
 
   return (
-    <Box sx={{display:`${display}`}}>
+    <Box sx={{ display: `${display}` }}>
       <Drawer
         variant="permanent"
         open={true}
@@ -90,8 +101,7 @@ export default function SideBar(props: Props) {
             padding: "0.5rem",
             height: "100vh",
             overflow: "auto",
-            margin: "0px"
-           
+            margin: "0px",
           },
         }}
       >
@@ -120,26 +130,34 @@ export default function SideBar(props: Props) {
               key={text}
               disablePadding
               sx={{
-                color: theme.palette.secondary.main,
-                "&:hover": {
-                  backgroundColor: "White",
-                  color: theme.palette.primary.main,
-                  "&, & .MuiListItemIcon-root": {
-                    color: theme.palette.primary.main,
-                  },
-                },
+                backgroundColor: selectedItem === text ? "white" : "inherit",
               }}
+              onClick={() => handleItemClick(text)}
             >
               <ListItemButton
-                onClick={() => {
-                  if (text === "Logout") {
-                    logout();
-                  }else if (text === "My Channels") {
-                    router.push(`/myChannels`);
-                  }
+                sx={{
+                  color:
+                    selectedItem === text
+                      ? theme.palette.primary.main
+                      : theme.palette.secondary.main,
+                  backgroundColor: selectedItem === text ? theme.palette.secondary.main : theme.palette.primary.main,
+                  "&:hover": {
+                    backgroundColor: "White",
+                    color: theme.palette.primary.main,
+                    "&, & .MuiListItemIcon-root": {
+                      color: theme.palette.primary.main,
+                    },
+                  },
                 }}
               >
-                <ListItemIcon sx={{ color: "White" }}>
+                <ListItemIcon
+                  sx={{
+                    color:
+                      selectedItem === text
+                        ? theme.palette.primary.main
+                        : "White",
+                  }}
+                >
                   {(() => {
                     switch (text) {
                       case "Explore":
@@ -202,7 +220,6 @@ export default function SideBar(props: Props) {
           }}
         />
       </Drawer>
-      
     </Box>
   );
 }
