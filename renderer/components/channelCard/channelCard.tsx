@@ -9,12 +9,18 @@ import useUserInfo from "../../api/hooks/user-info";
 import { useGetPhotoPathById } from "../../api/hooks/photo-hook";
 import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
+import { useRouter } from "next/router";
 
-export default function ChannelCard({ title, imageId, description, ownerId }) {
+export default function ChannelCard({ title, imageId, description, ownerId, channelId }) {
   const { userData, updateUser } = useUser();
   const { mutate: getImageURL } = useGetPhotoPathById();
   const [imageUrl, setImageUrl] = useState<string>("");
   const ownerInfo = useUserInfo(ownerId);
+  const router = useRouter()
+
+  const handleSeeMore = ()=>{
+    router.push(`/channelInfo/${channelId}`)
+  }
 
   const handleGetImageUrl = async () => {
     if (imageId) {
@@ -56,7 +62,7 @@ export default function ChannelCard({ title, imageId, description, ownerId }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button fullWidth variant={"outlined"}>See More</Button>
+        <Button fullWidth variant={"outlined"} onClick={handleSeeMore}>See More</Button>
       </CardActions>
     </Card>
   );

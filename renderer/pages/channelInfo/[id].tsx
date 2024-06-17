@@ -93,32 +93,10 @@ export default function ChannelInfo() {
                         <Box fontWeight='fontWeightMedium' display='inline'>Description: </Box>
                         {channelInfo.description}
                     </Typography>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        marginBottom: "0.5rem"
-                    }}>
-                        <Typography>
-                            <Box fontWeight='fontWeightMedium' display='inline'>Rating: </Box>
-                        </Typography>
-                        <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
-                    </Box>
                     <Typography sx={{ mb: "0.5rem" }}>
                         <Box fontWeight='fontWeightMedium' display='inline-block'>Created by:&nbsp; </Box>
                         <Link href="#">Amongus Elmasry</Link>
                     </Typography>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        marginBottom: "0.7rem"
-                    }}>
-                        <LanguageIcon />
-                        <Typography>
-                            {channelInfo.language}
-                        </Typography>
-                    </Box>
                     <Box style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
                         {imageUrl &&
                             <img style={{ width: "70%", height: "70%", marginBottom: "0.5rem" }} src={imageUrl} />

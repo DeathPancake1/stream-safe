@@ -75,6 +75,11 @@ export default function SideBar(props: Props) {
       setDisplay("block");
       props.setWidth(290);
     }
+    const currentRoute = router.pathname;
+    const isNotAuthRoute = !/^\/(login|signup|forgetpassword)/.test(currentRoute);    
+    if (userData.email === "" && isNotAuthRoute ) {
+      router.push("/login")
+    }
   }, [userData.email]);
 
   useHomeLogic();
@@ -83,9 +88,14 @@ export default function SideBar(props: Props) {
     if (text === "Logout") {
       logout();
     } else if (text === "My Channels") {
+      setSelectedItem(text);
       router.push(`/myChannels`);
     }
-    setSelectedItem(text);
+    else if (text === "Explore") {
+      setSelectedItem(text);
+      router.push(`/allChannels`);
+    }
+    
   };
 
   return (

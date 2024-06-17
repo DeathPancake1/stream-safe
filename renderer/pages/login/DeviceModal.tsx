@@ -57,7 +57,7 @@ export default function DeviceModal({open, setOpen}: props){
     };
 
     const login = () =>{
-        router.push('/test')
+        router.push('/allChannels')
     }
 
     useEffect(()=>{

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useAllChannels } from "../../api/hooks/channel-card-hook";
-import RecipeReviewCard from "../channelCard/channelCard";
+import RecipeReviewCard from "../../components/channelCard/channelCard";
 import { useUser } from "../../providers/UserContext";
 import {
   useGetPhotoByPath,
   useGetPhotoPathById,
 } from "../../api/hooks/photo-hook";
-import SearchBox from "../SearchBox";
+import SearchBox from "../../components/SearchBox";
 import { Box } from "@mui/material";
 import { useSearchAllChannels } from "../../api/hooks/channel-hook";
+import ChannelCard from "../../components/channelCard/channelCard";
 
 export default function AllChannelPage() {
   const { userData } = useUser();
@@ -54,7 +55,7 @@ export default function AllChannelPage() {
   return (
     <Box
       component="main"
-      sx={{ flexGrow: 1, p: 3, width: `calc(100vw - 290px)` }}
+      sx={{ width: '100%' }}
     >
       <Box
         style={{
@@ -66,11 +67,12 @@ export default function AllChannelPage() {
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         {arrayOfChannels.map((channel) => (
           <div key={channel.id} style={{ margin: "10px" }}>
-            <RecipeReviewCard
+            <ChannelCard
               title={channel.title}
               ownerId={channel.ownerId}
               imageId={channel.thumbnailId}
               description={channel.description}
+              channelId={channel.id}
             />
           </div>
         ))}
