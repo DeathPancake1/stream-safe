@@ -32,7 +32,7 @@ export default function myChannels() {
                 <Tab label="Registered" />
                 <Tab label="Owned" />
             </Tabs>
-            <div style={{ display: "flex", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap",marginBottom:"4.2rem" }}>
                 {registeredOrOwned && ownedChannelsArray?.map((channel) => (
                     <div key={channel.id} style={{ margin: "10px" }}>
                         <ChannelCard
