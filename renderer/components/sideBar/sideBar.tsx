@@ -68,19 +68,20 @@ export default function SideBar(props: Props) {
   };
 
   useEffect(() => {
-    if (userData.email === "") {
+    const currentRoute = router.pathname;
+    const isNotAuthRoute = !/^\/(login|signup|forgetpassword|verify)/.test(currentRoute);    
+    if (!isNotAuthRoute) {
       setDisplay("none");
       props.setWidth(0);
     } else {
       setDisplay("block");
       props.setWidth(290);
     }
-    const currentRoute = router.pathname;
-    const isNotAuthRoute = !/^\/(login|signup|forgetpassword)/.test(currentRoute);    
+
     if (userData.email === "" && isNotAuthRoute ) {
       router.push("/login")
     }
-  }, [userData.email]);
+  }, [router.pathname]);
 
   useHomeLogic(userData);
 

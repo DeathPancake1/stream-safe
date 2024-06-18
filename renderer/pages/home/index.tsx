@@ -19,7 +19,7 @@ export default function Home(){
   const [selectedType, setSelectedType] = useState<ChatTypeEnum>()
   const [width, setWidth] = useState<number>(200); // Initial width
   
-  useHomeLogic()
+  // useHomeLogic()
 
   return (
     <Box sx={{display: 'flex', height: `calc(100vh - 80px)`}}>

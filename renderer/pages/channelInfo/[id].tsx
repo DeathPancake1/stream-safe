@@ -88,6 +88,14 @@ export default function ChannelInfo() {
                         <Box fontWeight='fontWeightMedium' display='inline'>Description: </Box>
                         {channelInfo.description}
                     </Typography>
+                    <Typography sx={{ mb: "0.5rem" }} >
+                        <Box fontWeight='fontWeightMedium' display='inline'>Privacy Type: </Box>
+                        {channelInfo.private?"private":"public"}
+                    </Typography>
+                    <Typography sx={{ mb: "0.5rem" }} >
+                        <Box fontWeight='fontWeightMedium' display='inline'>Subscribers Count: </Box>
+                        {channelInfo.totalMembers}
+                    </Typography>
                     <Typography sx={{ mb: "0.5rem" }}>
                         <Box fontWeight='fontWeightMedium' display='inline-block'>Created by:&nbsp; </Box>
                         <Link href="#">Amongus Elmasry</Link>
