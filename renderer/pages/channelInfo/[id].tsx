@@ -56,11 +56,6 @@ export default function ChannelInfo() {
                         }
                     });
             }
-            if (channelInfo.channelContent.length % 2 === 0) {
-                setMid(channelInfo.channelContent.length / 2);
-            } else {
-                setMid(Math.ceil(channelInfo.channelContent.length / 2));
-            }
         }
     }, [channelInfo]);
 
@@ -102,40 +97,6 @@ export default function ChannelInfo() {
                             <img style={{ width: "70%", height: "70%", marginBottom: "0.5rem" }} src={imageUrl} />
                         }
                         <Button style={{ padding: "0.5rem", width: "70%", backgroundColor: primaryColor, color: secondaryColor, marginBottom: "2rem" }}>Subscribe Now</Button>
-                        <Box style={{ width: "70%", border: "2px solid #e8edea", borderRadius: "0.3rem" }}>
-                            <Typography variant="h5" sx={{ fontWeight: "500", m: "1rem 1rem" }} >Channel content</Typography>
-                            <Box style={{ display: "flex", justifyContent: "space-between", margin: "1rem" }}>
-                                <Box style={{ flex: 1 }}>
-                                    {
-                                        channelInfo.channelContent.slice(0, mid).map((item, index) => (
-                                            <ListItem key={index}>
-                                                <ListItemIcon>
-                                                    <DoneIcon />
-                                                </ListItemIcon>
-                                                <ListItemText >
-                                                    <Typography sx={{ fontSize: "0.9rem" }}>
-                                                        {item}
-                                                    </Typography>
-                                                </ListItemText>
-                                            </ListItem>
-                                        ))}
-                                </Box>
-                                <Box style={{ flex: 1 }}>
-                                    {channelInfo.channelContent.slice(mid, channelInfo.channelContent.length).map((item, index) => (
-                                        <ListItem key={index}>
-                                            <ListItemIcon>
-                                                <DoneIcon />
-                                            </ListItemIcon>
-                                            <ListItemText >
-                                                <Typography sx={{ fontSize: "0.9rem" }}>
-                                                    {item}
-                                                </Typography>
-                                            </ListItemText>
-                                        </ListItem>
-                                    ))}
-                                </Box>
-                            </Box>
-                        </Box>
                     </Box>
                 </>
             }

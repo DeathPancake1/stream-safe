@@ -36,6 +36,7 @@ export default function myChannels() {
             }
         );
     }, []);
+    
     return (
         <Box>
             <Typography variant="h4" sx={{ fontWeight: "600" }}>

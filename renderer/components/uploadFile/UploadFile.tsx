@@ -113,7 +113,7 @@ const UploadFile = ({ fileList, setFiles, allowedTypes, maxSize }: Props) => {
                 Upload File
             </Typography>
             <Typography style={{ textTransform: 'none' }}>
-                Drag or click to upload
+                Drag or click
             </Typography>
         </Button>
     )

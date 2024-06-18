@@ -6,7 +6,7 @@ import myChannelsService from "../services/my-channels-service"
 
 const useCreateChannel = ()=>{
     return useMutation(
-        async (data: {title: string, description: string, private: boolean, jwt: string})=>{
+        async (data: {title: string, description: string, private: boolean, jwt: string, thumbnailPhoto: File})=>{
             return await channelService.createChannel(data)
         },
         {

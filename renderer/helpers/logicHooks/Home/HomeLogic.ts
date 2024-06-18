@@ -7,9 +7,7 @@ import { useGetNewMessages } from "../../../api/hooks/messages-hook"
 import { useReceiverSeen } from "../../../api/hooks/key-hook"
 import { useUser } from "../../../providers/UserContext"
 
-export const useHomeLogic = ()=>{
-    const {userData, updateUser} = useUser()
-
+export const useHomeLogic = (userData)=>{
     const {mutate: receiveKeys} = useReceiverSeen()
     const {mutate: getNewMessages} = useGetNewMessages()
 

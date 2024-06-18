@@ -36,7 +36,7 @@ const FileStatus = ({
                 justifyContent: 'start',
                 position: 'relative',
                 borderRadius: '8px',
-                width: 'calc(100vw - 400px)'
+                width: "100%"
             }}
         >
             <Box>
