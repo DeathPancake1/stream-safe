@@ -170,6 +170,30 @@ class ChannelService {
             };
         }
     }
+
+    /**
+     *POST channel/checkIfMember
+     * @returns
+     */
+     async checkIfMember(data: { channelId: string; jwt: string }) {
+        try {
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${data.jwt}`;
+            const res = await axios.post(
+                `${process.env.API_URL}/channel/checkIfMember`,
+                {
+                    id: data.channelId,
+                }
+            );
+            return res;
+        } catch (error) {
+            return {
+                status: 401,
+                data: "",
+            };
+        }
+    }
 }
 
 export default new ChannelService();

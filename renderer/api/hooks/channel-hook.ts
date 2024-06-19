@@ -95,6 +95,19 @@ const useGetMyChannels = () =>{
     )
 }
 
+const useCheckIfMember = () =>{
+    return useMutation(
+        async (data: {jwt: string, channelId: string})=>{
+            return await channelService.checkIfMember(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
 
 
 
@@ -105,5 +118,6 @@ export {
     useGetMembers,
     useGetChannelInfoById,
     useSearchAllChannels,
-    useGetMyChannels
+    useGetMyChannels,
+    useCheckIfMember
 }
