@@ -5,12 +5,8 @@ import ChannelCard from "../../components/channelCard/channelCard";
 import { useGetMyChannels } from "../../api/hooks/channel-hook";
 import AddIcon from "@mui/icons-material/Add";
 import CreateChannelModal from "./createChannelModal";
-import InboxIcon from '@mui/icons-material/Inbox';
 import React from "react";
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import Requests from "./requests";
 
 export default function MyChannels() {
     const [tabValue, setTabValue] = useState<string>("registered");
@@ -26,11 +22,7 @@ export default function MyChannels() {
         setOpenModal(true);
     };
 
-    const requests = [
-        { name: 'Alice', channel: 'General' },
-        { name: 'Bob', channel: 'Development' },
-        { name: 'Charlie', channel: 'Marketing' },
-    ];
+
 
     useEffect(() => {
         getMyChannels(
@@ -48,7 +40,7 @@ export default function MyChannels() {
                 },
             }
         );
-    }, []);
+    }, [tabValue, openModal]);
 
     return (
         <Box>
@@ -95,29 +87,7 @@ export default function MyChannels() {
                         </div>
                     ))}
                 {tabValue === "requests" &&
-                    <Container sx={{ border: '1px solid', borderColor: 'grey.300', margin: '16px' }}>
-                        <List sx={{ width: '100%' }}>
-                            {requests.map((request, index) => (
-                                <React.Fragment key={index}>
-                                    <ListItem
-                                        secondaryAction={
-                                            <>
-                                                <IconButton edge="end" aria-label="accept">
-                                                    <CheckCircleIcon sx={{ color: 'green' }} />
-                                                </IconButton>
-                                                <IconButton edge="end" aria-label="reject">
-                                                    <CancelOutlinedIcon sx={{ color: 'red' }} />
-                                                </IconButton>
-                                            </>
-                                        }
-                                    >
-                                        <ListItemText primary={`${request.name} requests to join ${request.channel}`} />
-                                    </ListItem>
-                                    {index < requests.length - 1 && <Divider />}
-                                </React.Fragment>
-                            ))}
-                        </List>
-                    </Container>
+                    <Requests />
                 }
             </div>
             <Fab
