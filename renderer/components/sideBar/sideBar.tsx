@@ -154,7 +154,7 @@ export default function SideBar(props: Props) {
 
     useEffect(() => {
         const currentRoute = router.pathname;
-        const isNotAuthRoute = !/^\/(login|signup|forgetpassword|verify)/.test(
+        const isNotAuthRoute = !/^\/(login|signup|forgetPassword|verify|resetPassword)/.test(
             currentRoute
         );
         if (!isNotAuthRoute) {

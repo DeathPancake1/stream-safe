@@ -25,7 +25,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }));
 
   useEffect(() => {
-    const isAuthRoute = /^\/(login|signup|verify|resetPassword)/.test(router.pathname);
+    const isAuthRoute = /^\/(login|signup|verify|resetPassword|forgetPassword)/.test(router.pathname);
     if (isAuthRoute) {
       setContentStyle({ width: '100%', marginLeft: '0' });
     } else {

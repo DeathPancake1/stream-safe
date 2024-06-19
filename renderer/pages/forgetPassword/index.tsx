@@ -15,8 +15,8 @@ export default function Page() {
             height: '100%',
           }}
         >
+          <ForgetPasswordForm/>
         </Box>
-        <ForgetPasswordForm/>
       </ThemeProvider>
     );
   }
