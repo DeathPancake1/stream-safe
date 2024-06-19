@@ -16,12 +16,14 @@ type FileStatusProps = {
     file: File
     removeFile: (file: File) => void
     upload: (file: File) => void,
+    fileType?: string
 }
 
 const FileStatus = ({
     file,
     removeFile,
     upload,
+    fileType = ""
 }: FileStatusProps) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -71,7 +73,7 @@ const FileStatus = ({
                     component="label" 
                     variant="contained" 
                     startIcon={<CloudUploadIcon />} 
-                    disabled={isLoading}
+                    disabled={isLoading || fileType === "thumbnail"}
                     onClick={()=>{
                         upload(file) 
                         setIsLoading(true)

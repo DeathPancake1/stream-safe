@@ -48,6 +48,7 @@ export default function UploadThumbnail({setSelectedFile}: Props){
                   handleUpload()
                 }
               }
+              fileType="thumbnail"
             />
           }
         </Box>
