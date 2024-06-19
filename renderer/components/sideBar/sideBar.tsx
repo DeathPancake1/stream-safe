@@ -83,7 +83,7 @@ export default function SideBar(props: Props) {
     }
   }, [router.pathname]);
 
-  useHomeLogic(userData);
+  useHomeLogic(userData.email, userData.jwt);
 
   const handleItemClick = (text) => {
     if (text === "Logout") {

@@ -7,7 +7,7 @@ import { useGetNewMessages } from "../../../api/hooks/messages-hook"
 import { useReceiverSeen } from "../../../api/hooks/key-hook"
 import { useUser } from "../../../providers/UserContext"
 
-export const useHomeLogic = (userData)=>{
+export const useHomeLogic = (email, jwt)=>{
     const {mutate: receiveKeys} = useReceiverSeen()
     const {mutate: getNewMessages} = useGetNewMessages()
 
@@ -33,7 +33,7 @@ export const useHomeLogic = (userData)=>{
                 const privateKey = getPrivateKey();
                 const decryptedKey = await decryptPrivate(privateKey, encryptedKey);
                 const channel = key.channel
-                const id = addChannel(channel.title, channelId, decryptedKey, key.senderEmail, userData.email);
+                const id = addChannel(channel.title, channelId, decryptedKey, key.senderEmail, email);
             }
             
         });
@@ -49,8 +49,8 @@ export const useHomeLogic = (userData)=>{
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            receiveKeys({ jwt: userData.jwt }, { onSuccess: processReceivedKeys });
-            getNewMessages({ jwt: userData.jwt }, { onSuccess: processNewMessages });
+            receiveKeys({ jwt: jwt }, { onSuccess: processReceivedKeys });
+            getNewMessages({ jwt: jwt }, { onSuccess: processNewMessages });
         }, 60000);
 
         return () => clearInterval(intervalId);
