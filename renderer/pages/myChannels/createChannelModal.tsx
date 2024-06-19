@@ -34,7 +34,15 @@ export default function CreateChannelModal({ open, setOpen }: props) {
         setOpen(false);
     };
 
+    const isValidTitle = (title: string) => {
+        const invalidCharacters = /[\\/:*?"<>|]/;
+        return !invalidCharacters.test(title);
+    };
+
     const handleSubmit = async (title: string, description: string, privateChan: boolean) => {
+        if (!isValidTitle(title)) {
+            return;
+        }
         const channelSymmetricKey = await generateSymmetricKey256()
         createChannel(
             {
