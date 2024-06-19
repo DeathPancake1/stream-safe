@@ -18,6 +18,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useUser } from "../../providers/UserContext";
 import { useRouter } from "next/router";
 import { useHomeLogic } from "../../helpers/logicHooks/Home/HomeLogic";
+import ChatIcon from '@mui/icons-material/Chat';
 
 interface Props {
   childrenFunction: any;
@@ -96,6 +97,10 @@ export default function SideBar(props: Props) {
       setSelectedItem(text);
       router.push(`/allChannels`);
     }
+    else if (text === "Chats") {
+      setSelectedItem(text);
+      router.push(`/chats`);
+    }
     
   };
 
@@ -136,7 +141,7 @@ export default function SideBar(props: Props) {
             variant="middle"
             sx={{ background: theme.palette.secondary.main, mb: "0.7rem" }}
           />
-          {["Explore", "My Channels", "Logout"].map((text) => (
+          {["Explore", "My Channels","Chats", "Logout"].map((text) => (
             <ListItem
               key={text}
               disablePadding
@@ -179,6 +184,8 @@ export default function SideBar(props: Props) {
                         return <Settings />;
                       case "Logout":
                         return <LogoutIcon />;
+                      case "Chats":
+                        return <ChatIcon />;
                       default:
                         return null;
                     }
