@@ -19,8 +19,8 @@ export default function Page() {
             height: '100%',
           }}
         >
+          <VerifyOtpForm type={type} />
         </Box>
-        <VerifyOtpForm type={type} />
       </ThemeProvider>
     );
   }
