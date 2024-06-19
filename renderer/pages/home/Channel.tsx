@@ -1,4 +1,11 @@
-import { Box, Divider, Typography, Button, Popover } from "@mui/material";
+import {
+    Box,
+    Divider,
+    Typography,
+    Button,
+    Popover,
+    IconButton,
+} from "@mui/material";
 import Welcome from "../../components/auth/Welcome";
 import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
@@ -10,10 +17,12 @@ import MembersPopover from "./MembersPopover";
 import theme from "../../themes/theme";
 import { useLiveQuery } from "dexie-react-hooks";
 import { channelsDB } from "../../indexedDB/channel.db";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useRouter } from "next/router";
 
 interface Props {
     channel?: ChannelType;
-    setChannel: (data: ChannelType) => void
+    setChannel: (data: ChannelType) => void;
 }
 
 export default function Channel({
@@ -23,7 +32,7 @@ export default function Channel({
         name: "",
         key: "",
     },
-    setChannel
+    setChannel,
 }: Props) {
     const { userData, updateUser } = useUser();
     const [openPopover, setOpenPopover] = useState<boolean>(false);
@@ -31,6 +40,7 @@ export default function Channel({
         null
     );
     const [channelKey, setChannelKey] = useState<string>("");
+    const router = useRouter();
 
     const handleOpenPopover = (event) => {
         if (channel.ownerEmail === userData.email) {
@@ -42,6 +52,13 @@ export default function Channel({
     const handleClose = (event) => {
         setAnchorEl(null);
         setOpenPopover(false);
+    };
+
+    const handleBack = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        router.back();
     };
 
     useLiveQuery(async () => {
@@ -57,18 +74,17 @@ export default function Channel({
             } else {
                 setChannelKey(null);
             }
-
         }
     }, [channel]);
 
-    useEffect(()=>{
-        if(channelKey){
+    useEffect(() => {
+        if (channelKey) {
             setChannel({
                 ...channel,
-                key: channelKey
-            })
+                key: channelKey,
+            });
         }
-    }, [channelKey])
+    }, [channelKey]);
 
     return (
         <Box
@@ -90,26 +106,54 @@ export default function Channel({
                         height: "100%",
                     }}
                 >
-                    <Box
-                        onClick={handleOpenPopover}
-                        sx={{
-                            cursor:
-                                channel.ownerEmail === userData.email
-                                    ? "pointer"
-                                    : "default",
-                        }}
-                    >
-                        <Typography fontSize={24}>{channel.name}</Typography>
-                        <Typography
-                            fontSize={10}
-                            color={theme.palette.grey[700]}
+                    <Box>
+                        <Box
+                            sx={{
+                                zIndex: 2002,
+                                top: 0,
+                                right: 0,
+                                padding: "4px",
+                                display: "inline",
+                            }}
                         >
-                            {channel.ownerEmail === userData.email &&
-                                "Click for more info"}
+                            <IconButton
+                                onClick={handleBack}
+                                size="large"
+                                sx={{ width: 20, height: 25, color: "black" }}
+                                color="primary"
+                            >
+                                <ArrowBackIcon
+                                    sx={{
+                                        width: 25,
+                                        height: 25,
+                                        color: "black",
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                        <Typography sx={{ display: "inline" }} fontSize={24}>
+                            {channel.name}
                         </Typography>
-                        <Typography fontSize={12}>
-                            {"Owner Email: " + channel.ownerEmail}
-                        </Typography>
+                        <Box
+                            onClick={handleOpenPopover}
+                            sx={{
+                                cursor:
+                                    channel.ownerEmail === userData.email
+                                        ? "pointer"
+                                        : "default",
+                            }}
+                        >
+                            <Typography
+                                fontSize={10}
+                                color={theme.palette.grey[700]}
+                            >
+                                {channel.ownerEmail === userData.email &&
+                                    "Click for more info"}
+                            </Typography>
+                            <Typography fontSize={12}>
+                                {"Owner Email: " + channel.ownerEmail}
+                            </Typography>
+                        </Box>
                         <Divider />
                     </Box>
                     {channel.channelId && channel.key !== "" && (
@@ -130,16 +174,18 @@ export default function Channel({
                             width: "100%",
                         }}
                     >
-                        {
-                            channel && channel.key && <ChannelBody channel={channel} />
-                        }
+                        {channel && channel.key && (
+                            <ChannelBody channel={channel} />
+                        )}
                     </Box>
 
                     {/* Divider */}
                     <Divider />
 
                     {/* Button to upload a file */}
-                    {channel.ownerEmail === userData.email && channel && channel.key ? (
+                    {channel.ownerEmail === userData.email &&
+                    channel &&
+                    channel.key ? (
                         <ChannelCurrentMessage channel={channel} />
                     ) : (
                         <Box

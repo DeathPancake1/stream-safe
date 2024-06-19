@@ -71,7 +71,7 @@ export default function ChatPage() {
     }, [ownerId]);
 
     return (
-        <Box component="main" sx={{ height:"98%", maxWidth: "98%", p: "1%" }}>
+        <Box component="main" sx={{ height:"98%", maxWidth: "98%", p: "1%", pt: "0" }}>
             {chatType && chatType === ChatTypeEnum.chat && userData.jwt ? (
                 <Chat email={id as string} />
             ) : chatType && chatType === ChatTypeEnum.channel && userData.jwt && channelInfo && channelInfo.ownerEmail ? (

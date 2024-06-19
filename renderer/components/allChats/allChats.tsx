@@ -122,7 +122,7 @@ export function AllChats() {
                             <CircularProgress />
                         ) : chats.length > 0 ? (
                             chats.map((chat, index) => (
-                                <Box key={index} sx={{ paddingRight: "30px" }}>
+                                <Box key={index} sx={{ paddingRight: "60px" }}>
                                     <ChatListItem email={chat.email}/>
                                     {index < chats.length - 1 && (
                                         <Divider />
@@ -131,7 +131,7 @@ export function AllChats() {
                             ))
                         ) : searchLength < 3 ? (
                             combinedUniqueUsers.map((email, index) => (
-                                <Box key={index} sx={{ paddingRight: "30px" }}>
+                                <Box key={index} sx={{ paddingRight: "60px" }}>
                                     <ChatListItem email={email}/>
                                     {index < combinedUniqueUsers.length - 1 && (
                                         <Divider />
