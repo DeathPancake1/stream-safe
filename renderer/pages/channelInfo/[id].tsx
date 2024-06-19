@@ -2,18 +2,13 @@ import {
     Alert,
     Box,
     Button,
-    Link,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
+    IconButton,
     Rating,
     Snackbar,
     Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import theme from "../../themes/theme";
-import LanguageIcon from "@mui/icons-material/Language";
-import DoneIcon from "@mui/icons-material/Done";
 import {
     useCheckIfMember,
     useGetChannelInfoById,
@@ -27,7 +22,6 @@ import {
 import { useRouter } from "next/router";
 import { useUserById } from "../../api/hooks/user-by-id-hook";
 import { useCreateChannelRequests } from "../../api/hooks/request-hook";
-import { response } from "express";
 
 interface User {
     firstname: string;
@@ -46,14 +40,13 @@ export default function ChannelInfo() {
         useGetPhotoPathById();
     const { mutate: getPhotoByPath, isLoading: getPhotoByPathLoading } =
         useGetPhotoByPath();
-    const { mutate: createRequest } =
-        useCreateChannelRequests();
+    const { mutate: createRequest } = useCreateChannelRequests();
     const { mutate: checkIfMember } = useCheckIfMember();
     const { userData, updateUser } = useUser();
     const [channelInfo, setChannelInfo] = useState<any>();
     const [photoPath, setPhotoPath] = useState<string>();
     const [status, setStatus] = useState<string>("");
-    const [refresh, setRefresh] = useState<boolean>(false)
+    const [refresh, setRefresh] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>();
     const [imageUrl, setImageUrl] = useState<string>();
     const [owner, setOwner] = useState<User>({
@@ -74,7 +67,7 @@ export default function ChannelInfo() {
         event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
-        router.push(`/chats/${channelInfo.id}/channel`)
+        router.push(`/chats/${channelInfo.id}/channel`);
     };
 
     const handleRequest = (
@@ -84,16 +77,16 @@ export default function ChannelInfo() {
         createRequest(
             {
                 jwt: userData.jwt,
-                channelId: id as string
+                channelId: id as string,
             },
             {
-                onSuccess: (response) =>{
-                    if(response.status === 201){
-                        setRefresh((prev)=>!prev)
+                onSuccess: (response) => {
+                    if (response.status === 201) {
+                        setRefresh((prev) => !prev);
                     }
-                }
+                },
             }
-        )
+        );
     };
 
     useEffect(() => {
@@ -188,118 +181,151 @@ export default function ChannelInfo() {
         );
     }, [refresh]);
 
+    const handleBack = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        router.back()
+    };
+
     return (
-        <Box sx={{ backgroundColor: secondaryColor }}>
-            {channelInfo && (
-                <>
-                    <Typography
-                        variant="h3"
-                        sx={{
-                            whiteSpace: "nowrap",
-                            fontWeight: "600",
-                            mb: "0.7rem",
-                        }}
-                    >
-                        {channelInfo.title}
-                    </Typography>
-                    <Typography sx={{ mb: "0.5rem" }}>
-                        <Box fontWeight="fontWeightMedium" display="inline">
-                            Description:{" "}
-                        </Box>
-                        {channelInfo.description}
-                    </Typography>
-                    <Typography sx={{ mb: "0.5rem" }}>
-                        <Box fontWeight="fontWeightMedium" display="inline">
-                            Privacy Type:{" "}
-                        </Box>
-                        {channelInfo.private ? "private" : "public"}
-                    </Typography>
-                    <Typography sx={{ mb: "0.5rem" }}>
-                        <Box fontWeight="fontWeightMedium" display="inline">
-                            Subscribers Count:{" "}
-                        </Box>
-                        {channelInfo.totalMembers}
-                    </Typography>
-                    <Typography sx={{ mb: "0.5rem" }}>
-                        <Box
-                            fontWeight="fontWeightMedium"
-                            display="inline-block"
-                        >
-                            Created by:&nbsp;{" "}
-                        </Box>
-                        {owner.firstname + " " + owner.lastname}
-                    </Typography>
-                    <Box
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            width: "100%",
-                        }}
-                    >
-                        {imageUrl && (
-                            <img
-                                style={{
-                                    width: "70%",
-                                    height: "70%",
-                                    marginBottom: "0.5rem",
-                                }}
-                                src={imageUrl}
-                            />
-                        )}
-                        {status === "Not Member" && (
-                            <Button
-                                style={{
-                                    padding: "0.5rem",
-                                    width: "70%",
-                                    backgroundColor: primaryColor,
-                                    color: secondaryColor,
-                                    marginBottom: "2rem",
-                                }}
-                                onClick={handleRequest}
-                            >
-                                Request Join
-                            </Button>
-                        )}
-                        {status === "Member" && (
-                            <Button
-                                style={{
-                                    padding: "0.5rem",
-                                    width: "70%",
-                                    backgroundColor: primaryColor,
-                                    color: secondaryColor,
-                                    marginBottom: "2rem",
-                                }}
-                                onClick={handleMessage}
-                            >
-                                Message
-                            </Button>
-                        )}
-                        {status === "Pending" && (
-                            <Button
-                                variant="contained"
-                                disabled
-                                style={{
-                                    padding: "0.5rem",
-                                    width: "70%",
-                                    marginBottom: "2rem",
-                                }}
-                            >
-                                Pending
-                            </Button>
-                        )}
-                    </Box>
-                </>
-            )}
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert
-                    onClose={handleClose}
-                    severity="error"
-                    sx={{ width: "100%" }}
+        <Box>
+            <Box
+                sx={{
+                    zIndex: 2002,
+                    position: "fixed",
+                    top: 0,
+                    right: 0,
+                    backgroundColor: "rgb(0, 0, 0, 0.7)",
+                    padding: "4px",
+                    borderRadius: " 0 0 0 15px",
+                }}
+            >
+                <IconButton
+                    onClick={handleBack}
+                    size="large"
+                    sx={{ width: 35, height: 35 }}
+                    color="secondary"
                 >
-                    Error loading the page
-                </Alert>
-            </Snackbar>
+                    <CloseIcon sx={{ width: 35, height: 35 }} />
+                </IconButton>
+            </Box>
+            <Box sx={{ backgroundColor: secondaryColor}}>
+                {channelInfo && (
+                    <>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                whiteSpace: "nowrap",
+                                fontWeight: "600",
+                                mb: "0.7rem",
+                            }}
+                        >
+                            {channelInfo.title}
+                        </Typography>
+                        <Typography sx={{ mb: "0.5rem" }}>
+                            <Box fontWeight="fontWeightMedium" display="inline">
+                                Description:{" "}
+                            </Box>
+                            {channelInfo.description}
+                        </Typography>
+                        <Typography sx={{ mb: "0.5rem" }}>
+                            <Box fontWeight="fontWeightMedium" display="inline">
+                                Privacy Type:{" "}
+                            </Box>
+                            {channelInfo.private ? "private" : "public"}
+                        </Typography>
+                        <Typography sx={{ mb: "0.5rem" }}>
+                            <Box fontWeight="fontWeightMedium" display="inline">
+                                Subscribers Count:{" "}
+                            </Box>
+                            {channelInfo.totalMembers}
+                        </Typography>
+                        <Typography sx={{ mb: "0.5rem" }}>
+                            <Box
+                                fontWeight="fontWeightMedium"
+                                display="inline-block"
+                            >
+                                Created by:&nbsp;{" "}
+                            </Box>
+                            {owner.firstname + " " + owner.lastname}
+                        </Typography>
+                        <Box
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                width: "100%",
+                            }}
+                        >
+                            {imageUrl && (
+                                <img
+                                    style={{
+                                        width: "70%",
+                                        height: "70%",
+                                        marginBottom: "0.5rem",
+                                    }}
+                                    src={imageUrl}
+                                />
+                            )}
+                            {status === "Not Member" && (
+                                <Button
+                                    style={{
+                                        padding: "0.5rem",
+                                        width: "70%",
+                                        backgroundColor: primaryColor,
+                                        color: secondaryColor,
+                                        marginBottom: "2rem",
+                                    }}
+                                    onClick={handleRequest}
+                                >
+                                    Request Join
+                                </Button>
+                            )}
+                            {status === "Member" && (
+                                <Button
+                                    style={{
+                                        padding: "0.5rem",
+                                        width: "70%",
+                                        backgroundColor: primaryColor,
+                                        color: secondaryColor,
+                                        marginBottom: "2rem",
+                                    }}
+                                    onClick={handleMessage}
+                                >
+                                    Message
+                                </Button>
+                            )}
+                            {status === "Pending" && (
+                                <Button
+                                    variant="contained"
+                                    disabled
+                                    style={{
+                                        padding: "0.5rem",
+                                        width: "70%",
+                                        marginBottom: "2rem",
+                                    }}
+                                >
+                                    Pending
+                                </Button>
+                            )}
+                        </Box>
+                    </>
+                )}
+                <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                >
+                    <Alert
+                        onClose={handleClose}
+                        severity="error"
+                        sx={{ width: "100%" }}
+                    >
+                        Error loading the page
+                    </Alert>
+                </Snackbar>
+            </Box>
         </Box>
     );
 }

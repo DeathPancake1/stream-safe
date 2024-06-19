@@ -48,7 +48,7 @@ export default function ChatPage() {
     }, [id, chatType]);
 
     useEffect(() => {
-        if(chatType && ownerId){
+        if(chatType === "channel" && ownerId){
             getUserById(
                 { ownerId: ownerId, jwt: userData.jwt },
                 {
@@ -61,6 +61,7 @@ export default function ChatPage() {
                                 ownerEmail: response.data.message.email
                             }
                             setChannelInfo(channel)
+                            console.log(channelInfo.key)
                         }
                     },
                 }
@@ -74,7 +75,7 @@ export default function ChatPage() {
             {chatType && chatType === ChatTypeEnum.chat && userData.jwt ? (
                 <Chat email={id as string} />
             ) : chatType && chatType === ChatTypeEnum.channel && userData.jwt && channelInfo && channelInfo.ownerEmail ? (
-                <Channel channel={channelInfo} />
+                <Channel channel={channelInfo} setChannel={setChannelInfo} />
             ) : (
                 <Box
                     sx={{

@@ -17,7 +17,6 @@ export default function Page() {
             alignItems: 'center',
             width: '100%',
             height: '100%',
-            marginTop: '5%'
           }}
         >
         </Box>

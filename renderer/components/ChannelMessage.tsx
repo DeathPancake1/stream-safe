@@ -3,10 +3,6 @@ import { ChannelVideo, keysDB, updateChannelVideo, updateVideo } from "../indexe
 import DownloadIcon from '@mui/icons-material/Download';
 import { useUser } from "../providers/UserContext";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { useState } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
-import { useDownloadFile } from "../api/hooks/download-file-hook";
-import writeFile from "../helpers/fileSystem/writeFile";
 import { localUrl } from "../config";
 import decryptAESHex from "../helpers/decryption/decryptAESHex";
 import secureLocalStorage from "react-secure-storage";

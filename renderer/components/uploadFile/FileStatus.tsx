@@ -30,7 +30,6 @@ const FileStatus = ({
         <Box
             sx={{
                 backgroundColor: 'primary.primaryLight4',
-                padding: '8px',
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'start',
