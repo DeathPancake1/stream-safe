@@ -7,6 +7,13 @@ import { useUser } from "../../providers/UserContext";
 import { useEffect, useState } from "react";
 import { useGetPhotoByPath, useGetPhotoPathById } from "../../api/hooks/photo-hook";
 import { useRouter } from 'next/router';
+import { useUserById } from "../../api/hooks/user-by-id-hook";
+
+interface User {
+    firstname: string;
+    lastname: string;
+    photoId: number | null;
+}
 
 export default function ChannelInfo() {
     const router = useRouter();
@@ -20,8 +27,13 @@ export default function ChannelInfo() {
     const [channelInfo, setChannelInfo] = useState<any>();
     const [photoPath, setPhotoPath] = useState<string>();
     const [open, setOpen] = useState<boolean>();
-    const [mid, setMid] = useState<number>(0);
     const [imageUrl, setImageUrl] = useState<string>();
+    const [owner, setOwner] = useState<User>({
+        firstname: "",
+        lastname: "",
+        photoId: 0,
+    });
+    const { mutate: getUserById } = useUserById();
 
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         setOpen(false);
@@ -77,6 +89,25 @@ export default function ChannelInfo() {
         }
     }, [photoPath]);
 
+    useEffect(()=>{
+        if(channelInfo){
+            getUserById(
+                {
+                    jwt: userData.jwt,
+                    ownerId: channelInfo.ownerId
+                },
+                {
+                    onSuccess: (response) =>{
+                        if(response.status === 201) {
+                            setOwner(response.data.message)
+                        }
+                    }
+                }
+            )
+        }
+        
+    }, [channelInfo])
+
     return (
         <Box sx={{ backgroundColor: secondaryColor }}>
             {channelInfo &&
@@ -98,7 +129,7 @@ export default function ChannelInfo() {
                     </Typography>
                     <Typography sx={{ mb: "0.5rem" }}>
                         <Box fontWeight='fontWeightMedium' display='inline-block'>Created by:&nbsp; </Box>
-                        <Link href="#">Amongus Elmasry</Link>
+                        {owner.firstname + " " + owner.lastname}
                     </Typography>
                     <Box style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
                         {imageUrl &&

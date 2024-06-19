@@ -5,7 +5,6 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import useUserInfo from "../../api/hooks/user-info";
 import {
     useGetPhotoByPath,
     useGetPhotoPathById,
@@ -13,6 +12,13 @@ import {
 import { useEffect, useState } from "react";
 import { useUser } from "../../providers/UserContext";
 import { useRouter } from "next/router";
+import { useUserById } from "../../api/hooks/user-by-id-hook";
+
+interface User {
+    firstname: string;
+    lastname: string;
+    photoId: number | null;
+}
 
 export default function ChannelCard({
     title,
@@ -28,12 +34,30 @@ export default function ChannelCard({
         useGetPhotoByPath();
     const [photoPath, setPhotoPath] = useState<string>("");
     const [imageUrl, setImageUrl] = useState<string>("");
-    const ownerInfo = useUserInfo(ownerId);
+    const [owner, setOwner] = useState<User>({
+        firstname: "",
+        lastname: "",
+        photoId: 0,
+    });
+    const { mutate: getUserById } = useUserById();
     const router = useRouter();
 
     const handleSeeMore = () => {
         router.push(`/channelInfo/${channelId}`);
     };
+
+    useEffect(() => {
+        getUserById(
+            { ownerId: ownerId, jwt: userData.jwt },
+            {
+                onSuccess: (response) => {
+                    if (response.status === 201) {
+                        setOwner(response.data.message);
+                    }
+                },
+            }
+        );
+    }, []);
 
     useEffect(() => {
         if (imageId) {
@@ -83,7 +107,7 @@ export default function ChannelCard({
                     {title}
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    Owner: <i>{ownerInfo?.firstname}</i>
+                    Owner: <i>{owner?.firstname}</i>
                 </Typography>
                 <Typography
                     variant="body2"
