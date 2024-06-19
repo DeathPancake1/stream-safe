@@ -294,7 +294,7 @@ export default function ChannelInfo() {
                                     }}
                                     onClick={handleMessage}
                                 >
-                                    Message
+                                    See Content
                                 </Button>
                             )}
                             {status === "Pending" && (

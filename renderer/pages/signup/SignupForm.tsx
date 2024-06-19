@@ -106,7 +106,7 @@ export default function SignupForm() {
             }}
         >
             <Snackbar open={openOTP} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Something rong happend while sending OTP</Alert>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Something wrong happend while sending OTP</Alert>
             </Snackbar>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>Email already exists</Alert>
