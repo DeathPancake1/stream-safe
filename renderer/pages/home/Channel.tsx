@@ -148,7 +148,7 @@ export default function Channel({
                                 color={theme.palette.grey[700]}
                             >
                                 {channel.ownerEmail === userData.email &&
-                                    "Click for more info"}
+                                    "Manage members"}
                             </Typography>
                             <Typography fontSize={12}>
                                 {"Owner Email: " + channel.ownerEmail}

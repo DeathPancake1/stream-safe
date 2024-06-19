@@ -7,14 +7,14 @@ import AddIcon from "@mui/icons-material/Add";
 import CreateChannelModal from "./createChannelModal";
 import React from "react";
 import Requests from "./requests";
+import { useLiveQuery } from "dexie-react-hooks";
+import { channelsDB } from "../../indexedDB/channel.db";
 
 export default function MyChannels() {
     const [tabValue, setTabValue] = useState<string>("registered");
     const { userData } = useUser();
     const [openModal, setOpenModal] = useState<boolean>(false);
 
-    const { mutate: getMyChannels, isLoading: getMyChannelsLoading } =
-        useGetMyChannels();
     const [registeredChannelsArray, setRegisteredChannelsArray] = useState([]);
     const [ownedChannelsArray, setOwnedChannelsArray] = useState([]);
 
@@ -24,26 +24,39 @@ export default function MyChannels() {
 
 
 
-    useEffect(() => {
-        if(userData.jwt){
-            getMyChannels(
-                { jwt: userData.jwt },
-                {
-                    onSuccess: (response) => {
-                        if (response.status === 201) {
-                            setOwnedChannelsArray(
-                                response.data.message["ownedChannels"]
-                            );
-                            setRegisteredChannelsArray(
-                                response.data.message["registeredChannels"]
-                            );
-                        }
-                    },
-                }
-            );
+    useLiveQuery(async () => {
+        if (userData?.email) {
+          const registeredChannelsFromDb = await channelsDB.channels
+            .where('userEmail')
+            .equalsIgnoreCase(userData.email)
+            .and(channel => channel.ownerEmail !== userData.email)
+            .sortBy('date');
+    
+          const registeredChannels = Array.from(new Set(registeredChannelsFromDb.map((channel) => ({
+            name: channel.name,
+            channelId: channel.channelId,
+            ownerEmail: channel.ownerEmail,
+            key: channel.channelKey,
+          }))));
+    
+          setRegisteredChannelsArray(registeredChannels);
+    
+          // Query for channels where user is the owner
+          const ownedChannelsFromDb = await channelsDB.channels
+            .where('ownerEmail')
+            .equalsIgnoreCase(userData.email)
+            .sortBy('date');
+    
+          const ownedChannels = Array.from(new Set(ownedChannelsFromDb.map((channel) => ({
+            name: channel.name,
+            channelId: channel.channelId,
+            ownerEmail: channel.ownerEmail,
+            key: channel.channelKey,
+          }))));
+    
+          setOwnedChannelsArray(ownedChannels);
         }
-        
-    }, [tabValue, openModal, userData]);
+    }, [userData?.email]);
 
     return (
         <Box>
