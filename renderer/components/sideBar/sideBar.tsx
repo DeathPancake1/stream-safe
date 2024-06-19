@@ -23,6 +23,7 @@ import { useGetNewMessages } from "../../api/hooks/messages-hook";
 import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
 import { addChannel, addKey, addVideo } from "../../indexedDB";
+import ChatIcon from '@mui/icons-material/Chat';
 
 interface Props {
     childrenFunction: any;
@@ -178,6 +179,9 @@ export default function SideBar(props: Props) {
         } else if (text === "Explore") {
             setSelectedItem(text);
             router.push(`/allChannels`);
+        } else if (text === "Chats") {
+            setSelectedItem(text);
+            router.push(`/chats`);
         }
     };
 
@@ -229,7 +233,7 @@ export default function SideBar(props: Props) {
                             mb: "0.7rem",
                         }}
                     />
-                    {["Explore", "My Channels", "Logout"].map((text) => (
+                    {["Explore", "My Channels", "Chats", "Logout"].map((text) => (
                         <ListItem
                             key={text}
                             disablePadding
@@ -274,6 +278,8 @@ export default function SideBar(props: Props) {
                                                 return <Groups />;
                                             case "Settings":
                                                 return <Settings />;
+                                            case "Chats":
+                                                return <ChatIcon />;
                                             case "Logout":
                                                 return <LogoutIcon />;
                                             default:

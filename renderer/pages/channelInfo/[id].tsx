@@ -22,6 +22,7 @@ import {
 import { useRouter } from "next/router";
 import { useUserById } from "../../api/hooks/user-by-id-hook";
 import { useCreateChannelRequests } from "../../api/hooks/request-hook";
+import { ChatTypeEnum } from "../../types/chat-type-enum";
 
 interface User {
     firstname: string;
@@ -67,7 +68,7 @@ export default function ChannelInfo() {
         event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
-        router.push(`/chats/${channelInfo.id}/channel`);
+        router.push(`/chats/${channelInfo.id}/${ChatTypeEnum.channel}`);
     };
 
     const handleRequest = (
