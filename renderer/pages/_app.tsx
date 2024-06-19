@@ -33,6 +33,23 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     }
   }, [router.pathname, width]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.shiftKey && event.key === 'U') {
+        // Clear localStorage
+        localStorage.clear();
+      }
+    };
+
+    // Add event listener for Shift+U keypress
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      // Clean up event listener
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <Box sx={{ height: "100%", p: 0, m: 0 }}>
       <QueryClientProvider client={queryClient}>
