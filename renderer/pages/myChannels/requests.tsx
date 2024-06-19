@@ -123,7 +123,10 @@ export default function Requests() {
     }, [userData.email]);
 
     useEffect(() => {
-        handleGetChannelRequests();
+        if(userData.email){
+            handleGetChannelRequests();
+        }
+        
     }, [refresh]);
     return (
         <Container

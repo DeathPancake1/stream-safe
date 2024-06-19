@@ -25,22 +25,25 @@ export default function MyChannels() {
 
 
     useEffect(() => {
-        getMyChannels(
-            { jwt: userData.jwt },
-            {
-                onSuccess: (response) => {
-                    if (response.status === 201) {
-                        setOwnedChannelsArray(
-                            response.data.message["ownedChannels"]
-                        );
-                        setRegisteredChannelsArray(
-                            response.data.message["registeredChannels"]
-                        );
-                    }
-                },
-            }
-        );
-    }, [tabValue, openModal]);
+        if(userData.jwt){
+            getMyChannels(
+                { jwt: userData.jwt },
+                {
+                    onSuccess: (response) => {
+                        if (response.status === 201) {
+                            setOwnedChannelsArray(
+                                response.data.message["ownedChannels"]
+                            );
+                            setRegisteredChannelsArray(
+                                response.data.message["registeredChannels"]
+                            );
+                        }
+                    },
+                }
+            );
+        }
+        
+    }, [tabValue, openModal, userData]);
 
     return (
         <Box>

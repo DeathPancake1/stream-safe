@@ -70,6 +70,13 @@ export default function ChannelInfo() {
         setOpen(false);
     };
 
+    const handleMessage = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        router.push(`/chats/${channelInfo.id}/channel`)
+    };
+
     const handleRequest = (
         event?: React.SyntheticEvent | Event,
         reason?: string
@@ -263,6 +270,7 @@ export default function ChannelInfo() {
                                     color: secondaryColor,
                                     marginBottom: "2rem",
                                 }}
+                                onClick={handleMessage}
                             >
                                 Message
                             </Button>

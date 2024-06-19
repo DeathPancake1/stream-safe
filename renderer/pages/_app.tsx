@@ -1,12 +1,11 @@
 import { Box, ThemeProvider } from '@mui/material'
 import type { AppProps } from 'next/app'
 import theme from '../themes/theme'
-import MyAppBar from '../components/appBar/MyAppBar'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from "react-query/devtools";
-import { useEffect, useState } from 'react'
-import { UserProvider, useUser } from '../providers/UserContext'
+import { useState } from 'react'
+import { UserProvider } from '../providers/UserContext'
 import SideBar from '../components/sideBar/sideBar'
+import '../styles/globals.css';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [width, setWidth] = useState<number>(290);
@@ -23,12 +22,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }))
 
   return (
-    <Box>
+    <Box sx={{height: "100%", p: 0, m: 0}}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <UserProvider>
             <SideBar childrenFunction={undefined} width={width} setWidth={setWidth} />
-            <Box sx={{ width: `calc(96% - ${width}px )`, ml: `calc(${width}px + 4%)` }}>
+            <Box sx={{ width: `calc(96% - ${width}px )`, ml: `calc(${width}px + 4%)`, height: "100%" }}>
               <Component {...pageProps} />
             </Box>
             
