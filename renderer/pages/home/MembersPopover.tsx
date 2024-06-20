@@ -107,8 +107,48 @@ export default function MembersPopover({
         }
     };
 
+    const handleExchangeKey = async (email, channelSymmetricKey) => {
+        return new Promise<void>((resolve, reject) => {
+            findUnique(
+                {
+                    email: email,
+                    jwt: userData.jwt,
+                },
+                {
+                    onSuccess: async (response) => {
+                        const member = response.data;
+                        const encryptedWithPublic = await encryptPublic(
+                            member.publicKey,
+                            channelSymmetricKey
+                        );
+                        exchangeKey(
+                            {
+                                channelId: channel.channelId,
+                                jwt: userData.jwt,
+                                email: member.email,
+                                key: encryptedWithPublic,
+                            },
+                            {
+                                onSuccess: (response) => {
+                                    resolve();
+                                },
+                                onError: (error) => {
+                                    console.error(error);
+                                    reject(error);
+                                },
+                            }
+                        );
+                    },
+                    onError: (error) => {
+                        console.error(error);
+                        reject(error);
+                    }
+                }
+            );
+        });
+    };
+
     const handleAddMember = async (newMember) => {
-        let chat: ChatType;
         findUnique(
             {
                 email: newMember,
@@ -116,7 +156,7 @@ export default function MembersPopover({
             },
             {
                 onSuccess: async (response) => {
-                    chat = response.data;
+                    const chat = response.data;
                     await addMember(
                         {
                             channelId: channel.channelId,
@@ -133,30 +173,10 @@ export default function MembersPopover({
                                 ];
 
                                 for (const memberEmail of subscribers) {
-                                    findUnique(
-                                        {
-                                            email: memberEmail,
-                                            jwt: userData.jwt,
-                                        },
-                                        {
-                                            onSuccess: async (response) => {
-                                                const member = response.data;
-                                                const encryptedWithPublic = await encryptPublic(
-                                                    member.publicKey,
-                                                    channelSymmetricKey
-                                                );
-                                                exchangeKey({
-                                                    channelId:
-                                                        channel.channelId,
-                                                    jwt: userData.jwt,
-                                                    email: member.email,
-                                                    key: encryptedWithPublic,
-                                                });
-                                            },
-                                        }
-                                    );
+                                    await handleExchangeKey(memberEmail, channelSymmetricKey);
                                 }
-                                addChannel(channel.name, channel.channelId, channelSymmetricKey, userData.email, userData.email)
+
+                                addChannel(channel.name, channel.channelId, channelSymmetricKey, userData.email, userData.email);
 
                                 setSearchChats([]);
                             },
@@ -181,30 +201,11 @@ export default function MembersPopover({
 
                     for (const memberEmail of subscribedMembers) {
                         if (memberEmail !== oldMember) {
-                            findUnique(
-                                {
-                                    email: memberEmail,
-                                    jwt: userData.jwt,
-                                },
-                                {
-                                    onSuccess: async (response) => {
-                                        const member = response.data;
-                                        const encryptedWithPublic = await encryptPublic(
-                                            member.publicKey,
-                                            channelSymmetricKey
-                                        );
-                                        exchangeKey({
-                                            channelId: channel.channelId,
-                                            jwt: userData.jwt,
-                                            email: member.email,
-                                            key: encryptedWithPublic,
-                                        });
-                                    },
-                                }
-                            );
+                            await handleExchangeKey(memberEmail, channelSymmetricKey);
                         }
                     }
-                    addChannel(channel.name, channel.channelId, channelSymmetricKey, userData.email, userData.email)
+
+                    addChannel(channel.name, channel.channelId, channelSymmetricKey, userData.email, userData.email);
                     setSearchChats([]);
                 },
             }
