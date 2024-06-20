@@ -44,7 +44,7 @@ export async function addChannelVideo(
         downloaded,
         iv,
         type,
-        key: key, 
+        key, 
     });
 
     return id;

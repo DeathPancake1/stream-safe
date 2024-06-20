@@ -31,6 +31,7 @@ import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
 import { addChannel, addChannelVideo, addKey, addVideo } from "../../indexedDB";
 import ChatIcon from '@mui/icons-material/Chat';
 import { useGetMessagesFromChannel } from "../../api/hooks/channel-hook";
+import encryptAESHex from "../../helpers/encryption/encryptAESHex";
 
 interface Props {
     childrenFunction: any;
@@ -111,16 +112,18 @@ export default function SideBar(props: Props) {
         newMessages.forEach(async (message) => {
             const date = Date.parse(message.video.sentDate);
             const privateKey = getPrivateKey();
-            const decryptedKey = decryptPrivate(privateKey, message.usedKey.encryptedKey)
+            const decryptedKey = await decryptPrivate(privateKey, message.usedKey.encryptedKey)
+            const masterKey = secureLocalStorage.getItem("masterKey").toString();
+            const encryptedSym = await encryptAESHex(masterKey, decryptedKey)
             const id = addChannelVideo(
                 message.video.path,
                 message.video.name,
                 message.video.channelId,
                 date,
                 false,
-                message.iv,
-                message.type,
-                decryptedKey
+                message.video.iv,
+                message.video.type,
+                encryptedSym
             );
         });
     };
