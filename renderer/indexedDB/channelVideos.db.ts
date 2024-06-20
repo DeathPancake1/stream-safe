@@ -1,11 +1,11 @@
-import Dexie, { Table } from 'dexie';
-import { channelsDB } from './channel.db'; // Import the channelsDB
+import Dexie, { Table } from "dexie";
+import { channelsDB } from "./channel.db"; // Import the channelsDB
 
 export interface ChannelVideo {
     id?: number;
     path: string;
-    name: string; 
-    channelId: string; 
+    name: string;
+    channelId: string;
     date: Date;
     downloaded: boolean;
     iv: string;
@@ -14,62 +14,49 @@ export interface ChannelVideo {
 }
 
 class ChannelVideoDatabase extends Dexie {
-  videos!: Table<ChannelVideo>;
+    videos!: Table<ChannelVideo>;
 
-  constructor() {
-    super('channelVideosDatabase');
-    this.version(1).stores({
-      videos: '++id, path, name, channelId, date, downloaded, iv, type, key'
-    });
-  }
+    constructor() {
+        super("channelVideosDatabase");
+        this.version(1).stores({
+            videos: "++id, path, name, channelId, date, downloaded, iv, type, key",
+        });
+    }
 }
 
 export const channelVideosDB = new ChannelVideoDatabase();
 
 export async function addChannelVideo(
-  path,
-  name,
-  channelId,
-  date,
-  downloaded,
-  iv,
-  type
+    path,
+    name,
+    channelId,
+    date,
+    downloaded,
+    iv,
+    type,
+    key
 ) {
-  try {
-
-    const channel = await channelsDB.channels
-      .where('channelId')
-      .equalsIgnoreCase(channelId)
-      .first();
-
-    if (!channel) {
-      throw new Error(`Channel with ID ${channelId} not found`);
-    }
-
-    const channelKey = channel.channelKey;
-
     const id = await channelVideosDB.videos.add({
-      path,
-      name,
-      channelId,
-      date,
-      downloaded,
-      iv,
-      type,
-      key: channelKey, // Store the channelKey in the video record
+        path,
+        name,
+        channelId,
+        date,
+        downloaded,
+        iv,
+        type,
+        key: key, 
     });
 
     return id;
-
-  } catch (error) {
-    console.error(error);
-  }
 }
 
-export async function updateChannelVideo(videoId: number, updatedData: ChannelVideo){
-  try {
-    await channelVideosDB.videos.update(videoId, updatedData);
-  } catch (error) {
-    console.error(error);
-  }
+export async function updateChannelVideo(
+    videoId: number,
+    updatedData: ChannelVideo
+) {
+    try {
+        await channelVideosDB.videos.update(videoId, updatedData);
+    } catch (error) {
+        console.error(error);
+    }
 }
