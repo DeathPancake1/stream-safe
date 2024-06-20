@@ -23,9 +23,7 @@ export default function ChannelBody({ channel }: Props) {
     const { userData, updateUser } = useUser();
     const [videoPlayerVisible, setVideoPlayerVisible] =
         useState<boolean>(false);
-    const { mutate: getMessages } = useGetMessagesFromChannel();
     const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>("");
-    const [forceUpdate, setForceUpdate] = useState(false);
     const [allMessages, setAllMessages] = useState<ChannelVideo[]>([]);
     const [messages, setMessages] = useState<ChannelVideo[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -37,37 +35,7 @@ export default function ChannelBody({ channel }: Props) {
             .sortBy("date");
 
         setMessages(dbMessages);
-    }, [forceUpdate, channel]);
-
-    const processNewMessages = (response) => {
-        const newMessages = response.data;
-        if (newMessages) {
-            newMessages.forEach(async (message) => {
-                // Check if the message already exists in the database
-                const existingMessage = messages.find((existingMsg) => {
-                    return (
-                        existingMsg.name === message.name &&
-                        existingMsg.type === message.type &&
-                        existingMsg.iv === message.iv
-                    );
-                });
-
-                // If the message doesn't exist, add it to the database
-                if (!existingMessage) {
-                    const date = Date.parse(message.sentDate);
-                    const id = addChannelVideo(
-                        message.path,
-                        message.name,
-                        channel.channelId,
-                        date,
-                        false,
-                        message.iv,
-                        message.type
-                    );
-                }
-            });
-        }
-    };
+    }, [channel]);
 
     useEffect(() => {
         const sortedMessages = [...messages].sort(
@@ -81,24 +49,6 @@ export default function ChannelBody({ channel }: Props) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [allMessages]);
-
-    useEffect(() => {
-        setForceUpdate((prev) => !prev);
-
-        getMessages(
-            { jwt: userData.jwt, channelId: channel.channelId },
-            { onSuccess: processNewMessages }
-        );
-
-        const intervalId = setInterval(() => {
-            getMessages(
-                { jwt: userData.jwt, channelId: channel.channelId },
-                { onSuccess: processNewMessages }
-            );
-        }, 20000);
-
-        return () => clearInterval(intervalId);
-    }, [channel]);
 
     return (
         <Box

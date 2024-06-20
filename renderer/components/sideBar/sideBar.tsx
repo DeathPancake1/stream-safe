@@ -28,8 +28,9 @@ import { useReceiverSeen } from "../../api/hooks/key-hook";
 import { useGetNewMessages } from "../../api/hooks/messages-hook";
 import formatPrivateKey from "../../helpers/keyExchange/formatPrivate";
 import decryptPrivate from "../../helpers/keyExchange/decryptPrivate";
-import { addChannel, addKey, addVideo } from "../../indexedDB";
+import { addChannel, addChannelVideo, addKey, addVideo } from "../../indexedDB";
 import ChatIcon from '@mui/icons-material/Chat';
+import { useGetMessagesFromChannel } from "../../api/hooks/channel-hook";
 
 interface Props {
     childrenFunction: any;
@@ -47,6 +48,7 @@ export default function SideBar(props: Props) {
 
     const { mutate: receiveKeys } = useReceiverSeen();
     const { mutate: getNewMessages } = useGetNewMessages();
+    const { mutate: getNewChannelMessages }= useGetMessagesFromChannel()
 
     const getPrivateKey = () => {
         const privateKey = secureLocalStorage.getItem("privateKey").toString();
@@ -104,6 +106,22 @@ export default function SideBar(props: Props) {
         });
     };
 
+    const processNewChannelMessages = (response) => {
+        const newMessages = response.data;
+        newMessages.forEach(async (message) => {
+            const date = Date.parse(message.video.sentDate);
+            const id = addChannelVideo(
+                message.video.path,
+                message.video.name,
+                message.video.channelId,
+                date,
+                false,
+                message.iv,
+                message.type,
+            );
+        });
+    };
+
     const handleRefresh = () => {
         setIsRefreshDisabled(true);
         setRefreshCountdown(5); // Set the countdown duration in seconds
@@ -118,6 +136,11 @@ export default function SideBar(props: Props) {
         getNewMessages(
             { jwt: userData.jwt },
             { onSuccess: processNewMessages }
+        );
+
+        getNewChannelMessages(
+            { jwt: userData.jwt },
+            { onSuccess: processNewChannelMessages }
         );
 
         // Stop countdown after the specified duration

@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie';
+import { channelsDB } from './channel.db'; // Import the channelsDB
 
 export interface ChannelVideo {
     id?: number;
@@ -8,7 +9,8 @@ export interface ChannelVideo {
     date: Date;
     downloaded: boolean;
     iv: string;
-    type: string
+    type: string;
+    key: string;
 }
 
 class ChannelVideoDatabase extends Dexie {
@@ -17,38 +19,57 @@ class ChannelVideoDatabase extends Dexie {
   constructor() {
     super('channelVideosDatabase');
     this.version(1).stores({
-      videos: '++id, path, name, channelId, date, downloaded, iv, type'
+      videos: '++id, path, name, channelId, date, downloaded, iv, type, key'
     });
   }
 }
 
 export const channelVideosDB = new ChannelVideoDatabase();
 
-export async function addChannelVideo(path, name, channelId, date, downloaded, iv, type) {
-    try{
-        const id = await channelVideosDB.videos.add({
-            path,
-            name,
-            channelId,
-            date,
-            downloaded,
-            iv,
-            type
-        });
+export async function addChannelVideo(
+  path,
+  name,
+  channelId,
+  date,
+  downloaded,
+  iv,
+  type
+) {
+  try {
 
-        return id;
+    const channel = await channelsDB.channels
+      .where('channelId')
+      .equalsIgnoreCase(channelId)
+      .first();
 
-    }catch(error){
-
-        console.error(error)
-
+    if (!channel) {
+      throw new Error(`Channel with ID ${channelId} not found`);
     }
+
+    const channelKey = channel.channelKey;
+
+    const id = await channelVideosDB.videos.add({
+      path,
+      name,
+      channelId,
+      date,
+      downloaded,
+      iv,
+      type,
+      key: channelKey, // Store the channelKey in the video record
+    });
+
+    return id;
+
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function updateChannelVideo(videoId: number, updatedData: ChannelVideo){
   try {
     await channelVideosDB.videos.update(videoId, updatedData);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }

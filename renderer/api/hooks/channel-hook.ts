@@ -19,8 +19,21 @@ const useCreateChannel = ()=>{
 
 const useAddMembers = () =>{
     return useMutation(
-        async (data: {channelId: string, newMember: string, key: string, jwt: string})=>{
+        async (data: {channelId: string, newMember: string, jwt: string})=>{
             return await channelService.addMember(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
+const useRemoveMembers = () =>{
+    return useMutation(
+        async (data: {channelId: string, oldMember: string, jwt: string})=>{
+            return await channelService.removeMember(data)
         },
         {
             onSuccess: (response)=>{
@@ -32,7 +45,7 @@ const useAddMembers = () =>{
 
 const useGetMessagesFromChannel = () =>{
     return useMutation(
-        async (data: {channelId: string, jwt: string})=>{
+        async (data: { jwt: string})=>{
             return await channelService.getMessagesFromChannel(data)
         },
         {
@@ -108,6 +121,19 @@ const useCheckIfMember = () =>{
     )
 }
 
+const useExchangeChannelKey = () =>{
+    return useMutation(
+        async (data: {jwt: string, channelId: string, key: string, email: string})=>{
+            return await channelService.exchangeChannelKey(data)
+        },
+        {
+            onSuccess: (response)=>{
+                
+            }
+        }
+    )
+}
+
 
 
 
@@ -119,5 +145,7 @@ export {
     useGetChannelInfoById,
     useSearchAllChannels,
     useGetMyChannels,
-    useCheckIfMember
+    useCheckIfMember,
+    useRemoveMembers,
+    useExchangeChannelKey
 }

@@ -54,7 +54,7 @@ export default function ChannelMessage({ incoming, message, messages, setPlayVid
 
   const playVideo = async ()=>{
     const masterKey = secureLocalStorage.getItem('masterKey').toString()
-    const decryptedKey = await decryptAESHex(masterKey, channel.key)
+    const decryptedKey = await decryptAESHex(masterKey, message.key)
     const base_url = localUrl;
     setVideo(base_url+'/decrypt/'+channel.channelId+'/'+message.name+'/'+decryptedKey+'/'+message.iv)
     setPlayVideo(true)

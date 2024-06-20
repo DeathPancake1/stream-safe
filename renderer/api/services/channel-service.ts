@@ -53,7 +53,6 @@ class ChannelService {
     async addMember(data: {
         channelId: string;
         newMember: string;
-        key: string;
         jwt: string;
     }) {
         try {
@@ -64,8 +63,67 @@ class ChannelService {
                 `${process.env.API_URL}/channel/addMember`,
                 {
                     channelId: data.channelId,
-                    key: data.key,
                     newMemberEmails: data.newMember,
+                }
+            );
+            return res;
+        } catch (error) {
+            return {
+                status: 401,
+                data: "",
+            };
+        }
+    }
+
+    /**
+     *POST channel/removeMember
+     * @returns
+     */
+     async removeMember(data: {
+        channelId: string;
+        oldMember: string;
+        jwt: string;
+    }) {
+        try {
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${data.jwt}`;
+            const res = await axios.post(
+                `${process.env.API_URL}/channel/removeMember`,
+                {
+                    channelId: data.channelId,
+                    oldMemberEmail: data.oldMember,
+                }
+            );
+            return res;
+        } catch (error) {
+            return {
+                status: 401,
+                data: "",
+            };
+        }
+    }
+
+    /**
+     *POST channel/exchangeChannelKey
+     * @returns
+     */
+     async exchangeChannelKey(data: {
+        channelId: string;
+        email: string;
+        key: string
+        jwt: string;
+    }) {
+        try {
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${data.jwt}`;
+            const res = await axios.post(
+                `${process.env.API_URL}/channel/exchangeChannelKey`,
+                {
+                    channelId: data.channelId,
+                    receiverEmail: data.email,
+                    key: data.key
                 }
             );
             return res;
@@ -81,16 +139,13 @@ class ChannelService {
      *POST channel/getMessagesFromChannel
      * @returns
      */
-    async getMessagesFromChannel(data: { channelId: string; jwt: string }) {
+    async getMessagesFromChannel(data: { jwt: string }) {
         try {
             axios.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${data.jwt}`;
-            const res = await axios.post(
+            const res = await axios.get(
                 `${process.env.API_URL}/channelFiles/getMessagesFromChannel`,
-                {
-                    channelId: data.channelId,
-                }
             );
             return res;
         } catch (error) {
