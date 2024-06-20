@@ -61,7 +61,6 @@ export default function ChatPage() {
                                 ownerEmail: response.data.message.email
                             }
                             setChannelInfo(channel)
-                            console.log(channelInfo.key)
                         }
                     },
                 }

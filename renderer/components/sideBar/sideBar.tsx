@@ -56,7 +56,6 @@ export default function SideBar(props: Props) {
 
     const processReceivedKeys = (response) => {
         const newKeys = response.data;
-        console.log(newKeys);
         newKeys.forEach(async (key) => {
             if (key.type === "USER") {
                 const senderEmail = key.senderEmail;
@@ -140,6 +139,7 @@ export default function SideBar(props: Props) {
                 break;
             case 3:
                 componentToRender = <Looks3Icon />;
+                break;
             case 2:
                 componentToRender = <LooksTwoIcon />;
                 break;
