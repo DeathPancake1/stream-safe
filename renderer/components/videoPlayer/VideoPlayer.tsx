@@ -25,14 +25,13 @@ export default function VideoPlayer({
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number | null>(null);
   const playerRef = useRef<ReactPlayer | null>(null);
-  const playerContainerRef = useRef(null);
-  const {userData, updateUser} = useUser()
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const { userData } = useUser();
   const [position, setPosition] = useState({ top: '0%', left: '0%' });
-
 
   const updatePosition = () => {
     if (playerContainerRef.current) {
-      const playerRect = playerContainerRef.current.getBoundingClientRect()
+      const playerRect = playerContainerRef.current.getBoundingClientRect();
       setPosition({
         top: `${Math.floor(Math.random() * (playerRect.bottom - 50 - playerRect.top + 1)) + playerRect.top}px`,
         left: `${Math.floor(Math.random() * (playerRect.right - 200 - playerRect.left + 1)) + playerRect.left}px`,
@@ -40,28 +39,24 @@ export default function VideoPlayer({
     }
   };
 
-
   useEffect(() => {
-    updatePosition()
+    updatePosition();
     const intervalId = setInterval(updatePosition, 3000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
-    // Create the blob URL when the component mounts
     if (videoUrl) {
-      const url = videoUrl
+      const url = videoUrl;
       setBlobUrl(url);
 
       return () => {
-        // Revoke the blob URL when the component unmounts
         URL.revokeObjectURL(url);
       };
     }
   }, [videoUrl]);
 
-  // Handle the duration event to get the video duration
   const handleDuration = (newDuration: number) => {
     setDuration(newDuration);
   };
@@ -73,18 +68,18 @@ export default function VideoPlayer({
         left: position.left,
         top: position.top,
         zIndex: 2002,
-        backgroundColor: 'rgb(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         width: "fit-content",
         padding: "4px",
         borderRadius: "2px",
         cursor: "default"
       }}
     >
-      <Typography variant="body2" color={theme.palette.secondary.main} sx={{margin:"auto"}} fontSize={20}>
+      <Typography variant="body2" color={theme.palette.secondary.main} sx={{ margin: "auto" }} fontSize={20}>
         {userData.email}
       </Typography>
     </Box>
-  )
+  );
 
   return (
     <Box
@@ -118,18 +113,21 @@ export default function VideoPlayer({
       />
       {watermarkOverlay}
       {videoUrl && (
-        <Box 
-          ref={playerContainerRef} 
+        <Box
+          ref={playerContainerRef}
           sx={{
-            width: "fit-content",
-            height: "fit-content",
-            margin: "auto"
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
           <ReactPlayer
             ref={playerRef}
-            width={"100%"}
-            height={"100%"}
+            width="100%"
+            height="100%"
             url={blobUrl}
             playing={playerReady && playing}
             muted={muted}
@@ -137,13 +135,23 @@ export default function VideoPlayer({
               setPlayerReady(true);
             }}
             onEnded={() => {
-              setPlaying(false)
-              setCurrentTime(duration)
+              setPlaying(false);
+              setCurrentTime(duration);
             }}
-            onProgress={(progress) =>
-              setCurrentTime(Math.floor(progress.playedSeconds))
-            }
+            onProgress={(progress) => setCurrentTime(Math.floor(progress.playedSeconds))}
             onDuration={handleDuration}
+            style={{ position: "absolute", top: 0, left: 0 }}
+            config={{
+              file: {
+                attributes: {
+                  style: {
+                    objectFit: "contain",
+                    width: "100%",
+                    height: "100%",
+                  },
+                },
+              },
+            }}
           />
         </Box>
       )}
