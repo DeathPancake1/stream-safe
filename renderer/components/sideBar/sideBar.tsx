@@ -110,6 +110,8 @@ export default function SideBar(props: Props) {
         const newMessages = response.data;
         newMessages.forEach(async (message) => {
             const date = Date.parse(message.video.sentDate);
+            const privateKey = getPrivateKey();
+            const decryptedKey = decryptPrivate(privateKey, message.usedKey.encryptedKey)
             const id = addChannelVideo(
                 message.video.path,
                 message.video.name,
@@ -118,7 +120,7 @@ export default function SideBar(props: Props) {
                 false,
                 message.iv,
                 message.type,
-                message.usedKey.id
+                decryptedKey
             );
         });
     };
