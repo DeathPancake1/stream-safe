@@ -116,8 +116,8 @@ export default function SideBar(props: Props) {
                 message.video.channelId,
                 date,
                 false,
-                message.iv,
-                message.type,
+                message.video.iv,
+                message.video.type,
             );
         });
     };
