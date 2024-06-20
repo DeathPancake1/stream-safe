@@ -11,6 +11,12 @@ import {
     ListItemText,
     Typography,
 } from "@mui/material";
+import Looks5Icon from "@mui/icons-material/Looks5";
+import Looks4Icon from "@mui/icons-material/Looks4";
+import Looks3Icon from "@mui/icons-material/Looks3";
+import LooksTwoIcon from "@mui/icons-material/LooksTwo";
+import LooksOneIcon from "@mui/icons-material/LooksOne";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { Search, Groups, Settings, HelpOutline } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import icon from "../../../resources/icon.ico";
@@ -32,13 +38,13 @@ interface Props {
 }
 
 export default function SideBar(props: Props) {
-    const [initialMouseX, setInitialMouseX] = useState<number>(0);
-    const [isResizing, setIsResizing] = useState<boolean>(false);
     const { userData, updateUser } = useUser();
     const [display, setDisplay] = useState<string>("none");
     const [selectedItem, setSelectedItem] = useState<string>("Explore");
 
-    // Start Home Logic
+    const [refreshCountdown, setRefreshCountdown] = useState<number>(0);
+    const [isRefreshDisabled, setIsRefreshDisabled] = useState<boolean>(false);
+
     const { mutate: receiveKeys } = useReceiverSeen();
     const { mutate: getNewMessages } = useGetNewMessages();
 
@@ -50,6 +56,7 @@ export default function SideBar(props: Props) {
 
     const processReceivedKeys = (response) => {
         const newKeys = response.data;
+        console.log(newKeys);
         newKeys.forEach(async (key) => {
             if (key.type === "USER") {
                 const senderEmail = key.senderEmail;
@@ -98,51 +105,53 @@ export default function SideBar(props: Props) {
         });
     };
 
-    useEffect(() => {
-        if (userData.jwt) {
-            const intervalId = setInterval(() => {
-                receiveKeys(
-                    { jwt: userData.jwt },
-                    { onSuccess: processReceivedKeys }
-                );
-                getNewMessages(
-                    { jwt: userData.jwt },
-                    { onSuccess: processNewMessages }
-                );
-            }, 60000);
+    const handleRefresh = () => {
+        setIsRefreshDisabled(true);
+        setRefreshCountdown(5); // Set the countdown duration in seconds
 
-            return () => clearInterval(intervalId);
+        // Start countdown
+        const countdownInterval = setInterval(() => {
+            setRefreshCountdown((prevCount) => prevCount - 1);
+        }, 1000);
+
+        // Trigger API calls after refresh button click
+        receiveKeys({ jwt: userData.jwt }, { onSuccess: processReceivedKeys });
+        getNewMessages(
+            { jwt: userData.jwt },
+            { onSuccess: processNewMessages }
+        );
+
+        // Stop countdown after the specified duration
+        setTimeout(() => {
+            clearInterval(countdownInterval);
+            setIsRefreshDisabled(false);
+        }, 5000); // 5000 milliseconds (5 seconds) in this example
+    };
+
+    const refreshIcon = (refreshCountdown) => {
+        let componentToRender;
+
+        switch (refreshCountdown) {
+            case 5:
+                componentToRender = <Looks5Icon />;
+                break;
+            case 4:
+                componentToRender = <Looks4Icon />;
+                break;
+            case 3:
+                componentToRender = <Looks3Icon />;
+            case 2:
+                componentToRender = <LooksTwoIcon />;
+                break;
+            case 1:
+                componentToRender = <LooksOneIcon />;
+                break;
+            default:
+                componentToRender = <RefreshIcon />;
         }
-    }, [userData]);
 
-    // End Home Logic
-
-    const handleMouseDown = (event) => {
-        setInitialMouseX(event.clientX);
-        setIsResizing(true);
+        return componentToRender;
     };
-
-    const handleMouseUp = () => {
-        setIsResizing(false);
-    };
-
-    const handleMouseMove = (event) => {
-        if (isResizing) {
-            const deltaX = initialMouseX - event.clientX;
-            const newWidth = Math.min(Math.max(props.width - deltaX, 290), 700); // Adjust minimum width as needed
-            props.setWidth(newWidth);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
-
-        return () => {
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
-        };
-    }, [isResizing]);
 
     const router = useRouter();
 
@@ -182,6 +191,9 @@ export default function SideBar(props: Props) {
         } else if (text === "Chats") {
             setSelectedItem(text);
             router.push(`/chats`);
+        }
+        else if (text === "Refresh") {
+            handleRefresh()
         }
     };
 
@@ -233,7 +245,7 @@ export default function SideBar(props: Props) {
                             mb: "0.7rem",
                         }}
                     />
-                    {["Explore", "My Channels", "Chats", "Logout"].map((text) => (
+                    {["Explore", "My Channels", "Chats", "Refresh", "Logout"].map((text) => (
                         <ListItem
                             key={text}
                             disablePadding
@@ -244,6 +256,7 @@ export default function SideBar(props: Props) {
                             onClick={() => handleItemClick(text)}
                         >
                             <ListItemButton
+                                disabled = {text === "Refresh" && isRefreshDisabled}
                                 sx={{
                                     color:
                                         selectedItem === text
@@ -282,6 +295,8 @@ export default function SideBar(props: Props) {
                                                 return <ChatIcon />;
                                             case "Logout":
                                                 return <LogoutIcon />;
+                                            case "Refresh":
+                                                return refreshIcon(refreshCountdown)
                                             default:
                                                 return null;
                                         }
@@ -329,7 +344,6 @@ export default function SideBar(props: Props) {
                     </Box>
                 </List>
                 <div
-                    onMouseDown={handleMouseDown}
                     style={{
                         width: "1px",
                         cursor: "ew-resize",
