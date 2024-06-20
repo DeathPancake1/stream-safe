@@ -44,7 +44,7 @@ export default function ChannelCurrentMessage({
       const masterKey = secureLocalStorage.getItem('masterKey').toString()
       const decryptedKey = await decryptAESHex(masterKey, encryptedKey)
       const originalFile = files[0];
-      await channelEncryptAndUpload(decryptedKey, originalFile, userData, channel.channelId, setIsUploadComplete);
+      await channelEncryptAndUpload(decryptedKey, originalFile, userData, channel.channelId, setIsUploadComplete, channel.key);
       setFiles([])
     };
     
