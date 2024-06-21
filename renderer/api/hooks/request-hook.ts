@@ -30,8 +30,8 @@ const useCreateChannelRequests = () =>{
 
 const useRespondChannelRequest = () =>{
     return useMutation(
-        async (data: {jwt: string, requestId: number, response: boolean, key: string})=>{
-            return await channelRequestService.respondChannelRequest(data.jwt, data.requestId, data.response, data.key)
+        async (data: {jwt: string, requestId: number, response: boolean})=>{
+            return await channelRequestService.respondChannelRequest(data.jwt, data.requestId, data.response)
         },
         {
             onSuccess: (response)=>{

@@ -31,12 +31,11 @@ class ChannelRequestService {
      *POST channelRequest/respond
      * @returns
      */
-     respondChannelRequest(jwt: string, requestId: number, response: boolean, key: string) {
+     respondChannelRequest(jwt: string, requestId: number, response: boolean) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
         const res = axios.post(`${process.env.API_URL}/channelRequest/respond`, {
             requestId: requestId,
             response: response.toString(),
-            key: key
         });
         return res;
     }

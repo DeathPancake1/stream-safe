@@ -16,10 +16,18 @@ import {
 import { useUser } from "../../providers/UserContext";
 import secureLocalStorage from "react-secure-storage";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Channels, channelsDB } from "../../indexedDB/channel.db";
+import { Channels, addChannel, channelsDB } from "../../indexedDB/channel.db";
 import decryptAESHex from "../../helpers/decryption/decryptAESHex";
 import { useFindEmail } from "../../api/hooks/search-hook";
 import encryptPublic from "../../helpers/keyExchange/encryptPublic";
+import { channel } from "diagnostics_channel";
+import {
+    useGetMembers,
+    useAddMembers,
+    useRemoveMembers,
+    useExchangeChannelKey,
+} from "../../api/hooks/channel-hook";
+import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
 
 export default function Requests() {
     const { mutate: getChannelRequests } = useGetChannelRequests();
@@ -28,7 +36,11 @@ export default function Requests() {
     const [requests, setRequests] = useState([]);
     const [channels, setChannels] = useState<Channels[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
-    const { mutate: findByEmail } = useFindEmail();
+    const { mutate: getMembers, isLoading: isLoadingMembers } = useGetMembers();
+    const { mutate: addMember } = useAddMembers();
+    const { mutate: findUnique } = useFindEmail();
+    const { mutate: removeMember } = useRemoveMembers();
+    const { mutate: exchangeKey } = useExchangeChannelKey();
 
     const handleGetChannelRequests = () => {
         getChannelRequests(
@@ -43,60 +55,121 @@ export default function Requests() {
         );
     };
 
-    const handleRespond =
-        (
-            requestId: number,
-            senderEmail: string,
-            response: boolean,
-            channelId: string
-        ) =>
-        async (event) => {
-            event.preventDefault();
-            const masterKey = secureLocalStorage
-                .getItem("masterKey")
-                .toString();
-            let channel: Channels;
-            for (let i = 0; i < channels.length; i++) {
-                if (channels[i].channelId === channelId) {
-                    channel = channels[i];
-                }
+    const fetchMembers = async (channelId): Promise<string[]> => {
+        let membersResponse;
+        await getMembers(
+            {
+                channelId: channelId,
+                jwt: userData.jwt,
+            },
+            {
+                onSuccess: (response) => {
+                    const members = response.data.subscribers.map(
+                        (member) => member.email
+                    );
+                    membersResponse = members;
+                },
             }
-            const decryptedKey = await decryptAESHex(
-                masterKey,
-                channel.channelKey
-            );
-            await findByEmail(
-                { email: senderEmail, jwt: userData.jwt },
+        );
+        return membersResponse;
+    };
+
+    const handleExchangeKey = async (email, channelSymmetricKey, channelId) => {
+        return new Promise<void>((resolve, reject) => {
+            findUnique(
                 {
-                    onSuccess: async (res) => {
-                        if (res.status === 201) {
-                            let user = res.data;
-                            const cipherText = await encryptPublic(
-                                user.publicKey,
-                                decryptedKey
-                            );
-                            respondChannelRequest(
-                                {
-                                    jwt: userData.jwt,
-                                    requestId: requestId,
-                                    response: response,
-                                    key: cipherText,
+                    email: email,
+                    jwt: userData.jwt,
+                },
+                {
+                    onSuccess: async (response) => {
+                        const member = response.data;
+                        const encryptedWithPublic = await encryptPublic(
+                            member.publicKey,
+                            channelSymmetricKey
+                        );
+                        exchangeKey(
+                            {
+                                channelId: channelId,
+                                jwt: userData.jwt,
+                                email: member.email,
+                                key: encryptedWithPublic,
+                            },
+                            {
+                                onSuccess: (response) => {
+                                    resolve();
                                 },
-                                {
-                                    onSuccess: (response) => {
-                                        if (response.status === 201) {
-                                            setRefresh((prev) => !prev);
-                                        }
-                                    },
-                                }
-                            );
-                        }
+                                onError: (error) => {
+                                    console.error(error);
+                                    reject(error);
+                                },
+                            }
+                        );
                     },
+                    onError: (error) => {
+                        console.error(error);
+                        reject(error);
+                    }
                 }
             );
-            
-            
-        };
+        });
+    };
+
+    const handleAddMember = (
+        requestId: number,
+        senderEmail: string,
+        answer: boolean,
+        channelId: string
+    ) => async (event) => {
+        findUnique(
+            {
+                email: senderEmail,
+                jwt: userData.jwt,
+            },
+            {
+                onSuccess: async (response) => {
+                    const chat = response.data;
+                    await respondChannelRequest(
+                        {
+                            requestId: requestId,
+                            response: answer,
+                            jwt: userData.jwt,
+                        },
+                        {
+                            onSuccess: async (response) => {
+                                if (answer === true) {
+                                    const members = await fetchMembers(channelId);
+                                    const channelSymmetricKey =
+                                        await generateSymmetricKey256();
+                                    const subscribers = [
+                                        ...members,
+                                        senderEmail,
+                                    ];
+
+                                    for (const memberEmail of subscribers) {
+                                        await handleExchangeKey(
+                                            memberEmail,
+                                            channelSymmetricKey,
+                                            channelId
+                                        );
+                                    }
+
+                                    addChannel(
+                                        "",
+                                        channelId,
+                                        channelSymmetricKey,
+                                        userData.email,
+                                        userData.email
+                                    );
+
+                                }
+                            },
+                        }
+                    );
+                },
+            }
+        );
+    };
 
     useLiveQuery(async () => {
         const channelsFromDb = await channelsDB.channels
@@ -123,10 +196,9 @@ export default function Requests() {
     }, [userData.email]);
 
     useEffect(() => {
-        if(userData.email){
+        if (userData.email) {
             handleGetChannelRequests();
         }
-        
     }, [refresh]);
     return (
         <Container
@@ -145,7 +217,7 @@ export default function Requests() {
                                     <IconButton
                                         edge="end"
                                         aria-label="accept"
-                                        onClick={handleRespond(
+                                        onClick={handleAddMember(
                                             request.id,
                                             request.senderEmail,
                                             true,
@@ -159,7 +231,7 @@ export default function Requests() {
                                     <IconButton
                                         edge="end"
                                         aria-label="reject"
-                                        onClick={handleRespond(
+                                        onClick={handleAddMember(
                                             request.id,
                                             request.senderEmail,
                                             false,
