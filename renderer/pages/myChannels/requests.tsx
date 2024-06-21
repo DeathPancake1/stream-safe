@@ -32,14 +32,13 @@ import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric
 export default function Requests() {
     const { mutate: getChannelRequests } = useGetChannelRequests();
     const { mutate: respondChannelRequest } = useRespondChannelRequest();
+    const [subscribedMembers, setSubscribedMembers] = useState<string[]>([]);
     const { userData, updateUser } = useUser();
     const [requests, setRequests] = useState([]);
     const [channels, setChannels] = useState<Channels[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const { mutate: getMembers, isLoading: isLoadingMembers } = useGetMembers();
-    const { mutate: addMember } = useAddMembers();
     const { mutate: findUnique } = useFindEmail();
-    const { mutate: removeMember } = useRemoveMembers();
     const { mutate: exchangeKey } = useExchangeChannelKey();
 
     const handleGetChannelRequests = () => {
@@ -55,8 +54,7 @@ export default function Requests() {
         );
     };
 
-    const fetchMembers = async (channelId): Promise<string[]> => {
-        let membersResponse;
+    const fetchMembers = async (channelId) => {
         await getMembers(
             {
                 channelId: channelId,
@@ -67,11 +65,10 @@ export default function Requests() {
                     const members = response.data.subscribers.map(
                         (member) => member.email
                     );
-                    membersResponse = members;
+                    setSubscribedMembers(members)
                 },
             }
         );
-        return membersResponse;
     };
 
     const handleExchangeKey = async (email, channelSymmetricKey, channelId) => {
@@ -138,11 +135,11 @@ export default function Requests() {
                         {
                             onSuccess: async (response) => {
                                 if (answer === true) {
-                                    const members = await fetchMembers(channelId);
+                                    await fetchMembers(channelId);
                                     const channelSymmetricKey =
                                         await generateSymmetricKey256();
                                     const subscribers = [
-                                        ...members,
+                                        ...subscribedMembers,
                                         senderEmail,
                                     ];
 
@@ -169,6 +166,7 @@ export default function Requests() {
                 },
             }
         );
+        setRefresh((prev)=>!prev)
     };
 
     useLiveQuery(async () => {
