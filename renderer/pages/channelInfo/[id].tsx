@@ -2,6 +2,7 @@ import {
     Alert,
     Box,
     Button,
+    Divider,
     IconButton,
     Rating,
     Snackbar,
@@ -23,6 +24,7 @@ import { useRouter } from "next/router";
 import { useUserById } from "../../api/hooks/user-by-id-hook";
 import { useCreateChannelRequests } from "../../api/hooks/request-hook";
 import { ChatTypeEnum } from "../../types/chat-type-enum";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface User {
     firstname: string;
@@ -191,27 +193,28 @@ export default function ChannelInfo() {
 
     return (
         <Box>
-            <Box
+            <Button
+                onClick={handleBack}
+                size="large"
                 sx={{
                     zIndex: 2002,
                     position: "fixed",
-                    top: 0,
-                    right: 0,
-                    backgroundColor: "rgb(0, 0, 0, 0.7)",
+                    top: 4,
+                    right: 4,
                     padding: "4px",
-                    borderRadius: " 0 0 0 15px",
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000', // Set background color to black
+                    color: 'common.white', // Use Material-UI's common white color
+                    '&:hover': { // Target the hover state
+                        color: '#000', // Set text color to black on hover
+                    },
                 }}
             >
-                <IconButton
-                    onClick={handleBack}
-                    size="large"
-                    sx={{ width: 35, height: 35 }}
-                    color="secondary"
-                >
-                    <CloseIcon sx={{ width: 35, height: 35 }} />
-                </IconButton>
-            </Box>
-            <Box sx={{ backgroundColor: secondaryColor}}>
+                <ArrowBackIcon sx={{ width: 25, height: 25 }} />  {/* Ensure white icon */}
+                <Typography variant="body1" sx={{ marginLeft: '8px', marginRight: '8px' }}>back</Typography>
+            </Button>
+            <Box sx={{ backgroundColor: secondaryColor, padding: "1rem" }}>
                 {channelInfo && (
                     <>
                         <Typography
@@ -224,33 +227,36 @@ export default function ChannelInfo() {
                         >
                             {channelInfo.title}
                         </Typography>
-                        <Typography sx={{ mb: "0.5rem" }}>
-                            <Box fontWeight="fontWeightMedium" display="inline">
-                                Description:{" "}
-                            </Box>
-                            {channelInfo.description}
-                        </Typography>
-                        <Typography sx={{ mb: "0.5rem" }}>
-                            <Box fontWeight="fontWeightMedium" display="inline">
-                                Privacy Type:{" "}
-                            </Box>
-                            {channelInfo.private ? "private" : "public"}
-                        </Typography>
-                        <Typography sx={{ mb: "0.5rem" }}>
-                            <Box fontWeight="fontWeightMedium" display="inline">
-                                Subscribers Count:{" "}
-                            </Box>
-                            {channelInfo.totalMembers}
-                        </Typography>
-                        <Typography sx={{ mb: "0.5rem" }}>
-                            <Box
-                                fontWeight="fontWeightMedium"
-                                display="inline-block"
-                            >
-                                Created by:&nbsp;{" "}
-                            </Box>
-                            {owner.firstname + " " + owner.lastname}
-                        </Typography>
+                        <Divider></Divider>
+                        <Box>
+                            <Typography sx={{ mb: "0.5rem" }}>
+                                <Box fontWeight="fontWeightMedium" display="inline">
+                                    Description:{" "}
+                                </Box>
+                                {channelInfo.description}
+                            </Typography>
+                            <Typography sx={{ mb: "0.5rem" }}>
+                                <Box fontWeight="fontWeightMedium" display="inline">
+                                    Privacy Type:{" "}
+                                </Box>
+                                {channelInfo.private ? "private" : "public"}
+                            </Typography>
+                            <Typography sx={{ mb: "0.5rem" }}>
+                                <Box fontWeight="fontWeightMedium" display="inline">
+                                    Subscribers Count:{" "}
+                                </Box>
+                                {channelInfo.totalMembers}
+                            </Typography>
+                            <Typography sx={{ mb: "0.5rem" }}>
+                                <Box
+                                    fontWeight="fontWeightMedium"
+                                    display="inline-block"
+                                >
+                                    Created by:&nbsp;{" "}
+                                </Box>
+                                {owner.firstname + " " + owner.lastname}
+                            </Typography>
+                        </Box>
                         <Box
                             style={{
                                 display: "flex",
@@ -259,57 +265,71 @@ export default function ChannelInfo() {
                                 width: "100%",
                             }}
                         >
-                            {imageUrl && (
-                                <img
-                                    style={{
-                                        width: "70%",
-                                        height: "70%",
-                                        marginBottom: "0.5rem",
-                                    }}
-                                    src={imageUrl}
-                                />
-                            )}
-                            {status === "Not Member" && (
-                                <Button
-                                    style={{
-                                        padding: "0.5rem",
-                                        width: "70%",
-                                        backgroundColor: primaryColor,
-                                        color: secondaryColor,
-                                        marginBottom: "2rem",
-                                    }}
-                                    onClick={handleRequest}
-                                >
-                                    Request Join
-                                </Button>
-                            )}
-                            {status === "Member" && (
-                                <Button
-                                    style={{
-                                        padding: "0.5rem",
-                                        width: "70%",
-                                        backgroundColor: primaryColor,
-                                        color: secondaryColor,
-                                        marginBottom: "2rem",
-                                    }}
-                                    onClick={handleMessage}
-                                >
-                                    See Content
-                                </Button>
-                            )}
-                            {status === "Pending" && (
-                                <Button
-                                    variant="contained"
-                                    disabled
-                                    style={{
-                                        padding: "0.5rem",
-                                        width: "70%",
-                                        marginBottom: "2rem",
-                                    }}
-                                >
-                                    Pending
-                                </Button>
-                            )}
+                            <Box sx={{
+                                width: "70%", maxHeight: "500px", marginBottom: '10px'
+                            }}>
+                                <Box sx={{
+                                    width: 'fit-content',
+                                    height: 'fit-content',
+                                    margin: 'auto'
+                                }}>
+                                    {imageUrl && (
+                                        <img
+                                            style={{
+                                                maxWidth: "100%",
+                                                maxHeight: "500px",
+                                                marginBottom: "0.5rem",
+                                                objectFit: "contain" // Maintain aspect ratio
+                                            }}
+                                            src={imageUrl}
+                                        />
+                                    )}
+                                </Box>
+                                {status === "Not Member" && (
+                                    <Button
+                                        style={{
+                                            padding: "0.5rem",
+                                            backgroundColor: primaryColor,
+                                            color: secondaryColor,
+                                            marginBottom: "2rem",
+                                            margin: 'auto'
+                                        }}
+                                        fullWidth
+                                        onClick={handleRequest}
+                                    >
+                                        Request Join
+                                    </Button>
+                                )}
+                                {status === "Member" && (
+                                    <Button
+                                        style={{
+                                            padding: "0.5rem",
+                                            backgroundColor: primaryColor,
+                                            color: secondaryColor,
+                                            marginBottom: "2rem",
+                                            margin: 'auto'
+                                        }}
+                                        onClick={handleMessage}
+                                        fullWidth
+                                    >
+                                        See Content
+                                    </Button>
+                                )}
+                                {status === "Pending" && (
+                                    <Button
+                                        variant="contained"
+                                        disabled
+                                        style={{
+                                            padding: "0.5rem",
+                                            marginBottom: "2rem",
+                                            margin: 'auto'
+                                        }}
+                                        fullWidth
+                                    >
+                                        Pending
+                                    </Button>
+                                )}
+                            </Box>
                         </Box>
                     </>
                 )}

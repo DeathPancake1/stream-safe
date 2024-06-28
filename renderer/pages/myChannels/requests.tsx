@@ -28,14 +28,21 @@ import {
     useExchangeChannelKey,
 } from "../../api/hooks/channel-hook";
 import generateSymmetricKey256 from "../../helpers/keyExchange/generateSymmetric";
+import ChannelType from "../../types/channel-type";
+
+type RequestType = {
+    id: number,
+    channelId: string,
+    senderEmail: string,
+    channel: any
+}
 
 export default function Requests() {
     const { mutate: getChannelRequests } = useGetChannelRequests();
     const { mutate: respondChannelRequest } = useRespondChannelRequest();
     const [subscribedMembers, setSubscribedMembers] = useState<string[]>([]);
     const { userData, updateUser } = useUser();
-    const [requests, setRequests] = useState([]);
-    const [channels, setChannels] = useState<Channels[]>([]);
+    const [requests, setRequests] = useState<RequestType[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const { mutate: getMembers, isLoading: isLoadingMembers } = useGetMembers();
     const { mutate: findUnique } = useFindEmail();
@@ -158,7 +165,7 @@ export default function Requests() {
                                         userData.email,
                                         userData.email
                                     );
-
+                                    setRefresh((prev)=>!prev)
                                 }
                             },
                         }
@@ -166,32 +173,8 @@ export default function Requests() {
                 },
             }
         );
-        setRefresh((prev)=>!prev)
     };
 
-    useLiveQuery(async () => {
-        const channelsFromDb = await channelsDB.channels
-            .where("ownerEmail")
-            .equalsIgnoreCase(userData.email)
-            .sortBy("date");
-
-        const uniqueChannel = Array.from(
-            new Set(
-                channelsFromDb.map((channel) => {
-                    return {
-                        id: channel.id,
-                        name: channel.name,
-                        channelId: channel.channelId,
-                        ownerEmail: channel.ownerEmail,
-                        channelKey: channel.channelKey,
-                        userEmail: channel.userEmail,
-                    };
-                })
-            )
-        );
-
-        setChannels(uniqueChannel);
-    }, [userData.email]);
 
     useEffect(() => {
         if (userData.email) {
@@ -244,7 +227,7 @@ export default function Requests() {
                             }
                         >
                             <ListItemText
-                                primary={`${request.senderEmail} requests to join ${request.channelId}`}
+                                primary={`${request.senderEmail} requests to join ${request.channel.title}`}
                             />
                         </ListItem>
                         {index < requests.length - 1 && <Divider />}
